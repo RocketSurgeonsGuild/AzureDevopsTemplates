@@ -1,5 +1,0 @@
-steps:
-  - template: ../gitversion/restore.yml
-  - template: ../cake/install.yml
-  - template: ../cake/run.yml
-  - template: ../publish-artifacts.yml
