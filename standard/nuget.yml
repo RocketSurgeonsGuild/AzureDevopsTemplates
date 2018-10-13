@@ -1,4 +1,6 @@
 steps:
+  - task: NuGetToolInstaller@0
+    displayName: "Get NuGet"
   - task: NuGetCommand@2
     displayName: 'Push NuGet packages to myget.org'
     inputs:
