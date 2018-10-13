@@ -7,6 +7,8 @@ parameters:
   version: '4.0.0-beta0012'
 
 steps:
+  - task: NuGetToolInstaller@0
+    displayName: "Get NuGet"
   - script: nuget install GitVersion.CommandLine -Version %VersionToInstall% -ExcludeVersion
     displayName: Install GitVersion
     env:
