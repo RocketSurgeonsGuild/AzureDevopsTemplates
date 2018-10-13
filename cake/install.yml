@@ -1,0 +1,19 @@
+parameters:
+  CakeVersion: '0.30.0'
+  DotNetVersion: '2.1.403'
+
+steps:
+- task: DotNetCoreInstaller@0
+  displayName: Install dotnet $(DotNetVersion)
+  inputs:
+    packageType: 'sdk'
+    version: ${{ parameters.DotNetVersion }}
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet install cake'
+  inputs:
+    command: custom
+    custom: tool
+    arguments: 'install Cake.Tool --version $(CakeVersion) --tool-path $(Agent.ToolsDirectory)'
+  env:
+    CakeVersion: ${{ parameters.CakeVersion }}

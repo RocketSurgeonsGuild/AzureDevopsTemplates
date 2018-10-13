@@ -1,0 +1,48 @@
+parameters:
+  Configuration: 'Release'
+  Coverage: '$(Agent.BuildDirectory)/c'
+  Artifacts: $(Build.ArtifactStagingDirectory)
+
+steps:
+- task: PublishTestResults@2
+  displayName: Publish Tests
+  condition: always()
+  inputs:
+    testRunner: "XUnit"
+    testResultsFiles: "$(Artifacts)/test/**/*.xml"
+    testRunTitle: "XUnit Results - $(system.phaseName)"
+    buildPlatform: ${{ parameters.os }}
+    buildConfiguration: ${{ parameters.Configuration }}
+  env:
+    Artifacts: ${{ parameters.Artifacts }}
+
+- task: PublishCodeCoverageResults@1
+  displayName: Publish Code Coverage
+  condition: always()
+  inputs:
+    codeCoverageTool: "Cobertura"
+    summaryFileLocation: "$(Coverage)/solution.cobertura"
+    reportDirectory: "$(Coverage)/report/"
+    # failIfCoverageEmpty: "true"
+  env:
+    Coverage: ${{ parameters.Coverage }}
+
+- task: PublishBuildArtifacts@1
+  displayName: Publish Logs
+  condition: always()
+  inputs:
+    PathtoPublish: "$(Artifacts)/logs/"
+    ArtifactName: "Logs - $(system.phaseName)"
+    ArtifactType: "Container"
+  env:
+    Artifacts: ${{ parameters.Artifacts }}
+
+- task: PublishBuildArtifacts@1
+  displayName: Publish Nupkg Artifacts
+  condition: always()
+  inputs:
+    PathtoPublish: "$(Artifacts)/nuget/"
+    ArtifactName: "Nupkg - $(system.phaseName)"
+    ArtifactType: "Container"
+  env:
+    Artifacts: ${{ parameters.Artifacts }}

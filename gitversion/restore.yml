@@ -1,0 +1,21 @@
+#
+# This task will restore all gitversion variables from the serialzied metafile
+#   This allows subsequent jobs to include the cake information without explictly requiring gitversion to be run.
+#
+parameters:
+  targetPath: "$(Build.ArtifactStagingDirectory)/gitversion/"
+
+steps:
+  # Should this use Pipeline Download Artifact ??
+  - task: DownloadBuildArtifacts@0
+    displayName: "Download GitVersion Variables"
+    inputs:
+      specificBuildWithTriggering: true
+      downloadType: single
+      artifactName: gitversion
+      pipelineId: GitVersion
+      targetPath: ${{ parameters.targetPath }}
+  - task: RocketSurgeonsGuild.variable-tools.DeserializeVariables.DeserializeVariables@1
+    displayName: 'Deserialize GitVersion'
+    inputs:
+      jsonfiles: ${{ format('{0}/**/gitversion.json', parameters.targetPath) }}

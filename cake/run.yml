@@ -1,0 +1,20 @@
+parameters:
+  CakeFile: 'cakefile.cake'
+  Target: 'Default'
+  Configuration: 'Release'
+  Coverage: '$(Agent.BuildDirectory)/c'
+  Artifacts: $(Build.ArtifactStagingDirectory)
+  Verbosity: 'Normal'
+
+steps:
+- script: $(Agent.ToolsDirectory)/dotnet-cake $(CakeFile) --Target="$(Target)" --Configuration="$(Configuration)" --Artifacts="$(Artifacts)" --Coverage="$(Coverage)" --verbosity=$(Verbosity)
+  displayName: 'dotnet cake'
+  env:
+    CakeFile: ${{ parameters.CakeFile }}
+    Target: ${{ parameters.Target }}
+    Configuration: ${{ parameters.Configuration }}
+    Artifacts: ${{ parameters.Artifacts }}
+    VstsArtifacts: ${{ parameters.Artifacts }}
+    Coverage: ${{ parameters.Coverage }}
+    VstsCoverage: ${{ parameters.Coverage }}
+    Verbosity: ${{ parameters.Verbosity }}
