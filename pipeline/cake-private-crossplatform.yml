@@ -15,7 +15,7 @@ jobs:
         parameters:
           NuGetVersion: ${{ parameters.NuGetVersion }}
 
-  - template: cake-job.yml
+  - template: cake-job-private.yml
     parameters:
       name: 'macOS'
       dependsOn: GitVersion
@@ -28,7 +28,7 @@ jobs:
       DotNetVersion: ${{ parameters.DotNetVersion }}
       NuGetVersion: ${{ parameters.NuGetVersion }}
 
-  - template: cake-job.yml
+  - template: cake-job-private.yml
     parameters:
       name: 'Linux'
       dependsOn: GitVersion
@@ -41,7 +41,7 @@ jobs:
       DotNetVersion: ${{ parameters.DotNetVersion }}
       NuGetVersion: ${{ parameters.NuGetVersion }}
 
-  - template: cake-job.yml
+  - template: cake-job-private.yml
     parameters:
       name: 'Windows'
       dependsOn: GitVersion
