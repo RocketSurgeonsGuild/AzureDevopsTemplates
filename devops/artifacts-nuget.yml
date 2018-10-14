@@ -1,5 +1,5 @@
 parameters:
-  os: $(Agent.OS)
+  os: "$(Agent.OS)"
 
 steps:
 - ${{ if or(eq(parameters.os, 'Darwin'), eq(parameters.os, 'Linux')) }}:
