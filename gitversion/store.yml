@@ -12,10 +12,12 @@ steps:
     displayName: "Get NuGet"
     inputs:
       versionSpec: ${{ parameters.NuGetVersion }}
-  - script: nuget install GitVersion.CommandLine -Version %VersionToInstall% -ExcludeVersion
-    displayName: Install GitVersion
-    env:
-      VersionToInstall: ${{ parameters.version }}
+  - task: NuGetCommand@2
+    displayName: 'NuGet custom'
+    inputs:
+      command: custom
+      feedsToUse: config
+      arguments: ${{ format('install GitVersion.CommandLine -Version "{0}" -ExcludeVersion', parameters.NuGetVersion) }}
   - script: GitVersion.exe /output buildserver
     displayName: Run GitVersion
     workingDirectory: GitVersion.CommandLine/tools/
