@@ -3,16 +3,16 @@ parameters:
 
 steps:
 - task: DotNetCoreCLI@2
-    displayName: 'Push NuGet packages to myget.org'
-    inputs:
-      command: push
-      nuGetFeedType: external
-      publishFeedCredentials: myget.org
-    condition: and(succeeded(), or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranch'], 'refs/heads/master')))
+  displayName: 'Push NuGet packages to myget.org'
+  inputs:
+    command: push
+    nuGetFeedType: external
+    publishFeedCredentials: myget.org
+  condition: and(succeeded(), or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranch'], 'refs/heads/master')))
 - task: DotNetCoreCLI@2
-    displayName: 'Push NuGet packages to nuget.org'
-    inputs:
-      command: push
-      nuGetFeedType: external
-      publishFeedCredentials: nuget.org
-    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
+  displayName: 'Push NuGet packages to nuget.org'
+  inputs:
+    command: push
+    nuGetFeedType: external
+    publishFeedCredentials: nuget.org
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
