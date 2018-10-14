@@ -1,0 +1,5 @@
+steps:
+- ${{ if or(eq(parameters.os, 'Windows'), eq(parameters.os, 'Linux')) }}:
+  - bash: bash <(curl -s https://raw.githubusercontent.com/Microsoft/artifacts-credprovider/master/helpers/installcredprovider.sh)
+- ${{ if eq(parameters.os, 'Darwin') }}:
+  - powershell: iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/Microsoft/artifacts-credprovider/master/helpers/installcredprovider.ps1'))
