@@ -15,9 +15,9 @@ jobs:
     dependsOn: ${{ parameters.dependsOn }}
     pool:
       - ${{ if ne(parameters.poolName, '') }}:
-        name: ${{ parameters.poolName }}
+        - name: ${{ parameters.poolName }}
       - ${{ if ne(parameters.vmImage, '') }}:
-        vmImage: ${{ parameters.vmImage }}
+        - vmImage: ${{ parameters.vmImage }}
     steps:
       - template: ../gitversion/restore.yml
       - template: ../standard/dotnet-restore.yml
