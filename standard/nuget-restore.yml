@@ -1,0 +1,16 @@
+parameters:
+  NuGetVersion: '4.7.1'
+  NuGetConfig: 'NuGet.config'
+  Verbosity: 'Normal'
+
+steps:
+  - task: NuGetToolInstaller@0
+    displayName: "Get NuGet"
+    inputs:
+      versionSpec: ${{ parameters.NuGetVersion }}
+  - task: NuGetCommand@2
+    displayName: 'NuGet restore'
+    inputs:
+      feedsToUse: config
+      nugetConfigPath: ${{ parameters.NuGetConfig }}
+      verbosityRestore: ${{ parameters.Verbosity }}

@@ -6,7 +6,6 @@ parameters:
   CakeVersion: "0.30.0"
   NuGetVersion: '4.7.1'
   FeedId: ''
-  FeedUri: ''
 jobs:
   - job: GitVersion
     pool:
@@ -23,7 +22,6 @@ jobs:
         vmImage: "VS2017-Win2016"
         pushNuget: true
         FeedId: ${{ parameters.FeedId }}
-        FeedUri: ${{ parameters.FeedUri }}
         Configuration: ${{ parameters.Configuration }}
         Verbosity: ${{ parameters.Verbosity }}
         CakeVersion: ${{ parameters.CakeVersion }}

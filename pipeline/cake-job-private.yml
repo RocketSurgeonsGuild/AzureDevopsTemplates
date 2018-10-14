@@ -9,6 +9,7 @@ parameters:
   dependsOn: ''
   vmImage: ''
   pushNuget: false
+  FeedId: ''
 jobs:
   - job: ${{ parameters.name }}
     dependsOn: ${{ parameters.dependsOn }}
@@ -19,7 +20,7 @@ jobs:
         vmImage: ${{ parameters.vmImage }}
     steps:
       - template: ../gitversion/restore.yml
-      - template: ../devops/artifacts-nuget.yml
+      - template: ../standard/dotnet-restore.yml
       - template: ../cake/install.yml
         parameters:
           CakeVersion: ${{ parameters.CakeVersion }}
@@ -32,6 +33,3 @@ jobs:
         - template: ../standard/nuget-push-feed.yml
           parameters:
             FeedId: ${{ parameters.FeedId }}
-            FeedUri: ${{ parameters.FeedUri }}
-    variables:
-      VSS_NUGET_EXTERNAL_FEED_ENDPOINTS: ${{ format('{"endpointCredentials":[{"endpoint":"{1}", "password":"{0}"}]}', parameters.AccessToken, parameters.FeedUri) }}

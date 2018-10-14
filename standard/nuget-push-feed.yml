@@ -1,7 +1,6 @@
 parameters:
   Artifacts: $(Build.ArtifactStagingDirectory)
   FeedId: ''
-  FeedUri: ''
   Verbosity: 'Normal'
   AllowPackageConflicts: 'true'
   AccessToken: '$(System.AccessToken)'
@@ -19,6 +18,3 @@ steps:
       feedPublish: ${{ parameters.FeedId }}
       verbosityPush: ${{ parameters.Verbosity }}
       allowPackageConflicts: ${{ parameters.AllowPackageConflicts }}
-    env:
-      NUGET_CREDENTIALPROVIDER_SESSIONTOKENCACHE_ENABLED: 'true'
-      VSS_NUGET_EXTERNAL_FEED_ENDPOINTS: ${{ format('{"endpointCredentials": [{"endpoint":"{1}", "password":"{0}"}]}', parameters.AccessToken, parameters.FeedUri) }}
