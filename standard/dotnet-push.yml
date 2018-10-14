@@ -1,24 +1,18 @@
 parameters:
-  NuGetVersion: '4.7.1'
+  Artifacts: $(Build.ArtifactStagingDirectory)
 
 steps:
-  - task: NuGetToolInstaller@0
-    displayName: "Get NuGet"
-    inputs:
-      versionSpec: ${{ parameters.NuGetVersion }}
-  - task: NuGetCommand@2
+- task: DotNetCoreCLI@2
     displayName: 'Push NuGet packages to myget.org'
     inputs:
       command: push
       nuGetFeedType: external
       publishFeedCredentials: myget.org
-      verbosityPush: Normal
-    condition: and(succeeded(), or(startsWith(variables['Build.SourceBranch'], 'refs/tags/'), eq(variables['Build.SourceBranch'], 'refs/heads/master')))
-  - task: NuGetCommand@2
+    condition: and(succeeded(), or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranch'], 'refs/heads/master')))
+- task: DotNetCoreCLI@2
     displayName: 'Push NuGet packages to nuget.org'
     inputs:
       command: push
       nuGetFeedType: external
       publishFeedCredentials: nuget.org
-      verbosityPush: Normal
     condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))

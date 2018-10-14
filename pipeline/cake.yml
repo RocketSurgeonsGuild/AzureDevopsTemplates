@@ -57,6 +57,6 @@ jobs:
         parameters:
           Configuration: ${{ parameters.Configuration }}
           Verbosity: ${{ parameters.Verbosity }}
-      - template: ../standard/nuget.yml
+      - template: ../standard/dotnet-push.yml
         parameters:
           NuGetVersion: ${{ parameters.NuGetVersion }}

@@ -1,0 +1,31 @@
+parameters:
+  NuGetVersion: '4.7.1'
+  Artifacts: $(Build.ArtifactStagingDirectory)
+  Verbosity: 'Normal'
+  AllowPackageConflicts: 'true'
+
+steps:
+  - task: NuGetToolInstaller@0
+    displayName: "Get NuGet"
+    inputs:
+      versionSpec: ${{ parameters.NuGetVersion }}
+  - task: NuGetCommand@2
+    displayName: 'Push NuGet packages to myget.org'
+    inputs:
+      command: push
+      nuGetFeedType: external
+      packagesToPush: ${{ format('{0}/nuget/*.nupkg;!{0}/nuget/*.symbols.nupkg', parameters.Artifacts) }}
+      publishFeedCredentials: myget.org
+      verbosityPush: ${{ parameters.Verbosity }}
+      allowPackageConflicts: ${{ parameters.AllowPackageConflicts }}
+    condition: and(succeeded(), or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranch'], 'refs/heads/master')))
+  - task: NuGetCommand@2
+    displayName: 'Push NuGet packages to nuget.org'
+    inputs:
+      command: push
+      nuGetFeedType: external
+      packagesToPush: ${{ format('{0}/nuget/*.nupkg;!{0}/nuget/*.symbols.nupkg', parameters.Artifacts) }}
+      publishFeedCredentials: nuget.org
+      verbosityPush: ${{ parameters.Verbosity }}
+      allowPackageConflicts: ${{ parameters.AllowPackageConflicts }}
+    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
