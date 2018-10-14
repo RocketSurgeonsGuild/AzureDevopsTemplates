@@ -1,7 +1,10 @@
+parameters:
+  os: $(Agent.OS)
+
 steps:
+- ${{ if or(eq(parameters.os, 'Darwin'), eq(parameters.os, 'Linux')) }}:
   - bash: bash <(curl -s https://raw.githubusercontent.com/Microsoft/artifacts-credprovider/master/helpers/installcredprovider.sh)
     displayName: Artifacts Credential Provider
-    condition: or(eq(variables['Agent.OS'], 'Darwin'), eq(variables['Agent.OS'], 'Linux'))
+- ${{ if eq(parameters.os, 'Windows_NT') }}:
   - powershell: iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/Microsoft/artifacts-credprovider/master/helpers/installcredprovider.ps1'))
     displayName: Artifacts Credential Provider
-    condition: eq(variables['Agent.OS'], 'Windows_NT')
