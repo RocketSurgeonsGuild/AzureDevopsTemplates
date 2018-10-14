@@ -7,7 +7,7 @@ parameters:
   Verbosity: 'Normal'
 
 steps:
-- script: ${{ format('$(Agent.ToolsDirectory)/dotnet-cake {0} --Target="{1}" --Configuration="$(Configuration)" --Artifacts="$(Artifacts)" --Coverage="$(Coverage)" --verbosity="$(Verbosity)"', parameters.Script, parameters.Target) }}
+- script: ${{ format('dotnet cake {0} --Target="{1}" --Configuration="$(Configuration)" --Artifacts="$(Artifacts)" --Coverage="$(Coverage)" --verbosity="$(Verbosity)"', parameters.Script, parameters.Target) }}
   displayName: 'dotnet cake'
   env:
     Configuration: ${{ parameters.Configuration }}
