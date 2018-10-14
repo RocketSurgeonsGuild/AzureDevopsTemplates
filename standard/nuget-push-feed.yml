@@ -7,6 +7,10 @@ parameters:
   AccessToken: '$(System.AccessToken)'
 
 steps:
+  - task: NuGetToolInstaller@0
+    displayName: "Get NuGet"
+    inputs:
+      versionSpec: ${{ parameters.NuGetVersion }}
   - task: NuGetCommand@2
     displayName: NuGet Push
     inputs:
