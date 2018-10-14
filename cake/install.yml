@@ -9,8 +9,11 @@ steps:
     packageType: 'sdk'
     version: ${{ parameters.DotNetVersion }}
 
-- task: petersendev.dotnet-global-tool-installer.DotnetGlobalToolInstaller.DotnetGlobalToolInstaller@0
+- task: DotNetCoreCLI@2
   displayName: 'dotnet install cake'
   inputs:
-    name: Cake.Tool
-    versionSpec: ${{ parameters.CakeVersion }}
+    command: custom
+    custom: tool
+    arguments: 'install Cake.Tool --version $(CakeVersion) --tool-path $(Agent.ToolsDirectory)'
+  env:
+    CakeVersion: ${{ parameters.CakeVersion }}
