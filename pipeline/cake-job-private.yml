@@ -29,6 +29,9 @@ jobs:
         parameters:
           Configuration: ${{ parameters.Configuration }}
           Verbosity: ${{ parameters.Verbosity }}
+      - template: ../publish-artifacts.yml
+        parameters:
+          Configuration: ${{ parameters.Configuration }}
       - ${{ if eq(parameters.pushNuget, 'true') }}:
         - template: ../standard/nuget-push-feed.yml
           parameters:
