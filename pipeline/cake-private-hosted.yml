@@ -6,7 +6,7 @@ parameters:
   CakeVersion: "0.30.0"
   NuGetVersion: '4.7.1'
   FeedId: ''
-  poolName: ''
+  poolName: 'Default'
 jobs:
   - job: GitVersion
     pool:
