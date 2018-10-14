@@ -1,4 +1,5 @@
 parameters:
+  NuGetVersion: '4.7.1'
   Artifacts: $(Build.ArtifactStagingDirectory)
   FeedId: ''
   Verbosity: 'Normal'
