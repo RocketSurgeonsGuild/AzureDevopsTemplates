@@ -15,5 +15,6 @@ steps:
     command: custom
     custom: tool
     arguments: 'install Cake.Tool --version $(CakeVersion) --tool-path $(Agent.ToolsDirectory)'
+    workingDirectory: '$(Build.ArtifactStagingDirectory)'
   env:
     CakeVersion: ${{ parameters.CakeVersion }}
