@@ -24,4 +24,4 @@ jobs:
           Configuration: ${{ parameters.Configuration }}
           Verbosity: ${{ parameters.Verbosity }}
       - ${{ if eq(parameters.pushNuget, 'true') }}:
-        - template: ../standard/dotnet-push.yml
+        - template: ../standard/nuget-push.yml

@@ -29,7 +29,7 @@ jobs:
           Configuration: ${{ parameters.Configuration }}
           Verbosity: ${{ parameters.Verbosity }}
       - ${{ if eq(parameters.pushNuget, 'true') }}:
-        - template: ../standard/dotnet-push-feed.yml
+        - template: ../standard/nuget-push-feed.yml
           parameters:
             FeedId: ${{ parameters.FeedId }}
             FeedUri: ${{ parameters.FeedUri }}
