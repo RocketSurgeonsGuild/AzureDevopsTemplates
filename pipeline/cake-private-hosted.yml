@@ -17,14 +17,14 @@ jobs:
           NuGetVersion: ${{ parameters.NuGetVersion }}
 
   - template: cake-job.yml
-      parameters:
-        name: 'Hosted'
-        dependsOn: GitVersion
-        poolName: ${{ parameters.poolName }}
-        pushNuget: true
-        FeedId: ${{ parameters.FeedId }}
-        Configuration: ${{ parameters.Configuration }}
-        Verbosity: ${{ parameters.Verbosity }}
-        CakeVersion: ${{ parameters.CakeVersion }}
-        DotNetVersion: ${{ parameters.DotNetVersion }}
-        NuGetVersion: ${{ parameters.NuGetVersion }}
+    parameters:
+      name: 'Hosted'
+      dependsOn: GitVersion
+      poolName: ${{ parameters.poolName }}
+      pushNuget: true
+      FeedId: ${{ parameters.FeedId }}
+      Configuration: ${{ parameters.Configuration }}
+      Verbosity: ${{ parameters.Verbosity }}
+      CakeVersion: ${{ parameters.CakeVersion }}
+      DotNetVersion: ${{ parameters.DotNetVersion }}
+      NuGetVersion: ${{ parameters.NuGetVersion }}

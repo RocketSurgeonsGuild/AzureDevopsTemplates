@@ -16,40 +16,40 @@ jobs:
           NuGetVersion: ${{ parameters.NuGetVersion }}
 
   - template: cake-job.yml
-      parameters:
-        name: 'macOS'
-        dependsOn: GitVersion
-        vmImage: "macOS-10.13"
-        pushNuget: false
-        FeedId: ${{ parameters.FeedId }}
-        Configuration: ${{ parameters.Configuration }}
-        Verbosity: ${{ parameters.Verbosity }}
-        CakeVersion: ${{ parameters.CakeVersion }}
-        DotNetVersion: ${{ parameters.DotNetVersion }}
-        NuGetVersion: ${{ parameters.NuGetVersion }}
+    parameters:
+      name: 'macOS'
+      dependsOn: GitVersion
+      vmImage: "macOS-10.13"
+      pushNuget: false
+      FeedId: ${{ parameters.FeedId }}
+      Configuration: ${{ parameters.Configuration }}
+      Verbosity: ${{ parameters.Verbosity }}
+      CakeVersion: ${{ parameters.CakeVersion }}
+      DotNetVersion: ${{ parameters.DotNetVersion }}
+      NuGetVersion: ${{ parameters.NuGetVersion }}
 
   - template: cake-job.yml
-      parameters:
-        name: 'Linux'
-        dependsOn: GitVersion
-        vmImage: "Ubuntu-16.04"
-        pushNuget: false
-        FeedId: ${{ parameters.FeedId }}
-        Configuration: ${{ parameters.Configuration }}
-        Verbosity: ${{ parameters.Verbosity }}
-        CakeVersion: ${{ parameters.CakeVersion }}
-        DotNetVersion: ${{ parameters.DotNetVersion }}
-        NuGetVersion: ${{ parameters.NuGetVersion }}
+    parameters:
+      name: 'Linux'
+      dependsOn: GitVersion
+      vmImage: "Ubuntu-16.04"
+      pushNuget: false
+      FeedId: ${{ parameters.FeedId }}
+      Configuration: ${{ parameters.Configuration }}
+      Verbosity: ${{ parameters.Verbosity }}
+      CakeVersion: ${{ parameters.CakeVersion }}
+      DotNetVersion: ${{ parameters.DotNetVersion }}
+      NuGetVersion: ${{ parameters.NuGetVersion }}
 
   - template: cake-job.yml
-      parameters:
-        name: 'Windows'
-        dependsOn: GitVersion
-        vmImage: "VS2017-Win2016"
-        pushNuget: true
-        FeedId: ${{ parameters.FeedId }}
-        Configuration: ${{ parameters.Configuration }}
-        Verbosity: ${{ parameters.Verbosity }}
-        CakeVersion: ${{ parameters.CakeVersion }}
-        DotNetVersion: ${{ parameters.DotNetVersion }}
-        NuGetVersion: ${{ parameters.NuGetVersion }}
+    parameters:
+      name: 'Windows'
+      dependsOn: GitVersion
+      vmImage: "VS2017-Win2016"
+      pushNuget: true
+      FeedId: ${{ parameters.FeedId }}
+      Configuration: ${{ parameters.Configuration }}
+      Verbosity: ${{ parameters.Verbosity }}
+      CakeVersion: ${{ parameters.CakeVersion }}
+      DotNetVersion: ${{ parameters.DotNetVersion }}
+      NuGetVersion: ${{ parameters.NuGetVersion }}
