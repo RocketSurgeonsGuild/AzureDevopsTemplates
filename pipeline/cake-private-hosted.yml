@@ -6,6 +6,7 @@ parameters:
   CakeVersion: "0.30.0"
   NuGetVersion: '4.7.1'
   FeedId: ''
+  NuGetSource: ''
   poolName: 'Default'
 jobs:
   - job: GitVersion
@@ -23,6 +24,7 @@ jobs:
       poolName: ${{ parameters.poolName }}
       pushNuget: true
       FeedId: ${{ parameters.FeedId }}
+      NuGetSource: ${{ parameters.NuGetSource }}
       Configuration: ${{ parameters.Configuration }}
       Verbosity: ${{ parameters.Verbosity }}
       CakeVersion: ${{ parameters.CakeVersion }}

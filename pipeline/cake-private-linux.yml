@@ -6,6 +6,7 @@ parameters:
   CakeVersion: "0.30.0"
   NuGetVersion: '4.7.1'
   FeedId: ''
+  NuGetSource: ''
 jobs:
   - job: GitVersion
     pool:
@@ -22,6 +23,7 @@ jobs:
       vmImage: "Ubuntu-16.04"
       pushNuget: true
       FeedId: ${{ parameters.FeedId }}
+      NuGetSource: ${{ parameters.NuGetSource }}
       Configuration: ${{ parameters.Configuration }}
       Verbosity: ${{ parameters.Verbosity }}
       CakeVersion: ${{ parameters.CakeVersion }}

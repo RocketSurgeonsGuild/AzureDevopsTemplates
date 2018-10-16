@@ -14,7 +14,7 @@ steps:
   displayName: ${{ format('Delete files from {0}', parameters.ToolsPath) }}
   inputs:
     SourceFolder: ${{ parameters.ToolsPath }}
-    Contents: '**/*.*'
+    Contents: 'dotnet-cake.exe'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet install cake'
