@@ -10,7 +10,7 @@ parameters:
 jobs:
   - job: GitVersion
     pool:
-      vmImage: "VS2017-Win2016"
+      name: ${{ parameters.poolName }}
     steps:
       - template: ../gitversion/store.yml
         parameters:
