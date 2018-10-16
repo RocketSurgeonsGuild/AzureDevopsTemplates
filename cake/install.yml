@@ -11,7 +11,7 @@ steps:
     version: ${{ parameters.DotNetVersion }}
 
 - task: DeleteFiles@1
-  displayName: 'Delete files from asdfasdfasdfasdf'
+  displayName: ${{ format('Delete files from {0}', parameters.ToolsPath) }}
   inputs:
     SourceFolder: ${{ parameters.ToolsPath }}
     Contents: '**/*.*'
