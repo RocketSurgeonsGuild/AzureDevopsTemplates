@@ -1,0 +1,18 @@
+parameters:
+  Artifacts: '$(Build.ArtifactStagingDirectory)\npm'
+
+steps:
+  - task: npmAuthenticate@0
+    displayName: 'npm Authenticate .npmrc'
+    inputs:
+      workingFile: .npmrc
+
+
+  - powershell: |
+    foreach ($i in gci $(NpmArtifacts) -Filter *.tgz -Recurse) {
+        npm publish $i;
+    }
+    displayName: 'PowerShell Script'
+    env:
+      NpmArtifacts: ${{ Artifacts }}
+
