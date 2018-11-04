@@ -7,7 +7,7 @@ steps:
     inputs:
       workingFile: .npmrc
   - powershell: |
-      foreach ($i in gci $ENV:Npm_Artifacts -Filter *.tgz -Recurse) { npm publish $i; }
+      foreach ($i in gci $ENV:Npm_Artifacts -Filter *.tgz -Recurse) { npm publish $i.FullName; }
     displayName: 'Publish npm packages'
     env:
       Npm_Artifacts: ${{ parameters.Artifacts }}
