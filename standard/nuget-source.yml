@@ -1,0 +1,15 @@
+parameters:
+  NuGetSource: ''
+  NuGetConfig: 'NuGet.config'
+
+steps:
+  - task: NuGetCommand@2
+    displayName: 'NuGet setApiKey'
+    inputs:
+      command: custom
+      arguments: ${{ format('setApiKey -Source {0} $(System.AccessToken) -NonInteractive -ConfigFile {1}', parameters.NuGetSource, parameters.NuGetConfig) }}
+  - task: NuGetCommand@2
+    displayName: 'NuGet sources update'
+    inputs:
+      command: custom
+      arguments: ${{ format('sources update -Name {0} -UserName ci -Password $(System.AccessToken) -StorePasswordInClearText -NonInteractive -ConfigFile {1}', parameters.NuGetSource, parameters.NuGetConfig) }}

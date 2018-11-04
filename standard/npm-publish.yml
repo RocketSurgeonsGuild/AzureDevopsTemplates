@@ -13,4 +13,5 @@ steps:
     displayName: 'Publish npm packages'
     env:
       NpmArtifacts: ${{ Artifacts }}
+    condition: succeededOrFailed()
 
