@@ -1,5 +1,5 @@
 parameters:
-  Artifacts: '$(Build.ArtifactStagingDirectory)\npm'
+  Artifacts: "$(Build.ArtifactStagingDirectory)/npm/"
 
 steps:
   - task: npmAuthenticate@0
@@ -7,9 +7,9 @@ steps:
     inputs:
       workingFile: .npmrc
   - powershell: |
-      foreach ($i in gci $(NpmArtifacts) -Filter *.tgz -Recurse) { npm publish $i; }
+      foreach ($i in gci $(Npm_Artifacts) -Filter *.tgz -Recurse) { npm publish $i; }
     displayName: 'Publish npm packages'
     env:
-      NpmArtifacts: ${{ parameters.Artifacts }}
+      Npm_Artifacts: ${{ parameters.Artifacts }}
     condition: succeededOrFailed()
 
