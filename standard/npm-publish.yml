@@ -10,6 +10,6 @@ steps:
       foreach ($i in gci $(NpmArtifacts) -Filter *.tgz -Recurse) { npm publish $i; }
     displayName: 'Publish npm packages'
     env:
-      NpmArtifacts: ${{ Artifacts }}
+      NpmArtifacts: ${{ parameters.Artifacts }}
     condition: succeededOrFailed()
 
