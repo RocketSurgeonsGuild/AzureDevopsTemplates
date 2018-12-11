@@ -2,6 +2,7 @@ parameters:
   CakeVersion: '0.30.0'
   DotNetVersion: '2.1.403'
   ToolsPath: '$(Agent.ToolsDirectory)/dotnet-cake/'
+  RestorePackageConfig: false
 
 steps:
 - task: DotNetCoreInstaller@0
@@ -25,3 +26,11 @@ steps:
     workingDirectory: '$(Build.ArtifactStagingDirectory)'
   env:
     CakeVersion: ${{ parameters.CakeVersion }}
+
+- ${{ if eq(parameters.RestorePackageConfig, true) }}:
+  - task: NuGetCommand@2
+    displayName: 'Cake restore packages.config'
+    inputs:
+      command: custom
+      feedsToUse: config
+      arguments: install tools/packages.config -ExcludeVersion -OutputDirectory tools

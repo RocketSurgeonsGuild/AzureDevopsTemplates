@@ -14,6 +14,7 @@ parameters:
   FeedId: ''
   NuGetSource: ''
   NuGetConfig: 'NuGet.config'
+  RestorePackageConfig: false
 jobs:
   - job: ${{ parameters.name }}
     dependsOn: ${{ parameters.dependsOn }}
@@ -31,6 +32,7 @@ jobs:
         parameters:
           CakeVersion: ${{ parameters.CakeVersion }}
           DotNetVersion: ${{ parameters.DotNetVersion }}
+          RestorePackageConfig: ${{ parameters.RestorePackageConfig }}
       - template: ../cake/run.yml
         parameters:
           Configuration: ${{ parameters.Configuration }}
