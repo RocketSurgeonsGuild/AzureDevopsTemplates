@@ -4,6 +4,8 @@ parameters:
   DotNetVersion: "2.1.403"
   CakeVersion: "0.30.0"
   NuGetVersion: '4.7.1'
+  Script: 'cakefile.cake'
+  Target: 'Default'
   name: ''
   poolName: ''
   dependsOn: ''
@@ -33,6 +35,8 @@ jobs:
         parameters:
           Configuration: ${{ parameters.Configuration }}
           Verbosity: ${{ parameters.Verbosity }}
+          Script: ${{ parameters.Script }}
+          Target: ${{ parameters.Target }}
       - template: ../publish-artifacts.yml
         parameters:
           Configuration: ${{ parameters.Configuration }}
