@@ -12,4 +12,5 @@ steps:
     env:
       Npm_Artifacts: ${{ parameters.Artifacts }}
     condition: succeededOrFailed()
+    continueOnError: true
 
