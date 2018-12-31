@@ -1,5 +1,5 @@
 parameters:
-  NuGetVersion: '4.7.1'
+  NuGetVersion: "4.9.2"
   NuGetConfig: 'NuGet.config'
   Verbosity: 'Normal'
 
