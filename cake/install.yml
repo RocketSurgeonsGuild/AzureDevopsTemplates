@@ -1,6 +1,6 @@
 parameters:
-  CakeVersion: '0.30.0'
-  DotNetVersion: '2.1.403'
+  DotNetVersion: "2.2.101"
+  CakeVersion: "0.31.0"
   ToolsPath: '$(Agent.ToolsDirectory)/dotnet-cake/'
   RestorePackageConfig: false
 
