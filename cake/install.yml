@@ -1,7 +1,6 @@
 parameters:
-  DotNetVersion: "2.2.101"
+  DotNetVersion: "2.2.103"
   CakeVersion: "0.32.1"
-  ToolsPath: '$(Agent.ToolsDirectory)/dotnet-cake/'
   RestorePackageConfig: false
 
 steps:
@@ -11,18 +10,12 @@ steps:
     packageType: 'sdk'
     version: ${{ parameters.DotNetVersion }}
 
-- task: DeleteFiles@1
-  displayName: ${{ format('Delete files from {0}', parameters.ToolsPath) }}
-  inputs:
-    SourceFolder: ${{ parameters.ToolsPath }}
-    Contents: '**'
-
 - task: DotNetCoreCLI@2
   displayName: 'dotnet install cake'
   inputs:
     command: custom
     custom: tool
-    arguments: ${{ format('install Cake.Tool --version $(CakeVersion) --tool-path {0}', parameters.ToolsPath) }}
+    arguments: 'install -g Cake.Tool --version $(CakeVersion)'
     workingDirectory: '$(Build.ArtifactStagingDirectory)'
   env:
     CakeVersion: ${{ parameters.CakeVersion }}

@@ -5,10 +5,9 @@ parameters:
   Coverage: '$(Agent.BuildDirectory)/c'
   Artifacts: $(Build.ArtifactStagingDirectory)
   Verbosity: 'Normal'
-  ToolsPath: '$(Agent.ToolsDirectory)/dotnet-cake/'
 
 steps:
-- script: ${{ format('{2}/dotnet-cake {0} --Target="{1}" --Configuration="$(Configuration)" --Artifacts="$(Artifacts)" --Coverage="$(Coverage)" --verbosity="$(Verbosity)"', parameters.Script, parameters.Target, parameters.ToolsPath) }}
+- script: ${{ format('{0} --Target="{1}" --Configuration="$(Configuration)" --Artifacts="$(Artifacts)" --Coverage="$(Coverage)" --verbosity="$(Verbosity)"', parameters.Script, parameters.Target) }}
   displayName: 'dotnet cake'
   env:
     Configuration: ${{ parameters.Configuration }}
