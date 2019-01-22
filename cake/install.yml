@@ -10,6 +10,7 @@ steps:
     packageType: 'sdk'
     version: ${{ parameters.DotNetVersion }}
 
+# Both install and update are here, until https://github.com/dotnet/cli/pull/10205 lands
 - task: DotNetCoreCLI@2
   displayName: 'dotnet install cake'
   inputs:
@@ -17,6 +18,18 @@ steps:
     custom: tool
     arguments: 'install -g Cake.Tool --version $(CakeVersion)'
     workingDirectory: '$(Build.ArtifactStagingDirectory)'
+  continueOnError: true
+  env:
+    CakeVersion: ${{ parameters.CakeVersion }}
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet update cake'
+  inputs:
+    command: custom
+    custom: tool
+    arguments: 'update -g Cake.Tool --version $(CakeVersion)'
+    workingDirectory: '$(Build.ArtifactStagingDirectory)'
+  continueOnError: true
   env:
     CakeVersion: ${{ parameters.CakeVersion }}
 
