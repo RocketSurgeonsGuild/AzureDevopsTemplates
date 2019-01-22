@@ -11,7 +11,8 @@ steps:
   displayName: 'dotnet cake'
   inputs:
     command: custom
-    custom: ${{ format('cake {0} --Target="{1}" --Configuration="$(Configuration)" --Artifacts="$(Artifacts)" --Coverage="$(Coverage)" --verbosity="$(Verbosity)"', parameters.Script, parameters.Target) }}
+    custom: cake
+    arguments: ${{ format('{0} --Target="{1}" --Configuration="$(Configuration)" --Artifacts="$(Artifacts)" --Coverage="$(Coverage)" --verbosity="$(Verbosity)"', parameters.Script, parameters.Target) }}
   env:
     Configuration: ${{ parameters.Configuration }}
     Artifacts: ${{ parameters.Artifacts }}
