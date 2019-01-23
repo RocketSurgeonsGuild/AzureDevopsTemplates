@@ -12,7 +12,7 @@ steps:
   inputs:
     command: custom
     custom: cake
-    arguments: ${{ format('{0} --bootstrap"', parameters.Script) }}
+    arguments: ${{ format('{0} --bootstrap', parameters.Script) }}
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet cake'
