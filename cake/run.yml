@@ -31,10 +31,10 @@ steps:
       Verbosity: ${{ parameters.Verbosity }}
 
 - ${{ if eq(parameters.PrivateBuild, true) }}:
-  - script: ${{ format('$(Agent.BuildDirectory)/t/dotnet-cake {0} --bootstrap', parameters.Script) }}
+  - script: ${{ format('$(Agent.BuildDirectory)/t/c/$(CakeVersion)/dotnet-cake {0} --bootstrap', parameters.Script) }}
     displayName: 'dotnet cake bootstrap'
 
-  - script: ${{ format('$(Agent.BuildDirectory)/t/dotnet-cake {0} --Target="{1}" --Configuration="$(Configuration)" --Artifacts="$(Artifacts)" --Coverage="$(Coverage)" --verbosity="$(Verbosity)"', parameters.Script, parameters.Target) }}
+  - script: ${{ format('$(Agent.BuildDirectory)/t/c/$(CakeVersion)/dotnet-cake {0} --Target="{1}" --Configuration="$(Configuration)" --Artifacts="$(Artifacts)" --Coverage="$(Coverage)" --verbosity="$(Verbosity)"', parameters.Script, parameters.Target) }}
     displayName: 'dotnet cake'
     env:
       Configuration: ${{ parameters.Configuration }}
