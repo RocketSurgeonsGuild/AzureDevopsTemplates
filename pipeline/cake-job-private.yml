@@ -30,12 +30,13 @@ jobs:
         - template: ../standard/nuget-source.yml
       - template: ../cake/install.yml
         parameters:
+          PrivateBuild: true
           CakeVersion: ${{ parameters.CakeVersion }}
           DotNetVersion: ${{ parameters.DotNetVersion }}
           RestorePackageConfig: ${{ parameters.RestorePackageConfig }}
-          PrivateBuild: true
       - template: ../cake/run.yml
         parameters:
+          PrivateBuild: true
           Configuration: ${{ parameters.Configuration }}
           Verbosity: ${{ parameters.Verbosity }}
           Script: ${{ parameters.Script }}

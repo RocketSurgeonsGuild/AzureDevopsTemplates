@@ -11,7 +11,6 @@ steps:
     packageType: 'sdk'
     version: ${{ parameters.DotNetVersion }}
 
-# Both install and update are here, until https://github.com/dotnet/cli/pull/10205 lands
 - ${{ if eq(parameters.PrivateBuild, false) }}:
   - task: DotNetCoreCLI@2
     displayName: 'dotnet install cake'
