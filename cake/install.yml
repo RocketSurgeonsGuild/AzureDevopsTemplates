@@ -27,7 +27,6 @@ steps:
     displayName: 'dotnet install cake'
     failOnStderr: false
     continueOnError: true
-    errorActionPreference: silentlyContinue
     env:
       CakeVersion: ${{ parameters.CakeVersion }}
 
