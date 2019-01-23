@@ -8,7 +8,7 @@ parameters:
 
 steps:
 - task: DotNetCoreCLI@2
-  displayName: 'dotnet cake'
+  displayName: 'dotnet cake bootstrap'
   inputs:
     command: custom
     custom: cake
