@@ -23,7 +23,7 @@ steps:
       CakeVersion: ${{ parameters.CakeVersion }}
 
 - ${{ if eq(parameters.PrivateBuild, true) }}:
-  - script: if (-not (Test-Path "$(Agent.BuildDirectory)/t/c/$(CakeVersion)")) { dotnet tool install Cake.Tool --tool-path "$(Agent.BuildDirectory)/t/c/$(CakeVersion)" --version $(CakeVersion) }
+  - bash: if [ -f $(Agent.BuildDirectory)/t/c/$(CakeVersion) ] dotnet tool install Cake.Tool --tool-path "$(Agent.BuildDirectory)/t/c/$(CakeVersion)" --version $(CakeVersion)
     displayName: 'dotnet install cake'
     failOnStderr: false
     continueOnError: true
