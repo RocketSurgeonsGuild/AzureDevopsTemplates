@@ -23,10 +23,10 @@ steps:
       CakeVersion: ${{ parameters.CakeVersion }}
 
 - ${{ if eq(parameters.PrivateBuild, true) }}:
-  - pwsh: dotnet tool install Cake.Tool --tool-path "$(Agent.BuildDirectory)/t" --version $(CakeVersion)
+  - script: dotnet tool install Cake.Tool --tool-path "$(Agent.BuildDirectory)/t" --version $(CakeVersion)
     displayName: 'dotnet install cake'
-    ignoreLASTEXITCODE: true
     failOnStderr: false
+    continueOnError: true
     errorActionPreference: silentlyContinue
     env:
       CakeVersion: ${{ parameters.CakeVersion }}
