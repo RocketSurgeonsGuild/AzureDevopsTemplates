@@ -5,25 +5,41 @@ parameters:
   Coverage: '$(Agent.BuildDirectory)/c'
   Artifacts: $(Build.ArtifactStagingDirectory)
   Verbosity: 'Normal'
+  PrivateBuild: false
 
 steps:
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet cake bootstrap'
-  inputs:
-    command: custom
-    custom: cake
-    arguments: ${{ format('{0} --bootstrap', parameters.Script) }}
+- ${{ if eq(parameters.PrivateBuild, false) }}:
+  - task: DotNetCoreCLI@2
+    displayName: 'dotnet cake bootstrap'
+    inputs:
+      command: custom
+      custom: cake
+      arguments: ${{ format('{0} --bootstrap', parameters.Script) }}
 
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet cake'
-  inputs:
-    command: custom
-    custom: cake
-    arguments: ${{ format('{0} --Target="{1}" --Configuration="$(Configuration)" --Artifacts="$(Artifacts)" --Coverage="$(Coverage)" --verbosity="$(Verbosity)"', parameters.Script, parameters.Target) }}
-  env:
-    Configuration: ${{ parameters.Configuration }}
-    Artifacts: ${{ parameters.Artifacts }}
-    VstsArtifacts: ${{ parameters.Artifacts }}
-    Coverage: ${{ parameters.Coverage }}
-    VstsCoverage: ${{ parameters.Coverage }}
-    Verbosity: ${{ parameters.Verbosity }}
+  - task: DotNetCoreCLI@2
+    displayName: 'dotnet cake'
+    inputs:
+      command: custom
+      custom: cake
+      arguments: ${{ format('{0} --Target="{1}" --Configuration="$(Configuration)" --Artifacts="$(Artifacts)" --Coverage="$(Coverage)" --verbosity="$(Verbosity)"', parameters.Script, parameters.Target) }}
+    env:
+      Configuration: ${{ parameters.Configuration }}
+      Artifacts: ${{ parameters.Artifacts }}
+      VstsArtifacts: ${{ parameters.Artifacts }}
+      Coverage: ${{ parameters.Coverage }}
+      VstsCoverage: ${{ parameters.Coverage }}
+      Verbosity: ${{ parameters.Verbosity }}
+
+- ${{ if eq(parameters.PrivateBuild, true) }}:
+  - pwsh: ${{ format('$(Agent.BuildDirectory)/t/dotnet-cake {0} --bootstrap', parameters.Script) }}
+    displayName: 'dotnet cake bootstrap'
+
+  - pwsh: ${{ format('$(Agent.BuildDirectory)/t/dotnet-cake {0} --Target="{1}" --Configuration="$(Configuration)" --Artifacts="$(Artifacts)" --Coverage="$(Coverage)" --verbosity="$(Verbosity)"', parameters.Script, parameters.Target) }}
+    displayName: 'dotnet cake'
+    env:
+      Configuration: ${{ parameters.Configuration }}
+      Artifacts: ${{ parameters.Artifacts }}
+      VstsArtifacts: ${{ parameters.Artifacts }}
+      Coverage: ${{ parameters.Coverage }}
+      VstsCoverage: ${{ parameters.Coverage }}
+      Verbosity: ${{ parameters.Verbosity }}

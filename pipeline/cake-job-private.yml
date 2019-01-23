@@ -33,6 +33,7 @@ jobs:
           CakeVersion: ${{ parameters.CakeVersion }}
           DotNetVersion: ${{ parameters.DotNetVersion }}
           RestorePackageConfig: ${{ parameters.RestorePackageConfig }}
+          PrivateBuild: true
       - template: ../cake/run.yml
         parameters:
           Configuration: ${{ parameters.Configuration }}
