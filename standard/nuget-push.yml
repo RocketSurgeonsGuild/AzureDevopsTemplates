@@ -1,5 +1,5 @@
 parameters:
-  NuGetVersion: "4.9.2"
+  NuGetVersion: "5.1.0"
   Artifacts: $(Build.ArtifactStagingDirectory)
   Verbosity: 'Normal'
   AllowPackageConflicts: 'true'
