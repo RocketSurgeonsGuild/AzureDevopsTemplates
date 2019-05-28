@@ -14,7 +14,7 @@ steps:
     inputs:
       command: push
       nuGetFeedType: external
-      packagesToPush: ${{ format('{0}/nuget/*.nupkg;!{0}/nuget/*.symbols.nupkg', parameters.Artifacts) }}
+      packagesToPush: ${{ format('{0}/nuget/**/*.nupkg;!{0}/nuget/**/*.symbols.nupkg', parameters.Artifacts) }}
       publishFeedCredentials: myget.org
       verbosityPush: ${{ parameters.Verbosity }}
       allowPackageConflicts: ${{ parameters.AllowPackageConflicts }}
@@ -24,7 +24,7 @@ steps:
     inputs:
       command: push
       nuGetFeedType: external
-      packagesToPush: ${{ format('{0}/nuget/*.nupkg;!{0}/nuget/*.symbols.nupkg', parameters.Artifacts) }}
+      packagesToPush: ${{ format('{0}/nuget/**/*.nupkg;!{0}/nuget/**/*.symbols.nupkg', parameters.Artifacts) }}
       publishFeedCredentials: nuget.org
       verbosityPush: ${{ parameters.Verbosity }}
       allowPackageConflicts: ${{ parameters.AllowPackageConflicts }}

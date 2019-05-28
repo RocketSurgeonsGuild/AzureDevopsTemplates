@@ -15,7 +15,7 @@ steps:
     displayName: NuGet Push
     inputs:
       command: "push"
-      packagesToPush: ${{ format('{0}/nuget/*.nupkg;!{0}/nuget/*.symbols.nupkg', parameters.Artifacts) }}
+      packagesToPush: ${{ format('{0}/nuget/**/*.nupkg;!{0}/nuget/**/*.symbols.nupkg', parameters.Artifacts) }}
       feedPublish: ${{ parameters.FeedId }}
       verbosityPush: ${{ parameters.Verbosity }}
       allowPackageConflicts: ${{ parameters.AllowPackageConflicts }}
