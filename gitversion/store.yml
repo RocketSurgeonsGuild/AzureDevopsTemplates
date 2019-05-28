@@ -8,7 +8,7 @@ parameters:
   NuGetVersion: "5.1.0"
 
 steps:
-  - task: NuGetToolInstaller@0
+  - task: NuGetToolInstaller@1
     displayName: "Get NuGet"
     inputs:
       versionSpec: ${{ parameters.NuGetVersion }}

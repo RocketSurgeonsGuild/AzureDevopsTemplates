@@ -7,13 +7,13 @@ parameters:
   PrivateBuild: false
 
 steps:
-- task: DotNetCoreInstaller@0
+- task: UseDotNet@2
   displayName: Install dotnet $(DotNetVersion)
   inputs:
     packageType: 'sdk'
     version: ${{ parameters.DotNetVersion }}
 
-- task: DotNetCoreInstaller@0
+- task: UseDotNet@2
   displayName: Install dotnet $(DotNet3Version)
   inputs:
     packageType: 'sdk'
@@ -44,7 +44,7 @@ steps:
       CakeVersion: ${{ parameters.CakeVersion }}
 
 - ${{ if eq(parameters.RestorePackageConfig, true) }}:
-  - task: NuGetToolInstaller@0
+  - task: NuGetToolInstaller@1
     displayName: "Get NuGet"
     inputs:
       versionSpec: ${{ parameters.NuGetVersion }}
