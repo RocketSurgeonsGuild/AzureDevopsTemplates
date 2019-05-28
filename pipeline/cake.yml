@@ -62,6 +62,10 @@ jobs:
       Target: ${{ parameters.Target }}
 
   - job: Publish
+    dependsOn:
+      - macOS
+      - Linux
+      - Windows
     steps:
       - task: DownloadBuildArtifacts@0
         displayName: "Download NuGet Packages"
