@@ -3,6 +3,7 @@ parameters:
   Configuration: Release
   Verbosity: Normal
   DotNetVersion: "2.2.300"
+  DotNet3Version: "3.0.100-preview5-011568"
   CakeVersion: "0.33.0"
   NuGetVersion: "5.1.0"
   FeedId: ''
@@ -28,6 +29,7 @@ jobs:
       Verbosity: ${{ parameters.Verbosity }}
       CakeVersion: ${{ parameters.CakeVersion }}
       DotNetVersion: ${{ parameters.DotNetVersion }}
+      DotNet3Version: ${{ parameters.DotNet3Version }}
       NuGetVersion: ${{ parameters.NuGetVersion }}
 
   - template: cake-job-private.yml
@@ -42,6 +44,7 @@ jobs:
       Verbosity: ${{ parameters.Verbosity }}
       CakeVersion: ${{ parameters.CakeVersion }}
       DotNetVersion: ${{ parameters.DotNetVersion }}
+      DotNet3Version: ${{ parameters.DotNet3Version }}
       NuGetVersion: ${{ parameters.NuGetVersion }}
 
   - template: cake-job-private.yml
@@ -56,4 +59,5 @@ jobs:
       Verbosity: ${{ parameters.Verbosity }}
       CakeVersion: ${{ parameters.CakeVersion }}
       DotNetVersion: ${{ parameters.DotNetVersion }}
+      DotNet3Version: ${{ parameters.DotNet3Version }}
       NuGetVersion: ${{ parameters.NuGetVersion }}
