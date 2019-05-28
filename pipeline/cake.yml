@@ -74,10 +74,9 @@ jobs:
           downloadType: single
           artifactName: 'Nupkg - Windows'
           pipelineId: Windows
-          targetPath: $(Build.ArtifactStagingDirectory)
+          targetPath: $(Build.ArtifactStagingDirectory)/nuget/
       - template: ../standard/nuget-push.yml
         parameters:
-          Artifacts: $(Build.ArtifactStagingDirectory)
           NuGetVersion: ${{ parameters.NuGetVersion }}
           Verbosity: ${{ parameters.Verbosity }}
 
