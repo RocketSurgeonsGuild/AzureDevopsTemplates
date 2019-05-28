@@ -60,3 +60,20 @@ jobs:
       NuGetVersion: ${{ parameters.NuGetVersion }}
       Script: ${{ parameters.Script }}
       Target: ${{ parameters.Target }}
+
+  - job: Publish
+    steps:
+      - task: DownloadBuildArtifacts@0
+        displayName: "Download NuGet Packages"
+        inputs:
+          specificBuildWithTriggering: true
+          downloadType: single
+          artifactName: 'Nupkg - Windows'
+          pipelineId: Windows
+          targetPath: $(Build.ArtifactStagingDirectory)
+      - template: ../standard/nuget-push.yml
+        parameters:
+          Artifacts: $(Build.ArtifactStagingDirectory)
+          NuGetVersion: ${{ parameters.NuGetVersion }}
+          Verbosity: ${{ parameters.Verbosity }}
+

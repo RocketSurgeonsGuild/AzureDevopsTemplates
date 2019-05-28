@@ -52,7 +52,7 @@ jobs:
       name: 'Windows'
       dependsOn: GitVersion
       vmImage: "windows-2019"
-      pushNuget: true
+      pushNuget: false
       FeedId: ${{ parameters.FeedId }}
       NuGetSource: ${{ parameters.NuGetSource }}
       Configuration: ${{ parameters.Configuration }}
@@ -61,3 +61,17 @@ jobs:
       DotNetVersion: ${{ parameters.DotNetVersion }}
       DotNet3Version: ${{ parameters.DotNet3Version }}
       NuGetVersion: ${{ parameters.NuGetVersion }}
+
+  - job: Publish
+    steps:
+      - task: DownloadBuildArtifacts@0
+        displayName: "Download NuGet Packages"
+        inputs:
+          specificBuildWithTriggering: true
+          downloadType: single
+          artifactName: 'Nupkg - Windows'
+          pipelineId: Windows
+          targetPath: $(Build.ArtifactStagingDirectory)
+      - template: ../standard/nuget-push-feed.yml
+        parameters:
+          FeedId: ${{ parameters.FeedId }}
