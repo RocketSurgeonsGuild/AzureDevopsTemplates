@@ -51,7 +51,7 @@ jobs:
       name: 'Windows'
       dependsOn: GitVersion
       vmImage: "windows-2019"
-      pushNuget: true
+      pushNuget: false
       Configuration: ${{ parameters.Configuration }}
       Verbosity: ${{ parameters.Verbosity }}
       CakeVersion: ${{ parameters.CakeVersion }}
