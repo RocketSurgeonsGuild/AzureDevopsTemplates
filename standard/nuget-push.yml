@@ -1,7 +1,6 @@
 parameters:
   NuGetVersion: "5.1.0"
   Artifacts: $(Build.ArtifactStagingDirectory)
-  Verbosity: 'Normal'
   AllowPackageConflicts: 'true'
 
 steps:
@@ -16,7 +15,6 @@ steps:
       nuGetFeedType: external
       packagesToPush: ${{ format('{0}/nuget/**/*.nupkg;!{0}/nuget/**/*.symbols.nupkg', parameters.Artifacts) }}
       publishFeedCredentials: myget.org
-      verbosityPush: ${{ parameters.Verbosity }}
       allowPackageConflicts: ${{ parameters.AllowPackageConflicts }}
   - task: NuGetCommand@2
     displayName: 'Push NuGet packages to nuget.org'
@@ -25,6 +23,5 @@ steps:
       nuGetFeedType: external
       packagesToPush: ${{ format('{0}/nuget/**/*.nupkg;!{0}/nuget/**/*.symbols.nupkg', parameters.Artifacts) }}
       publishFeedCredentials: nuget.org
-      verbosityPush: ${{ parameters.Verbosity }}
       allowPackageConflicts: ${{ parameters.AllowPackageConflicts }}
     condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
