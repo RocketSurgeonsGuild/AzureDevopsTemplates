@@ -8,6 +8,7 @@ parameters:
   NuGetVersion: "5.1.0"
   FeedId: ''
   NuGetSource: ''
+  CodeCovToken: ''
 jobs:
   - job: GitVersion
     pool:
@@ -31,6 +32,7 @@ jobs:
       DotNetVersion: ${{ parameters.DotNetVersion }}
       DotNet3Version: ${{ parameters.DotNet3Version }}
       NuGetVersion: ${{ parameters.NuGetVersion }}
+      CodeCovToken: ${{ parameters.CodeCovToken }}
 
   - template: cake-job-private.yml
     parameters:
@@ -46,6 +48,7 @@ jobs:
       DotNetVersion: ${{ parameters.DotNetVersion }}
       DotNet3Version: ${{ parameters.DotNet3Version }}
       NuGetVersion: ${{ parameters.NuGetVersion }}
+      CodeCovToken: ${{ parameters.CodeCovToken }}
 
   - template: cake-job-private.yml
     parameters:
@@ -61,6 +64,7 @@ jobs:
       DotNetVersion: ${{ parameters.DotNetVersion }}
       DotNet3Version: ${{ parameters.DotNet3Version }}
       NuGetVersion: ${{ parameters.NuGetVersion }}
+      CodeCovToken: ${{ parameters.CodeCovToken }}
 
   - job: Publish
     dependsOn:

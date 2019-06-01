@@ -16,6 +16,7 @@ parameters:
   NuGetSource: ''
   NuGetConfig: 'NuGet.config'
   RestorePackageConfig: false
+  CodeCovToken: ''
 jobs:
   - job: ${{ parameters.name }}
     dependsOn: ${{ parameters.dependsOn }}
@@ -47,6 +48,7 @@ jobs:
       - template: ../publish-artifacts.yml
         parameters:
           Configuration: ${{ parameters.Configuration }}
+          CodeCovToken: ${{ parameters.CodeCovToken }}
       - ${{ if eq(parameters.pushNuget, 'true') }}:
         - template: ../standard/nuget-push-feed.yml
           parameters:
