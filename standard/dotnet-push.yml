@@ -2,19 +2,19 @@ parameters:
   Artifacts: $(Build.ArtifactStagingDirectory)
 
 steps:
-- task: DotNetCoreCLI@2
-  displayName: 'Push NuGet packages to myget.org'
-  inputs:
-    command: push
-    nuGetFeedType: external
-    packagesToPush: ${{ format('{0}/nuget/*.nupkg;!{0}/nuget/*.symbols.nupkg', parameters.Artifacts) }}
-    publishFeedCredentials: myget.org
-  condition: and(succeeded(), or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranch'], 'refs/heads/master')))
-- task: DotNetCoreCLI@2
-  displayName: 'Push NuGet packages to nuget.org'
-  inputs:
-    command: push
-    nuGetFeedType: external
-    packagesToPush: ${{ format('{0}/nuget/*.nupkg;!{0}/nuget/*.symbols.nupkg', parameters.Artifacts) }}
-    publishFeedCredentials: nuget.org
-  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
+  - task: DotNetCoreCLI@2
+    displayName: "Push NuGet packages to myget.org"
+    inputs:
+      command: push
+      nuGetFeedType: external
+      packagesToPush: ${{ format('{0}/nuget/*.nupkg;!{0}/nuget/*.symbols.nupkg', parameters.Artifacts) }}
+      publishFeedCredentials: myget.org
+
+  - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/v') }}:
+      - task: DotNetCoreCLI@2
+        displayName: "Push NuGet packages to nuget.org"
+        inputs:
+          command: push
+          nuGetFeedType: external
+          packagesToPush: ${{ format('{0}/nuget/*.nupkg;!{0}/nuget/*.symbols.nupkg', parameters.Artifacts) }}
+          publishFeedCredentials: nuget.org

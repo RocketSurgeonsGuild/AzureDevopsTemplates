@@ -13,12 +13,12 @@ steps:
     packageType: 'sdk'
     version: ${{ parameters.DotNetVersion }}
 
-- task: UseDotNet@2
-  displayName: Install dotnet $(DotNet3Version)
-  inputs:
-    packageType: 'sdk'
-    version: ${{ parameters.DotNet3Version }}
-  condition: ne(variables['DotNetVersion'], variables['DotNet3Version'])
+- ${{ if ne(parameters.DotNetVersion, parameters.DotNet3Version) }}:
+  - task: UseDotNet@2
+    displayName: Install dotnet $(DotNet3Version)
+    inputs:
+      packageType: 'sdk'
+      version: ${{ parameters.DotNet3Version }}
 
 - ${{ if eq(parameters.PrivateBuild, false) }}:
   - task: DotNetCoreCLI@2
