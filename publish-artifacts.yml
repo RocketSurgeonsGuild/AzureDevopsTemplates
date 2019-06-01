@@ -27,19 +27,18 @@ steps:
   env:
     Coverage: ${{ parameters.Coverage }}
 
-- ${{ if ne(parameters.CodeCovToken, '') }}:
-  - bash: bash <(curl -s https://codecov.io/bash) -f $(Coverage)/solution.cobertura -P "$SYSTEM_PULLREQUEST_PULLREQUESTNUMBER"
-    env:
-      VCS_COMMIT_ID: $(Build.SourceVersion)
-      VCS_BRANCH_NAME: $(Build.SourceBranchName)
-      VCS_PULL_REQUEST: $(System.PullRequest.PullRequestNumber)
-      CI_BUILD_URL: $(System.TeamFoundationCollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)
-      CI_BUILD_ID: $(Build.BuildNumber)-$(Agent.OS)
-      CI_JOB_ID: $(System.TeamProject)-$(Build.Repository.Name)-$(Build.BuildNumber)
-      CODECOV_NAME: $(Build.Repository.Name)
-      CODECOV_TOKEN: ${{ parameters.CodeCovToken }}
-    displayName: Upload coverage to CodeCov
-    condition: and(succeeded(), ne(variables['CodeCovToken'], ''))
+- bash: bash <(curl -s https://codecov.io/bash) -f $(Coverage)/solution.cobertura -P "$SYSTEM_PULLREQUEST_PULLREQUESTNUMBER"
+  env:
+    VCS_COMMIT_ID: $(Build.SourceVersion)
+    VCS_BRANCH_NAME: $(Build.SourceBranchName)
+    VCS_PULL_REQUEST: $(System.PullRequest.PullRequestNumber)
+    CI_BUILD_URL: $(System.TeamFoundationCollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)
+    CI_BUILD_ID: $(Build.BuildNumber)-$(Agent.OS)
+    CI_JOB_ID: $(System.TeamProject)-$(Build.Repository.Name)-$(Build.BuildNumber)
+    CODECOV_NAME: $(Build.Repository.Name)
+    CODECOV_TOKEN: ${{ parameters.CodeCovToken }}
+  displayName: Upload coverage to CodeCov
+  condition: and(succeeded(), ne(variables['CodeCovToken'], ''))
 
 - task: PublishBuildArtifacts@1
   displayName: Publish Logs
