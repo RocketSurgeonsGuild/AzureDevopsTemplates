@@ -18,7 +18,7 @@ steps:
       publishFeedCredentials: myget.org
       verbosityPush: ${{ parameters.Verbosity }}
       allowPackageConflicts: ${{ parameters.AllowPackageConflicts }}
-    condition: and(succeeded(), or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranch'], 'refs/heads/master')))
+    # condition: and(succeeded(), or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranch'], 'refs/heads/master')))
   - task: NuGetCommand@2
     displayName: 'Push NuGet packages to nuget.org'
     inputs:
