@@ -2,7 +2,6 @@ parameters:
   Configuration: 'Release'
   Coverage: '$(Agent.BuildDirectory)/c'
   Artifacts: $(Build.ArtifactStagingDirectory)
-  CodeCovToken: ''
 
 steps:
 - task: PublishTestResults@2
@@ -40,6 +39,7 @@ steps:
       CODECOV_NAME: $(Build.Repository.Name)
       CODECOV_TOKEN: ${{ parameters.CodeCovToken }}
     displayName: Upload coverage to CodeCov
+    condition: and(succeeded(), ne(variables['CodeCovToken'], ''))
 
 - task: PublishBuildArtifacts@1
   displayName: Publish Logs

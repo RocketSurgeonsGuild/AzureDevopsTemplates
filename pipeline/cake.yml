@@ -7,7 +7,6 @@ parameters:
   NuGetVersion: "5.1.0"
   Script: 'cakefile.cake'
   Target: 'Default'
-  CodeCovToken: ''
 jobs:
   - job: GitVersion
     pool:
@@ -31,7 +30,6 @@ jobs:
       NuGetVersion: ${{ parameters.NuGetVersion }}
       Script: ${{ parameters.Script }}
       Target: ${{ parameters.Target }}
-      CodeCovToken: ${{ parameters.CodeCovToken }}
 
   - template: ./cake-job.yml
     parameters:
@@ -47,7 +45,6 @@ jobs:
       NuGetVersion: ${{ parameters.NuGetVersion }}
       Script: ${{ parameters.Script }}
       Target: ${{ parameters.Target }}
-      CodeCovToken: ${{ parameters.CodeCovToken }}
 
   - template: ./cake-job.yml
     parameters:
@@ -63,7 +60,6 @@ jobs:
       NuGetVersion: ${{ parameters.NuGetVersion }}
       Script: ${{ parameters.Script }}
       Target: ${{ parameters.Target }}
-      CodeCovToken: ${{ parameters.CodeCovToken }}
 
   - job: Publish
     dependsOn:

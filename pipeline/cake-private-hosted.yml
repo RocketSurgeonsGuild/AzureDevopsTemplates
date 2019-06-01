@@ -9,7 +9,6 @@ parameters:
   FeedId: ''
   NuGetSource: ''
   poolName: 'Default'
-  CodeCovToken: ''
 jobs:
   - job: GitVersion
     pool:
@@ -33,4 +32,3 @@ jobs:
       DotNetVersion: ${{ parameters.DotNetVersion }}
       DotNet3Version: ${{ parameters.DotNet3Version }}
       NuGetVersion: ${{ parameters.NuGetVersion }}
-      CodeCovToken: ${{ parameters.CodeCovToken }}
