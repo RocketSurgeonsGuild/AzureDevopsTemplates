@@ -51,6 +51,16 @@ steps:
     Artifacts: ${{ parameters.Artifacts }}
 
 - task: PublishBuildArtifacts@1
+  displayName: Publish Coverage
+  condition: always()
+  inputs:
+    PathtoPublish: "$(Coverage)"
+    ArtifactName: "Coverage - $(system.phaseName)"
+    ArtifactType: "Container"
+  env:
+    Coverage: ${{ parameters.Coverage }}
+
+- task: PublishBuildArtifacts@1
   displayName: Publish Nupkg Artifacts
   condition: always()
   inputs:
