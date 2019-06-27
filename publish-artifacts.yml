@@ -5,11 +5,23 @@ parameters:
 
 steps:
 - task: PublishTestResults@2
-  displayName: Publish Tests
+  displayName: Publish Tests (XUnit)
   condition: always()
   inputs:
     testRunner: "XUnit"
     testResultsFiles: "$(Artifacts)/test/**/*.xml"
+    testRunTitle: "XUnit Results - $(system.phaseName)"
+    buildPlatform: ${{ parameters.os }}
+    buildConfiguration: ${{ parameters.Configuration }}
+  env:
+    Artifacts: ${{ parameters.Artifacts }}
+
+- task: PublishTestResults@2
+  displayName: Publish Tests (VSTest)
+  condition: always()
+  inputs:
+    testRunner: "VSTest"
+    testResultsFiles: "$(Artifacts)/test/**/*.trx"
     testRunTitle: "XUnit Results - $(system.phaseName)"
     buildPlatform: ${{ parameters.os }}
     buildConfiguration: ${{ parameters.Configuration }}
