@@ -4,8 +4,7 @@ parameters:
   DotNetVersion: "2.2.300"
   DotNet3Version: "3.0.100-preview6-012264"
   NuGetVersion: "5.1.0"
-  Script: 'cakefile.cake'
-  Target: 'Default'
+  Targets: 'Default'
 jobs:
   - job: GitVersion
     pool:
@@ -15,7 +14,7 @@ jobs:
         parameters:
           NuGetVersion: ${{ parameters.NuGetVersion }}
 
-  - template: ./cake-job.yml
+  - template: ./nuke-job.yml
     parameters:
       name: 'macOS'
       dependsOn: GitVersion
@@ -26,10 +25,9 @@ jobs:
       DotNetVersion: ${{ parameters.DotNetVersion }}
       DotNet3Version: ${{ parameters.DotNet3Version }}
       NuGetVersion: ${{ parameters.NuGetVersion }}
-      Script: ${{ parameters.Script }}
-      Target: ${{ parameters.Target }}
+      Targets: ${{ parameters.Targets }}
 
-  - template: ./cake-job.yml
+  - template: ./nuke-job.yml
     parameters:
       name: 'Linux'
       dependsOn: GitVersion
@@ -40,10 +38,9 @@ jobs:
       DotNetVersion: ${{ parameters.DotNetVersion }}
       DotNet3Version: ${{ parameters.DotNet3Version }}
       NuGetVersion: ${{ parameters.NuGetVersion }}
-      Script: ${{ parameters.Script }}
-      Target: ${{ parameters.Target }}
+      Targets: ${{ parameters.Targets }}
 
-  - template: ./cake-job.yml
+  - template: ./nuke-job.yml
     parameters:
       name: 'Windows'
       dependsOn: GitVersion
@@ -54,8 +51,7 @@ jobs:
       DotNetVersion: ${{ parameters.DotNetVersion }}
       DotNet3Version: ${{ parameters.DotNet3Version }}
       NuGetVersion: ${{ parameters.NuGetVersion }}
-      Script: ${{ parameters.Script }}
-      Target: ${{ parameters.Target }}
+      Targets: ${{ parameters.Targets }}
 
   - job: Publish
     dependsOn:

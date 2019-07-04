@@ -3,7 +3,6 @@ parameters:
   Verbosity: Normal
   DotNetVersion: "2.2.300"
   DotNet3Version: "3.0.100-preview6-012264"
-  CakeVersion: "0.33.0"
   NuGetVersion: "5.1.0"
   Script: 'cakefile.cake'
   Target: 'Default'
@@ -21,7 +20,6 @@ jobs:
       - template: ../gitversion/restore.yml
       - template: ../cake/install.yml
         parameters:
-          CakeVersion: ${{ parameters.CakeVersion }}
           DotNetVersion: ${{ parameters.DotNetVersion }}
           DotNet3Version: ${{ parameters.DotNet3Version }}
           NuGetVersion: ${{ parameters.NuGetVersion }}

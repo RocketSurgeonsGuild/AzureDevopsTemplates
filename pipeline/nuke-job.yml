@@ -4,46 +4,32 @@ parameters:
   DotNetVersion: "2.2.300"
   DotNet3Version: "3.0.100-preview6-012264"
   NuGetVersion: "5.1.0"
-  Script: 'cakefile.cake'
-  Target: 'Default'
+  Targets: 'Default'
   name: ''
-  poolName: ''
   dependsOn: ''
   vmImage: ''
   pushNuget: false
-  FeedId: ''
-  NuGetSource: ''
-  NuGetConfig: 'NuGet.config'
   RestorePackageConfig: false
 jobs:
   - job: ${{ parameters.name }}
     dependsOn: ${{ parameters.dependsOn }}
     pool:
-      ${{ if ne(parameters.poolName, '') }}:
-        name: ${{ parameters.poolName }}
-      ${{ if ne(parameters.vmImage, '') }}:
-        vmImage: ${{ parameters.vmImage }}
+      vmImage: ${{ parameters.vmImage }}
     steps:
       - template: ../gitversion/restore.yml
-      - template: ../standard/dotnet-restore.yml
-      - ${{ if ne(parameters.NuGetSource, '') }}:
-        - template: ../standard/nuget-source.yml
-      - template: ../cake/install.yml
+      - template: ../nuke/install.yml
         parameters:
           DotNetVersion: ${{ parameters.DotNetVersion }}
           DotNet3Version: ${{ parameters.DotNet3Version }}
           NuGetVersion: ${{ parameters.NuGetVersion }}
           RestorePackageConfig: ${{ parameters.RestorePackageConfig }}
-      - template: ../cake/run.yml
+      - template: ../nuke/run.yml
         parameters:
           Configuration: ${{ parameters.Configuration }}
           Verbosity: ${{ parameters.Verbosity }}
-          Script: ${{ parameters.Script }}
-          Target: ${{ parameters.Target }}
+          Targets: ${{ parameters.Targets }}
       - template: ../publish-artifacts.yml
         parameters:
           Configuration: ${{ parameters.Configuration }}
       - ${{ if eq(parameters.pushNuget, 'true') }}:
-        - template: ../standard/nuget-push-feed.yml
-          parameters:
-            FeedId: ${{ parameters.FeedId }}
+        - template: ../standard/nuget-push.yml

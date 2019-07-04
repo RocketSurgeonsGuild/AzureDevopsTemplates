@@ -16,7 +16,7 @@ jobs:
         parameters:
           NuGetVersion: ${{ parameters.NuGetVersion }}
 
-  - template: cake-job-private.yml
+  - template: nuke-job-private.yml
     parameters:
       name: 'Windows'
       dependsOn: GitVersion

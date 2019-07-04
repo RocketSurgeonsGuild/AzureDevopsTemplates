@@ -16,11 +16,11 @@ jobs:
         parameters:
           NuGetVersion: ${{ parameters.NuGetVersion }}
 
-  - template: cake-job-private.yml
+  - template: nuke-job-private.yml
     parameters:
-      name: 'Windows'
+      name: 'Linux'
       dependsOn: GitVersion
-      vmImage: "windows-2019"
+      vmImage: "Ubuntu-16.04"
       pushNuget: true
       FeedId: ${{ parameters.FeedId }}
       NuGetSource: ${{ parameters.NuGetSource }}

@@ -1,6 +1,5 @@
 parameters:
-  Script: 'cakefile.cake'
-  Target: 'Default'
+  Targets: 'Default'
   Configuration: 'Release'
   Coverage: '$(Agent.BuildDirectory)/c'
   Artifacts: $(Build.ArtifactStagingDirectory)
@@ -8,17 +7,10 @@ parameters:
 
 steps:
 - task: DotNetCoreCLI@2
-  displayName: 'dotnet cake bootstrap'
+  displayName: 'dotnet nuke'
   inputs:
     command: custom
-    custom: cake
-    arguments: ${{ format('{0} --bootstrap', parameters.Script) }}
-
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet cake'
-  inputs:
-    command: custom
-    custom: cake
+    custom: nuke
     arguments: ${{ format('{0} --Target="{1}" --Configuration="$(Configuration)" --Artifacts="$(Artifacts)" --Coverage="$(Coverage)" --verbosity="$(Verbosity)"', parameters.Script, parameters.Target) }}
   env:
     Configuration: ${{ parameters.Configuration }}

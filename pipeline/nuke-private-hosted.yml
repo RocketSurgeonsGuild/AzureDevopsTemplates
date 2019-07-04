@@ -7,20 +7,21 @@ parameters:
   NuGetVersion: "5.1.0"
   FeedId: ''
   NuGetSource: ''
+  poolName: 'Default'
 jobs:
   - job: GitVersion
     pool:
-      vmImage: "windows-2019"
+      name: ${{ parameters.poolName }}
     steps:
       - template: ../gitversion/store.yml
         parameters:
           NuGetVersion: ${{ parameters.NuGetVersion }}
 
-  - template: cake-job-private.yml
+  - template: nuke-job-private.yml
     parameters:
-      name: 'Windows'
+      name: 'Hosted'
       dependsOn: GitVersion
-      vmImage: "windows-2019"
+      poolName: ${{ parameters.poolName }}
       pushNuget: true
       FeedId: ${{ parameters.FeedId }}
       NuGetSource: ${{ parameters.NuGetSource }}
