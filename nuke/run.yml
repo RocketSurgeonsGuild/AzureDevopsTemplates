@@ -11,7 +11,7 @@ steps:
   inputs:
     command: custom
     custom: nuke
-    arguments: ${{ format('{0} --Target="{1}" --Configuration="$(Configuration)" --Artifacts="$(Artifacts)" --Coverage="$(Coverage)" --verbosity="$(Verbosity)"', parameters.Script, parameters.Target) }}
+    arguments: ${{ format('{0} --Configuration="$(Configuration)" --Artifacts="$(Artifacts)" --Coverage="$(Coverage)" --verbosity="$(Verbosity)"', parameters.Targets) }}
   env:
     Configuration: ${{ parameters.Configuration }}
     Artifacts: ${{ parameters.Artifacts }}
