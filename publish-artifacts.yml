@@ -14,7 +14,7 @@ steps:
     buildPlatform: ${{ parameters.os }}
     buildConfiguration: ${{ parameters.Configuration }}
   env:
-    Artifacts: ${{ parameters.Artifacts }}
+    ARTIFACTS: ${{ parameters.Artifacts }}
 
 - task: PublishTestResults@2
   displayName: Publish Tests (VSTest)
@@ -26,7 +26,7 @@ steps:
     buildPlatform: ${{ parameters.os }}
     buildConfiguration: ${{ parameters.Configuration }}
   env:
-    Artifacts: ${{ parameters.Artifacts }}
+    ARTIFACTS: ${{ parameters.Artifacts }}
 
 - task: PublishCodeCoverageResults@1
   displayName: Publish Code Coverage
@@ -37,7 +37,7 @@ steps:
     reportDirectory: "$(Coverage)/report/"
     # failIfCoverageEmpty: "true"
   env:
-    Coverage: ${{ parameters.Coverage }}
+    COVERAGE: ${{ parameters.Coverage }}
 
 - bash: bash <(curl -s https://codecov.io/bash) -f "$(Coverage)/**/*.cobertura.xml" -P "$SYSTEM_PULLREQUEST_PULLREQUESTNUMBER"
   env:
@@ -60,7 +60,7 @@ steps:
     ArtifactName: "Logs - $(system.phaseName)"
     ArtifactType: "Container"
   env:
-    Artifacts: ${{ parameters.Artifacts }}
+    ARTIFACTS: ${{ parameters.Artifacts }}
 
 - task: PublishBuildArtifacts@1
   displayName: Publish Coverage
@@ -70,7 +70,7 @@ steps:
     ArtifactName: "Coverage - $(system.phaseName)"
     ArtifactType: "Container"
   env:
-    Coverage: ${{ parameters.Coverage }}
+    COVERAGE: ${{ parameters.Coverage }}
 
 - task: PublishBuildArtifacts@1
   displayName: Publish Nupkg Artifacts
@@ -80,4 +80,4 @@ steps:
     ArtifactName: "Nupkg - $(system.phaseName)"
     ArtifactType: "Container"
   env:
-    Artifacts: ${{ parameters.Artifacts }}
+    ARTIFACTS: ${{ parameters.Artifacts }}
