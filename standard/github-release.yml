@@ -33,8 +33,10 @@ steps:
     continueOnError: true
     inputs:
       gitHubConnection: github
+      tagSource: manual
       action: create
       title: v$(GitVersion.MajorMinorPatch)
+      tag: v$(GitVersion.MajorMinorPatch)
       isDraft: true
       isPreRelease: false
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
