@@ -5,6 +5,7 @@ parameters:
   DotNet3Version: "3.0.100-preview6-012264"
   NuGetVersion: "5.1.0"
   Targets: 'Default'
+  GitHub: false
   GitHubPackages: false
 jobs:
   - job: GitVersion
@@ -73,8 +74,9 @@ jobs:
           NuGetVersion: ${{ parameters.NuGetVersion }}
           Verbosity: ${{ parameters.Verbosity }}
           GitHubPackages: ${{ parameters.GitHubPackages }}
-      - template: ../standard/github-release.yml
-        parameters:
-          DotNet3Version: ${{ parameters.DotNet3Version }}
+      - ${{ if eq(parameters.GitHub, 'true') }}:
+        - template: ../standard/github-release.yml
+          parameters:
+            DotNet3Version: ${{ parameters.DotNet3Version }}
 
 

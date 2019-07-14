@@ -6,6 +6,7 @@ parameters:
   NuGetVersion: "5.1.0"
   Script: 'cakefile.cake'
   Target: 'Default'
+  GitHub: false
   GitHubPackages: false
 jobs:
   - job: GitVersion
@@ -77,7 +78,7 @@ jobs:
           NuGetVersion: ${{ parameters.NuGetVersion }}
           Verbosity: ${{ parameters.Verbosity }}
           GitHubPackages: ${{ parameters.GitHubPackages }}
-      - ${{ if eq(variables['Build.Repository.Provider'], 'GitHub') }}:
+      - ${{ if eq(parameters.GitHub, 'true') }}:
         - template: ../standard/github-release.yml
           parameters:
             DotNet3Version: ${{ parameters.DotNet3Version }}
