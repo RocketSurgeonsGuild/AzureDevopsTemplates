@@ -2,12 +2,12 @@ parameters:
   DotNet3Version: "3.0.100-preview6-012264"
 
 steps:
-- ${{ if eq(variables['Build.Repository.Provider'], 'GitHub') }}:
   - task: UseDotNet@2
     displayName: Install dotnet $(DotNet3Version)
     inputs:
       packageType: 'sdk'
       version: ${{ parameters.DotNet3Version }}
+    condition: and(succeeded(), eq(variables['Build.Repository.Provider'], 'GitHub'))
 
   - task: DotNetCoreCLI@2
     displayName: 'dotnet tool install gitreleasemanager.tool'
@@ -15,14 +15,18 @@ steps:
       command: custom
       custom: tool
       arguments: 'install gitreleasemanager.tool'
+    condition: and(succeeded(), eq(variables['Build.Repository.Provider'], 'GitHub'))
 
   - pwsh: |
       $parts = 'RocketSurgeonsGuild/Build' -split '/';
       echo "##vso[task.setvariable variable=GitHub.Owner;isOutput=true]$($parts[0])"
       echo "##vso[task.setvariable variable=GitHub.Repository;isOutput=true]$($parts[1])"
+    condition: and(succeeded(), eq(variables['Build.Repository.Provider'], 'GitHub'))
 
   - script: dotnet gitreleasemanager export -username '$(GitHub.Username)' -password '$(GitHub.Password)' -owner '$(GitHub.Owner)' -repository '$(GitHub.Repository)' -tagName 'v$(GitVersion.MajorMinorPatch)' -fileOutputPath '$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md'
+    condition: and(succeeded(), eq(variables['Build.Repository.Provider'], 'GitHub'))
   - script: dotnet gitreleasemanager export -username '$(GitHub.Username)' -password '$(GitHub.Password)' -owner '$(GitHub.Owner)' -repository '$(GitHub.Repository)' -fileOutputPath '$(Build.ArtifactStagingDirectory)/releasenotes/release.md'
+    condition: and(succeeded(), eq(variables['Build.Repository.Provider'], 'GitHub'))
 
   - task: PublishBuildArtifacts@1
     displayName: Publish Release Notes
@@ -30,6 +34,7 @@ steps:
       PathtoPublish: "$(Build.ArtifactStagingDirectory)/releasenotes/"
       ArtifactName: "Release Notes"
       ArtifactType: "Container"
+    condition: and(succeeded(), eq(variables['Build.Repository.Provider'], 'GitHub'))
 
   - task: GitHubRelease@0
     displayName: 'Update GitHub Release'
@@ -45,7 +50,7 @@ steps:
       # assetUploadMode: replace
       isDraft: true
       isPreRelease: false
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    condition: and(succeeded(), eq(variables['Build.Repository.Provider'], 'GitHub'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - script: dotnet gitreleasemanager close -username '$(GitHub.Username)' -password '$(GitHub.Password)' -owner '$(GitHub.Owner)' -repository '$(GitHub.Repository)' -milestone 'v$(GitVersion.MajorMinorPatch)'
-    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
+    condition: and(succeeded(), eq(variables['Build.Repository.Provider'], 'GitHub'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
