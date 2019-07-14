@@ -64,6 +64,7 @@ jobs:
       - Linux
       - Windows
     steps:
+      - template: ../gitversion/restore.yml
       - task: DownloadBuildArtifacts@0
         displayName: "Download NuGet Packages"
         inputs:
