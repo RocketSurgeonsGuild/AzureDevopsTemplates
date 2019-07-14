@@ -31,41 +31,49 @@ steps:
   - pwsh: mkdir $(Build.ArtifactStagingDirectory)\releasenotes\;
     displayName: "Create release notes directory"
 
-  # - pwsh: |
-  #     $response = Invoke-RestMethod -Uri https://api.github.com/graphql -Headers @{  Authorization = "Token $(GitHub.Token)" } -Method Post -Body (@{ query = "query getDrafts(`$owner: String!, `$name: String!) { repository(owner: `$owner, name: `$name) { releases(last: 100) { nodes { id, name, isDraft, isPrerelease, tagName } } } }"; variables = @{ owner = "$(GitHub.Owner);" name = "$(GitHub.Repository)" }  } | ConvertTo-Json)
-  #     $release = $response.data.repository.releases.nodes | where { $_.isDraft } | select -First 1;
-  #     if ($release) {
-  #       Invoke-RestMethod -Uri "https://api.github.com/repos/RocketSurgeonsGuild/Build/releases" `
-  #         -Headers @{ Authorization = "Bearer $(GitHub.Token)" } `
-  #         -Method Post `
-  #         -Body (@{ `
-  #           draft = $true; `
-  #           name = "v$(GitVersion.MajorMinorPatch)"; `
-  #           target_commitish = "master"; `
-  #           tag_name = "v$(GitVersion.MajorMinorPatch)"; `
-  #         } | ConvertTo-Json);
-  #     } else {
-  #       Invoke-RestMethod -Uri "https://api.github.com/repos/RocketSurgeonsGuild/Build/releases" -Headers @{ Authorization = "Bearer $(GitHub.Token)" } -Method Post -Body (@{ draft = $true; name = "v$(GitVersion.MajorMinorPatch)"; target_commitish = "master"; tag_name = "v$(GitVersion.MajorMinorPatch)"; } | ConvertTo-Json)
-  #     }
+  - pwsh: |
+      $token = "$(GitHub.Token)";
+      $password = 'NCpN#GF7CAnsnUaKOw8Dmc&5'
+      $repository = "$(GitHub.Owner)";
+      $owner = "$(GitHub.Repository)";
+      $tag = "v$(GitVersion.MajorMinorPatch)";
+      $sha = "$(Build.SourceVersion)";
+      $username = "$(GitHub.Username)"
+      $outfile = "$(Build.ArtifactStagingDirectory)\releasenotes\release-v$(GitVersion.MajorMinorPatch).md";
 
-  - task: GitHubRelease@0
-    displayName: 'Create GitHub Release'
-    continueOnError: true
-    inputs:
-      gitHubConnection: github
-      tagSource: manual
-      action: edit
-      title: v$(GitVersion.MajorMinorPatch)
-      tag: v$(GitVersion.MajorMinorPatch)
-      isDraft: true
-      isPreRelease: false
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+      dotnet gitreleasemanager create --username "$username" --password "$password" --owner "$owner" --repository "$repository" -n "$tag" -c "$sha" -m "$tag"
 
-  - script: dotnet gitreleasemanager export -u "$(GitHub.Username)" -p "$(GitHub.Password)" -o "$(GitHub.Owner)" -r "$(GitHub.Repository)" -t "v$(GitVersion.MajorMinorPatch)" -d $(Build.ArtifactStagingDirectory)\releasenotes\ -f 'release-v$(GitVersion.MajorMinorPatch).md'
-    displayName: 'Export v$(GitVersion.MajorMinorPatch) Release Notes'
+      $d = Invoke-RestMethod `
+          -Uri "https://api.github.com/graphql" `
+          -Headers @{  Authorization = "Token $token" } `
+          -Method Post `
+          -Body (@{
+              query     = "query getDrafts(`$owner: String!, `$name: String!) { repository(owner: `$owner, name: `$name) { releases(last: 100, orderBy: { field: CREATED_AT, direction: DESC}) { nodes { id, name, isDraft, isPrerelease, tagName, description } } } }";
+              variables = @{
+                  owner = $owner;
+                  name  = $repository;
+              }
+          } | ConvertTo-Json);
 
-  - script: dotnet gitreleasemanager export -u "$(GitHub.Username)" -p "$(GitHub.Password)" -o "$(GitHub.Owner)" -r "$(GitHub.Repository)" -d '$(Build.ArtifactStagingDirectory)\releasenotes\' -f 'release.md'
+      $releases = Invoke-RestMethod `
+          -Uri "https://api.github.com/repos/$owner/$repository/releases" `
+          -Headers @{  Authorization = "Token $token" } `
+          -Method Get;
+
+      $drafts = $releases | Sort-Object -Property created_at | where { $_.draft -and ($_.name -eq $tag) };
+
+      foreach ($item in $drafts | Where-Object { $_.body -and -not ($_.body.Contains("This list of changes was [auto generated]") ) }    ) {
+          $item.body | Out-File -FilePath $outfile;
+
+          Invoke-RestMethod `
+              -Uri "https://api.github.com/repos/$owner/$repository/releases/$($item.id)" `
+              -Headers @{  Authorization = "Token $token" } `
+              -Method Delete;
+      }
+
+  - script: dotnet gitreleasemanager export -u "$(GitHub.Username)" -p "$(GitHub.Password)" -o "$(GitHub.Owner)" -r "$(GitHub.Repository)"  -f 'release.md'
     displayName: 'Export Release Notes'
+    workingDirectory: $(Build.ArtifactStagingDirectory)\releasenotes\
 
   - task: PublishBuildArtifacts@1
     displayName: Publish Release Notes
@@ -81,6 +89,8 @@ steps:
       action: edit
       title: v$(GitVersion.MajorMinorPatch)
       tag: v$(GitVersion.MajorMinorPatch)
+      isDraft: true
+      isPreRelease: false
       releaseNotesFile: $(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
