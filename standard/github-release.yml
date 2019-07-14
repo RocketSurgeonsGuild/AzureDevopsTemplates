@@ -80,6 +80,7 @@ steps:
       gitHubConnection: github
       action: edit
       title: v$(GitVersion.MajorMinorPatch)
+      tag: v$(GitVersion.MajorMinorPatch)
       releaseNotesFile: $(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
