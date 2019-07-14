@@ -16,11 +16,11 @@ steps:
       version: ${{ parameters.DotNet3Version }}
 
   - task: DotNetCoreCLI@2
-    displayName: 'dotnet tool install gitreleasemanager.tool'
+    displayName: 'dotnet toolrestore'
     inputs:
       command: custom
       custom: tool
-      arguments: 'install gitreleasemanager.tool'
+      arguments: 'restore'
 
   - pwsh: |
       $parts = '$(Build.Repository.Name)' -split '/';
