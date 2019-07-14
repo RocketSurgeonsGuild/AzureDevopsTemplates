@@ -26,9 +26,12 @@ steps:
       $parts = '$(Build.Repository.Name)' -split '/';
       Write-Host "##vso[task.setvariable variable=GitHub.Owner]$($parts[0])"
       Write-Host "##vso[task.setvariable variable=GitHub.Repository]$($parts[1])"
+    displayName: 'Assign GitHub.Owner and GitHub.Repository'
 
-  - script: dotnet gitreleasemanager export --username '$(GitHub.Username)' --password '$(GitHub.Password)' --owner '$(GitHub.Owner)' --repository '$(GitHub.Repository)' --tagName 'v$(GitVersion.MajorMinorPatch)' --fileOutputPath '$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md'
-  - script: dotnet gitreleasemanager export --username '$(GitHub.Username)' --password '$(GitHub.Password)' --owner '$(GitHub.Owner)' --repository '$(GitHub.Repository)' --fileOutputPath '$(Build.ArtifactStagingDirectory)/releasenotes/release.md'
+  - script: dotnet gitreleasemanager export -u "$(GitHub.Username)" -p "$(GitHub.Password)" -o "$(GitHub.Owner)" -r "$(GitHub.Repository)" -t "v$(GitVersion.MajorMinorPatch)" -f '$(Build.ArtifactStagingDirectory)\releasenotes\release-v$(GitVersion.MajorMinorPatch).md'
+    displayName: 'Export v$(GitVersion.MajorMinorPatch) Release Notes'
+  - script: dotnet gitreleasemanager export -u "$(GitHub.Username)" -p "$(GitHub.Password)" -o "$(GitHub.Owner)" -r "$(GitHub.Repository)" -f '$(Build.ArtifactStagingDirectory)\releasenotes\release.md'
+    displayName: 'Export Release Notes'
 
   - task: PublishBuildArtifacts@1
     displayName: Publish Release Notes
@@ -42,8 +45,8 @@ steps:
     inputs:
       gitHubConnection: github
       action: edit
-      title: 'v$(GitVersion.MajorMinorPatch)'
-      tag: 'v$(GitVersion.MajorMinorPatch)'
+      title: v$(GitVersion.MajorMinorPatch)
+      tag: v$(GitVersion.MajorMinorPatch)
       releaseNotesFile: $(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md
       # assets: |
       #  /path/tpassets/**/*
@@ -53,5 +56,6 @@ steps:
       isPreRelease: false
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
-  - script: dotnet gitreleasemanager close --username '$(GitHub.Username)' --password '$(GitHub.Password)' --owner '$(GitHub.Owner)' --repository '$(GitHub.Repository)' --milestone 'v$(GitVersion.MajorMinorPatch)'
+  - script: dotnet gitreleasemanager close -u "$(GitHub.Username)" -p "$(GitHub.Password)" -o "$(GitHub.Owner)" -r "$(GitHub.Repository)" -m "v$(GitVersion.MajorMinorPatch)"
+    displayName: 'Close v$(GitVersion.MajorMinorPatch) Milestone'
     condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
