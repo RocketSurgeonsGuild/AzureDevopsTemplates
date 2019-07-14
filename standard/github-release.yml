@@ -2,7 +2,7 @@ parameters:
   DotNet3Version: "3.0.100-preview6-012264"
 
 steps:
-- $[ if eq(variables['Build.Repository.Provider'], 'GitHub') ]:
+- ${{ if eq(variables['Build.Repository.Provider'], 'GitHub') }}:
   - task: UseDotNet@2
     displayName: Install dotnet $(DotNet3Version)
     inputs:
