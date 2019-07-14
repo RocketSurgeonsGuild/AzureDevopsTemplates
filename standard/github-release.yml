@@ -1,7 +1,14 @@
 parameters:
+  DotNetVersion: "2.2.300"
   DotNet3Version: "3.0.100-preview6-012264"
 
 steps:
+  - task: UseDotNet@2
+    displayName: Install dotnet $(DotNetVersion)
+    inputs:
+      packageType: 'sdk'
+      version: ${{ parameters.DotNetVersion }}
+
   - task: UseDotNet@2
     displayName: Install dotnet $(DotNet3Version)
     inputs:

@@ -81,5 +81,6 @@ jobs:
       - ${{ if eq(parameters.GitHub, 'true') }}:
         - template: ../standard/github-release.yml
           parameters:
+            DotNetVersion: ${{ parameters.DotNetVersion }}
             DotNet3Version: ${{ parameters.DotNet3Version }}
 
