@@ -28,6 +28,17 @@ steps:
       Write-Host "##vso[task.setvariable variable=GitHub.Repository]$($parts[1])"
     displayName: 'Assign GitHub.Owner and GitHub.Repository'
 
+  - task: GitHubRelease@0
+    displayName: 'Update GitHub Release'
+    inputs:
+      gitHubConnection: github
+      action: edit
+      title: v$(GitVersion.MajorMinorPatch)
+      tag: v$(GitVersion.MajorMinorPatch)
+      isDraft: true
+      isPreRelease: false
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+
   - script: dotnet gitreleasemanager export -u "$(GitHub.Username)" -p "$(GitHub.Password)" -o "$(GitHub.Owner)" -r "$(GitHub.Repository)" -t "v$(GitVersion.MajorMinorPatch)" -f '$(Build.ArtifactStagingDirectory)\releasenotes\release-v$(GitVersion.MajorMinorPatch).md'
     displayName: 'Export v$(GitVersion.MajorMinorPatch) Release Notes'
   - script: dotnet gitreleasemanager export -u "$(GitHub.Username)" -p "$(GitHub.Password)" -o "$(GitHub.Owner)" -r "$(GitHub.Repository)" -f '$(Build.ArtifactStagingDirectory)\releasenotes\release.md'
