@@ -61,10 +61,10 @@ steps:
       isPreRelease: false
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
-  - script: dotnet gitreleasemanager export -u "$(GitHub.Username)" -p "$(GitHub.Password)" -o "$(GitHub.Owner)" -r "$(GitHub.Repository)" -t "v$(GitVersion.MajorMinorPatch)" -f '$(Build.ArtifactStagingDirectory)\releasenotes\release-v$(GitVersion.MajorMinorPatch).md'
+  - script: dotnet gitreleasemanager export -u "$(GitHub.Username)" -p "$(GitHub.Password)" -o "$(GitHub.Owner)" -r "$(GitHub.Repository)" -t "v$(GitVersion.MajorMinorPatch)" -d $(Build.ArtifactStagingDirectory)\releasenotes\ -f 'release-v$(GitVersion.MajorMinorPatch).md'
     displayName: 'Export v$(GitVersion.MajorMinorPatch) Release Notes'
 
-  - script: dotnet gitreleasemanager export -u "$(GitHub.Username)" -p "$(GitHub.Password)" -o "$(GitHub.Owner)" -r "$(GitHub.Repository)" -f '$(Build.ArtifactStagingDirectory)\releasenotes\release.md'
+  - script: dotnet gitreleasemanager export -u "$(GitHub.Username)" -p "$(GitHub.Password)" -o "$(GitHub.Owner)" -r "$(GitHub.Repository)" -d '$(Build.ArtifactStagingDirectory)\releasenotes\' -f '$(Build.ArtifactStagingDirectory)\releasenotes\release.md'
     displayName: 'Export Release Notes'
 
   - task: PublishBuildArtifacts@1
