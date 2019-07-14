@@ -20,7 +20,7 @@ steps:
     inputs:
       command: custom
       custom: tool
-      arguments: 'install gitreleasemanager.tool --global'
+      arguments: 'install gitreleasemanager.tool'
 
   - pwsh: |
       $parts = '$(Build.Repository.Name)' -split '/';
