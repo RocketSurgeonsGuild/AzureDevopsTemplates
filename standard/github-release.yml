@@ -28,13 +28,33 @@ steps:
       Write-Host "##vso[task.setvariable variable=GitHub.Repository]$($parts[1])"
     displayName: 'Assign GitHub.Owner and GitHub.Repository'
 
+  - pwsh: mkdir $(Build.ArtifactStagingDirectory)\releasenotes\;
+    displayName: "Create release notes directory"
+
+  # - pwsh: |
+  #     $response = Invoke-RestMethod -Uri https://api.github.com/graphql -Headers @{  Authorization = "Token $(GitHub.Token)" } -Method Post -Body (@{ query = "query getDrafts(`$owner: String!, `$name: String!) { repository(owner: `$owner, name: `$name) { releases(last: 100) { nodes { id, name, isDraft, isPrerelease, tagName } } } }"; variables = @{ owner = "$(GitHub.Owner);" name = "$(GitHub.Repository)" }  } | ConvertTo-Json)
+  #     $release = $response.data.repository.releases.nodes | where { $_.isDraft } | select -First 1;
+  #     if ($release) {
+  #       Invoke-RestMethod -Uri "https://api.github.com/repos/RocketSurgeonsGuild/Build/releases" `
+  #         -Headers @{ Authorization = "Bearer $(GitHub.Token)" } `
+  #         -Method Post `
+  #         -Body (@{ `
+  #           draft = $true; `
+  #           name = "v$(GitVersion.MajorMinorPatch)"; `
+  #           target_commitish = "master"; `
+  #           tag_name = "v$(GitVersion.MajorMinorPatch)"; `
+  #         } | ConvertTo-Json);
+  #     } else {
+  #       Invoke-RestMethod -Uri "https://api.github.com/repos/RocketSurgeonsGuild/Build/releases" -Headers @{ Authorization = "Bearer $(GitHub.Token)" } -Method Post -Body (@{ draft = $true; name = "v$(GitVersion.MajorMinorPatch)"; target_commitish = "master"; tag_name = "v$(GitVersion.MajorMinorPatch)"; } | ConvertTo-Json)
+  #     }
+
   - task: GitHubRelease@0
     displayName: 'Create GitHub Release'
     continueOnError: true
     inputs:
       gitHubConnection: github
       tagSource: manual
-      action: create
+      action: edit
       title: v$(GitVersion.MajorMinorPatch)
       tag: v$(GitVersion.MajorMinorPatch)
       isDraft: true
