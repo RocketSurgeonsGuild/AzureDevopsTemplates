@@ -6,6 +6,7 @@ parameters:
   NuGetVersion: "5.1.0"
   Script: 'cakefile.cake'
   Target: 'Default'
+  GitHubPackages: false
 jobs:
   - job: GitVersion
     pool:
@@ -74,4 +75,5 @@ jobs:
         parameters:
           NuGetVersion: ${{ parameters.NuGetVersion }}
           Verbosity: ${{ parameters.Verbosity }}
+          GitHubPackages: ${{ parameters.GitHubPackages }}
 

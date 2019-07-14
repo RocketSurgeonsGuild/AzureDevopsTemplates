@@ -2,6 +2,10 @@ parameters:
   NuGetVersion: "5.1.0"
   Artifacts: $(Build.ArtifactStagingDirectory)
   AllowPackageConflicts: 'true'
+  MyGetFeed: 'myget.org'
+  NuGetFeed: 'nuget.org'
+  GitHubFeed: 'github.nuget'
+  GitHubPackages: false
 
 steps:
   - task: NuGetToolInstaller@1
@@ -9,19 +13,37 @@ steps:
     inputs:
       versionSpec: ${{ parameters.NuGetVersion }}
   - task: NuGetCommand@2
-    displayName: 'Push NuGet packages to myget.org'
+    displayName: Push NuGet packages to ${{ parameters.MyGetFeed }}
     inputs:
       command: push
       nuGetFeedType: external
       packagesToPush: ${{ format('{0}/nuget/**/*.nupkg;!{0}/nuget/**/*.symbols.nupkg', parameters.Artifacts) }}
-      publishFeedCredentials: myget.org
+      publishFeedCredentials: ${{ parameters.MyGetFeed }}
       allowPackageConflicts: ${{ parameters.AllowPackageConflicts }}
   - task: NuGetCommand@2
-    displayName: 'Push NuGet packages to nuget.org'
+    displayName: Push NuGet packages to ${{ parameters.GitHubFeed }}
     inputs:
       command: push
       nuGetFeedType: external
       packagesToPush: ${{ format('{0}/nuget/**/*.nupkg;!{0}/nuget/**/*.symbols.nupkg', parameters.Artifacts) }}
-      publishFeedCredentials: nuget.org
+      publishFeedCredentials: ${{ parameters.GitHubFeed }}
+      allowPackageConflicts: ${{ parameters.AllowPackageConflicts }}
+    condition: and(succeeded(), eq('${{ parameters.GitHubPackages }}', 'true'))
+  - task: NuGetCommand@2
+    displayName: Push NuGet packages to ${{ parameters.NuGetFeed }}
+    inputs:
+      command: push
+      nuGetFeedType: external
+      packagesToPush: ${{ format('{0}/nuget/**/*.nupkg;!{0}/nuget/**/*.symbols.nupkg', parameters.Artifacts) }}
+      publishFeedCredentials: ${{ parameters.NuGetFeed }}
+      allowPackageConflicts: ${{ parameters.AllowPackageConflicts }}
+    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
+  - task: NuGetCommand@2
+    displayName: Push NuGet packages to ${{ parameters.NuGetFeed }}
+    inputs:
+      command: push
+      nuGetFeedType: external
+      packagesToPush: ${{ format('{0}/nuget/**/*.nupkg;!{0}/nuget/**/*.symbols.nupkg', parameters.Artifacts) }}
+      publishFeedCredentials: ${{ parameters.NuGetFeed }}
       allowPackageConflicts: ${{ parameters.AllowPackageConflicts }}
     condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
