@@ -6,13 +6,13 @@ parameters:
 
 steps:
 - task: UseDotNet@2
-  displayName: Install dotnet $(DotNetVersion)
+  displayName: Install dotnet ${{ parameters.DotNetVersion }}
   inputs:
     packageType: 'sdk'
     version: ${{ parameters.DotNetVersion }}
 
 - task: UseDotNet@2
-  displayName: Install dotnet $(DotNet3Version)
+  displayName: Install dotnet ${{ parameters.DotNet3Version }}
   inputs:
     packageType: 'sdk'
     version: ${{ parameters.DotNet3Version }}

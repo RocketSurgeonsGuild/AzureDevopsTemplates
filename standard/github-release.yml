@@ -4,13 +4,13 @@ parameters:
 
 steps:
   - task: UseDotNet@2
-    displayName: Install dotnet $(DotNetVersion)
+    displayName: Install dotnet ${{ parameters.DotNetVersion }}
     inputs:
       packageType: 'sdk'
       version: ${{ parameters.DotNetVersion }}
 
   - task: UseDotNet@2
-    displayName: Install dotnet $(DotNet3Version)
+    displayName: Install dotnet ${{ parameters.DotNet3Version }}
     inputs:
       packageType: 'sdk'
       version: ${{ parameters.DotNet3Version }}
@@ -23,9 +23,9 @@ steps:
       arguments: 'install gitreleasemanager.tool'
 
   - pwsh: |
-      $parts = 'RocketSurgeonsGuild/Build' -split '/';
-      echo "##vso[task.setvariable variable=GitHub.Owner;isOutput=true]$($parts[0])"
-      echo "##vso[task.setvariable variable=GitHub.Repository;isOutput=true]$($parts[1])"
+      $parts = $(Build.Repository.Name) -split '/';
+      Write-Host "##vso[task.setvariable variable=GitHub.Owner;isOutput=true]$($parts[0])"
+      Write-Host "##vso[task.setvariable variable=GitHub.Repository;isOutput=true]$($parts[1])"
 
   - script: dotnet gitreleasemanager export -username '$(GitHub.Username)' -password '$(GitHub.Password)' -owner '$(GitHub.Owner)' -repository '$(GitHub.Repository)' -tagName 'v$(GitVersion.MajorMinorPatch)' -fileOutputPath '$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md'
   - script: dotnet gitreleasemanager export -username '$(GitHub.Username)' -password '$(GitHub.Password)' -owner '$(GitHub.Owner)' -repository '$(GitHub.Repository)' -fileOutputPath '$(Build.ArtifactStagingDirectory)/releasenotes/release.md'
