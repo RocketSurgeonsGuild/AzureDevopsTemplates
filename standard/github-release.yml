@@ -1,0 +1,50 @@
+parameters:
+  DotNet3Version: "3.0.100-preview6-012264"
+
+steps:
+- task: UseDotNet@2
+  displayName: Install dotnet $(DotNet3Version)
+  inputs:
+    packageType: 'sdk'
+    version: ${{ parameters.DotNet3Version }}
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet tool install gitreleasemanager.tool'
+  inputs:
+    command: custom
+    custom: tool
+    arguments: 'install gitreleasemanager.tool'
+
+- pwsh: |
+    $parts = 'RocketSurgeonsGuild/Build' -split '/';
+    echo "##vso[task.setvariable variable=GitHub.Owner;isOutput=true]$($parts[0])"
+    echo "##vso[task.setvariable variable=GitHub.Repository;isOutput=true]$($parts[1])"
+
+- script: dotnet gitreleasemanager export -username '$(GitHub.Username)' -password '$(GitHub.Password)' -owner '$(GitHub.Owner)' -repository '$(GitHub.Repository)' -tagName 'v$(GitVersion.MajorMinorPatch)' -fileOutputPath '$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md'
+- script: dotnet gitreleasemanager export -username '$(GitHub.Username)' -password '$(GitHub.Password)' -owner '$(GitHub.Owner)' -repository '$(GitHub.Repository)' -fileOutputPath '$(Build.ArtifactStagingDirectory)/releasenotes/release.md'
+
+- task: PublishBuildArtifacts@1
+  displayName: Publish Release Notes
+  inputs:
+    PathtoPublish: "$(Build.ArtifactStagingDirectory)/releasenotes/"
+    ArtifactName: "Release Notes"
+    ArtifactType: "Container"
+
+- task: GitHubRelease@0
+  displayName: 'Update GitHub release'
+  inputs:
+    gitHubConnection: github
+    action: edit
+    title: 'v$(GitVersion.MajorMinorPatch)'
+    tag: 'v$(GitVersion.MajorMinorPatch)'
+    releaseNotesFile: $(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md
+    # assets: |
+    #  /path/tpassets/**/*
+    #  /path/to/stuff
+    # assetUploadMode: replace
+    isDraft: true
+    isPreRelease: true
+  condition:
+
+- script: dotnet gitreleasemanager close -username '$(GitHub.Username)' -password '$(GitHub.Password)' -owner '$(GitHub.Owner)' -repository '$(GitHub.Repository)' -milestone 'v$(GitVersion.MajorMinorPatch)'
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))

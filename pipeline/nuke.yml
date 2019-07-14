@@ -72,4 +72,9 @@ jobs:
           NuGetVersion: ${{ parameters.NuGetVersion }}
           Verbosity: ${{ parameters.Verbosity }}
           GitHubPackages: ${{ parameters.GitHubPackages }}
+      - ${{ if eq(variables['Build.Repository.Provider'], 'GitHub') }}:
+        - template: ../standard/github-release.yml
+          parameters:
+            DotNet3Version: ${{ parameters.DotNet3Version }}
+
 
