@@ -23,6 +23,7 @@ steps:
     condition: and(succeeded(), or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranch'], 'refs/heads/master')))
   - task: NuGetCommand@2
     displayName: Push NuGet packages to ${{ parameters.GitHubFeed }}
+    enabled: 'false'
     inputs:
       command: push
       nuGetFeedType: external
