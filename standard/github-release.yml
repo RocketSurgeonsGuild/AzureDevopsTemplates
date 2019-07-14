@@ -34,8 +34,8 @@ steps:
   - pwsh: |
       $token = "$(GitHub.Token)";
       $password = 'NCpN#GF7CAnsnUaKOw8Dmc&5'
-      $repository = "$(GitHub.Owner)";
-      $owner = "$(GitHub.Repository)";
+      $repository = "$(GitHub.Repository)";
+      $owner = "$(GitHub.Owner)";
       $tag = "v$(GitVersion.MajorMinorPatch)";
       $sha = "$(Build.SourceVersion)";
       $username = "$(GitHub.Username)"
