@@ -31,7 +31,7 @@ steps:
     ArtifactType: "Container"
 
 - task: GitHubRelease@0
-  displayName: 'Update GitHub release'
+  displayName: 'Update GitHub Release'
   inputs:
     gitHubConnection: github
     action: edit
@@ -43,8 +43,8 @@ steps:
     #  /path/to/stuff
     # assetUploadMode: replace
     isDraft: true
-    isPreRelease: true
-  condition:
+    isPreRelease: false
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
 - script: dotnet gitreleasemanager close -username '$(GitHub.Username)' -password '$(GitHub.Password)' -owner '$(GitHub.Owner)' -repository '$(GitHub.Repository)' -milestone 'v$(GitVersion.MajorMinorPatch)'
   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
