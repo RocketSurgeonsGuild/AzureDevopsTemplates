@@ -23,7 +23,7 @@ steps:
       arguments: 'install gitreleasemanager.tool'
 
   - pwsh: |
-      $parts = $(Build.Repository.Name) -split '/';
+      $parts = '$(Build.Repository.Name)' -split '/';
       Write-Host "##vso[task.setvariable variable=GitHub.Owner]$($parts[0])"
       Write-Host "##vso[task.setvariable variable=GitHub.Repository]$($parts[1])"
 
