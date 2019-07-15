@@ -87,7 +87,7 @@ steps:
       action: edit
       title: v$(GitVersion.MajorMinorPatch)
       tag: v$(GitVersion.MajorMinorPatch)
-      isDraft: $[ or(not(eq(variables['Build.SourceBranch'], 'refs/heads/master')), not(eq(variables['GitVersion.SemVer'], variables['GitVersion.MajorMinorPatch']))) ]
+      isDraft: $[ or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), not(eq(variables['GitVersion.SemVer'], variables['GitVersion.MajorMinorPatch']))) ]
       isPreRelease: false
       releaseNotesFile: $(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md
     condition: and(succeeded(), or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranch'], 'refs/heads/master')))
