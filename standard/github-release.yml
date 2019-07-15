@@ -123,8 +123,8 @@ steps:
       $currentMilestone = $milestones | where { $_.title -eq $tag }
 
       $currentMilestone.description | Out-File $outfile
-    displayName: 'Get up to date changeset details from GitHub Release'
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    displayName: 'Get manager release notes from milestone'
+    condition: and(succeeded(), or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranch'], 'refs/heads/master')))
 
   - task: PublishBuildArtifacts@1
     displayName: Publish Release Notes
