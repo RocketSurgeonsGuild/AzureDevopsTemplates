@@ -84,16 +84,19 @@ steps:
 
       $drafts = $releases | Sort-Object -Property created_at | where { $_.draft -and ($_.name -eq $tag) };
 
+      $notes = "";
       foreach ($item in $drafts | Where-Object { $_.body -and -not ($_.body.Contains("This list of changes was [auto generated]") ) }    ) {
-          $item.body | Out-File -FilePath $outfile;
+          $notes = $item.body
 
           Invoke-RestMethod `
               -Uri "https://api.github.com/repos/$owner/$repository/releases/$($item.id)" `
               -Headers @{  Authorization = "Token $token" } `
               -Method Delete;
       }
+      $notes | Out-File -FilePath $outfile;
     displayName: 'Get up to date changeset details from GitHub Release'
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    continueOnError: 'true'
 
   - task: PublishBuildArtifacts@1
     displayName: Publish Release Notes
@@ -101,6 +104,7 @@ steps:
       PathtoPublish: "$(Build.ArtifactStagingDirectory)/releasenotes/"
       ArtifactName: "Release Notes"
       ArtifactType: "Container"
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - task: GitHubRelease@0
     displayName: 'Update GitHub Release'
