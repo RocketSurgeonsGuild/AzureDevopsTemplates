@@ -71,7 +71,7 @@ steps:
               -Method Delete;
       }
     displayName: 'Get up to date changeset details from GitHub Release'
-    condition: and(succeeded(), or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranch'], 'refs/heads/master')))
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - task: PublishBuildArtifacts@1
     displayName: Publish Release Notes
@@ -87,10 +87,10 @@ steps:
       action: edit
       title: v$(GitVersion.MajorMinorPatch)
       tag: v$(GitVersion.MajorMinorPatch)
-      isDraft: $[ or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), not(eq(variables['GitVersion.SemVer'], variables['GitVersion.MajorMinorPatch']))) ]
+      isDraft: true
       isPreRelease: false
       releaseNotesFile: $(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md
-    condition: and(succeeded(), or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranch'], 'refs/heads/master')))
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - script: dotnet gitreleasemanager close -u "$(GitHub.Username)" -p "$(GitHub.Password)" -o "$(GitHub.Owner)" -r "$(GitHub.Repository)" -m "v$(GitVersion.MajorMinorPatch)"
     displayName: 'Close v$(GitVersion.MajorMinorPatch) Milestone'
