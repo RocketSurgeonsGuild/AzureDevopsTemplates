@@ -101,7 +101,7 @@ steps:
       $currentMilestone = $milestones | where { $_.title -eq $tag }
 
       Invoke-RestMethod `
-          -Uri "https://api.github.com/repos/$owner/$repository/milestones/$($currentMilestone.id)" `
+          -Uri "https://api.github.com/repos/$owner/$repository/milestones/$($currentMilestone.number)" `
           -Headers @{  Authorization = "Token $token" } `
           -Method Patch `
           -Body (@{ title = $tag; description = $notes } | ConvertTo-Json)
