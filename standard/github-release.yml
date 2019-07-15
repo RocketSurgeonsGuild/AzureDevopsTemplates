@@ -33,6 +33,28 @@ steps:
 
   - pwsh: |
       $token = "$(GitHub.Token)";
+      $repository = "$(GitHub.Repository)";
+      $owner = "$(GitHub.Owner)";
+      $tag = "v$(GitVersion.MajorMinorPatch)";
+
+      $milestones = Invoke-RestMethod `
+          -Uri "https://api.github.com/repos/$owner/$repository/milestones?state=open" `
+          -Headers @{  Authorization = "Token $token" } `
+          -Method Get;
+
+      $currentMilestone = $milestones | where { $_.title -eq $tag }
+      if (-not ($currentMilestone)) {
+          Invoke-RestMethod `
+              -Uri "https://api.github.com/repos/$owner/$repository/milestones" `
+              -Headers @{  Authorization = "Token $token" } `
+              -Method Post `
+              -Body (@{ title = $tag; } | ConvertTo-Json)
+      }
+    displayName: 'Ensure v$(GitVersion.MajorMinorPatch) Milestone'
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+
+  - pwsh: |
+      $token = "$(GitHub.Token)";
       $password = 'NCpN#GF7CAnsnUaKOw8Dmc&5'
       $repository = "$(GitHub.Repository)";
       $owner = "$(GitHub.Owner)";
