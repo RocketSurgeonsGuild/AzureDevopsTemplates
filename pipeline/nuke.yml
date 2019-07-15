@@ -55,38 +55,39 @@ jobs:
       NuGetVersion: ${{ parameters.NuGetVersion }}
       Targets: ${{ parameters.Targets }}
 
-  - job: Publish
-    dependsOn:
-      - macOS
-      - Linux
-      - Windows
-    steps:
-      # - checkout: none
-      - task: DownloadBuildArtifacts@0
-        displayName: "Download NuGet Packages"
-        inputs:
-          specificBuildWithTriggering: true
-          downloadType: single
-          artifactName: 'Nupkg - Windows'
-          downloadPath: $(Build.ArtifactStagingDirectory)/nuget/
-      - template: ../standard/nuget-push.yml
-        parameters:
-          NuGetVersion: ${{ parameters.NuGetVersion }}
-          Verbosity: ${{ parameters.Verbosity }}
-          GitHubPackages: ${{ parameters.GitHubPackages }}
-
-  - job: Release
-    dependsOn:
-      - macOS
-      - Linux
-      - Windows
-    steps:
-      # - checkout: none
-      - template: ../gitversion/restore.yml
-      - ${{ if eq(parameters.GitHub, 'true') }}:
-        - template: ../standard/github-release.yml
+  - ${{ if ne(variables['System.PullRequest.IsFork'], 'true') }}:
+    - job: Publish
+      dependsOn:
+        - macOS
+        - Linux
+        - Windows
+      steps:
+        # - checkout: none
+        - task: DownloadBuildArtifacts@0
+          displayName: "Download NuGet Packages"
+          inputs:
+            specificBuildWithTriggering: true
+            downloadType: single
+            artifactName: 'Nupkg - Windows'
+            downloadPath: $(Build.ArtifactStagingDirectory)/nuget/
+        - template: ../standard/nuget-push.yml
           parameters:
-            DotNetVersion: ${{ parameters.DotNetVersion }}
-            DotNet3Version: ${{ parameters.DotNet3Version }}
+            NuGetVersion: ${{ parameters.NuGetVersion }}
+            Verbosity: ${{ parameters.Verbosity }}
+            GitHubPackages: ${{ parameters.GitHubPackages }}
+
+    - job: Release
+      dependsOn:
+        - macOS
+        - Linux
+        - Windows
+      steps:
+        # - checkout: none
+        - template: ../gitversion/restore.yml
+        - ${{ if eq(parameters.GitHub, 'true') }}:
+          - template: ../standard/github-release.yml
+            parameters:
+              DotNetVersion: ${{ parameters.DotNetVersion }}
+              DotNet3Version: ${{ parameters.DotNet3Version }}
 
 
