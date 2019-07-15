@@ -73,11 +73,6 @@ steps:
     displayName: 'Get up to date changeset details from GitHub Release'
     condition: and(succeeded(), or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranch'], 'refs/heads/master')))
 
-  - script: dotnet gitreleasemanager export -u "$(GitHub.Username)" -p "$(GitHub.Password)" -o "$(GitHub.Owner)" -r "$(GitHub.Repository)"  -f 'release.md'
-    displayName: 'Export Release Notes'
-    workingDirectory: $(Build.ArtifactStagingDirectory)\releasenotes\
-    continueOnError: "true"
-
   - task: PublishBuildArtifacts@1
     displayName: Publish Release Notes
     inputs:
