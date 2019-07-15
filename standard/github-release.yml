@@ -28,7 +28,7 @@ steps:
       Write-Host "##vso[task.setvariable variable=GitHub.Repository]$($parts[1])"
     displayName: 'Assign GitHub.Owner and GitHub.Repository'
 
-  - pwsh: mkdir $(Build.ArtifactStagingDirectory)\releasenotes\;
+  - pwsh: mkdir $(Build.ArtifactStagingDirectory)/releasenotes/;
     displayName: "Create release notes directory"
 
   - pwsh: |
@@ -55,13 +55,12 @@ steps:
 
   - pwsh: |
       $token = "$(GitHub.Token)";
-      $password = 'NCpN#GF7CAnsnUaKOw8Dmc&5'
+      $password = '$(GitHub.Password)'
       $repository = "$(GitHub.Repository)";
       $owner = "$(GitHub.Owner)";
       $tag = "v$(GitVersion.MajorMinorPatch)";
       $sha = "$(Build.SourceVersion)";
       $username = "$(GitHub.Username)"
-      $outfile = "$(Build.ArtifactStagingDirectory)\releasenotes\release-v$(GitVersion.MajorMinorPatch).md";
 
       dotnet gitreleasemanager create --username "$username" --password "$password" --owner "$owner" --repository "$repository" -n "$tag" -c "$sha" -m "$tag"
 
@@ -93,9 +92,39 @@ steps:
               -Headers @{  Authorization = "Token $token" } `
               -Method Delete;
       }
-      $notes | Out-File -FilePath $outfile;
+
+      $milestones = Invoke-RestMethod `
+          -Uri "https://api.github.com/repos/$owner/$repository/milestones?state=open" `
+          -Headers @{  Authorization = "Token $token" } `
+          -Method Get;
+
+      $currentMilestone = $milestones | where { $_.title -eq $tag }
+
+      Invoke-RestMethod `
+          -Uri "https://api.github.com/repos/$owner/$repository/milestones/$($currentMilestone.id)" `
+          -Headers @{  Authorization = "Token $token" } `
+          -Method Patch `
+          -Body (@{ title = $tag; description = $notes } | ConvertTo-Json)
     displayName: 'Get up to date changeset details from GitHub Release'
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), ne(variables['GitVersion.MajorMinorPatch'], variables['GitVersion.SemVer']))
+
+  - pwsh: |
+      $token = "$(GitHub.Token)";
+      $repository = "$(GitHub.Repository)";
+      $owner = "$(GitHub.Owner)";
+      $tag = "v$(GitVersion.MajorMinorPatch)";
+      $outfile = "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md";
+
+      $milestones = Invoke-RestMethod `
+          -Uri "https://api.github.com/repos/$owner/$repository/milestones?state=open" `
+          -Headers @{  Authorization = "Token $token" } `
+          -Method Get;
+
+      $currentMilestone = $milestones | where { $_.title -eq $tag }
+
+      $currentMilestone.description | Out-File $outfile
+    displayName: 'Get up to date changeset details from GitHub Release'
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - task: PublishBuildArtifacts@1
     displayName: Publish Release Notes
@@ -103,7 +132,7 @@ steps:
       PathtoPublish: "$(Build.ArtifactStagingDirectory)/releasenotes/"
       ArtifactName: "Release Notes"
       ArtifactType: "Container"
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), ne(variables['GitVersion.MajorMinorPatch'], variables['GitVersion.SemVer']))
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - task: GitHubRelease@0
     displayName: 'Update GitHub Release'
@@ -115,7 +144,19 @@ steps:
       isDraft: true
       isPreRelease: false
       releaseNotesFile: $(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), ne(variables['GitVersion.MajorMinorPatch'], variables['GitVersion.SemVer']))
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master')
+
+  - task: GitHubRelease@0
+    displayName: 'Update GitHub Release'
+    inputs:
+      gitHubConnection: github
+      action: edit
+      title: v$(GitVersion.MajorMinorPatch)
+      tag: v$(GitVersion.MajorMinorPatch)
+      isDraft: false
+      isPreRelease: false
+      releaseNotesFile: $(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md
+    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
 
   - script: dotnet gitreleasemanager close -u "$(GitHub.Username)" -p "$(GitHub.Password)" -o "$(GitHub.Owner)" -r "$(GitHub.Repository)" -m "v$(GitVersion.MajorMinorPatch)"
     displayName: 'Close v$(GitVersion.MajorMinorPatch) Milestone'
