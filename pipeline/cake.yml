@@ -61,6 +61,8 @@ jobs:
 
   - ${{ if ne(variables['System.PullRequest.IsFork'], 'true') }}:
     - job: Publish
+      pool:
+        vmImage: "windows-2019"
       dependsOn:
         - macOS
         - Linux
@@ -81,6 +83,8 @@ jobs:
             GitHubPackages: ${{ parameters.GitHubPackages }}
 
     - job: Release
+      pool:
+        vmImage: "windows-2019"
       dependsOn:
         - macOS
         - Linux

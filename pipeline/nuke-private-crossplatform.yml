@@ -59,6 +59,8 @@ jobs:
       NuGetVersion: ${{ parameters.NuGetVersion }}
 
   - job: Publish
+    pool:
+      vmImage: "windows-2019"
     dependsOn:
       - macOS
       - Linux
