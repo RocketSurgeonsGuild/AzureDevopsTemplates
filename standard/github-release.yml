@@ -95,8 +95,7 @@ steps:
       }
       $notes | Out-File -FilePath $outfile;
     displayName: 'Get up to date changeset details from GitHub Release'
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-    continueOnError: 'true'
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), ne(variables['GitVersion.MajorMinorPatch'], variables['GitVersion.SemVer'])))
 
   - task: PublishBuildArtifacts@1
     displayName: Publish Release Notes
@@ -104,7 +103,7 @@ steps:
       PathtoPublish: "$(Build.ArtifactStagingDirectory)/releasenotes/"
       ArtifactName: "Release Notes"
       ArtifactType: "Container"
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), ne(variables['GitVersion.MajorMinorPatch'], variables['GitVersion.SemVer'])))
 
   - task: GitHubRelease@0
     displayName: 'Update GitHub Release'
@@ -116,7 +115,7 @@ steps:
       isDraft: true
       isPreRelease: false
       releaseNotesFile: $(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), ne(variables['GitVersion.MajorMinorPatch'], variables['GitVersion.SemVer'])))
 
   - script: dotnet gitreleasemanager close -u "$(GitHub.Username)" -p "$(GitHub.Password)" -o "$(GitHub.Owner)" -r "$(GitHub.Repository)" -m "v$(GitVersion.MajorMinorPatch)"
     displayName: 'Close v$(GitVersion.MajorMinorPatch) Milestone'
