@@ -4,7 +4,7 @@ parameters:
 
 steps:
   - task: DownloadBuildArtifacts@0
-    displayName: "Download GitVersion Variables"
+    displayName: "Download Release Notes"
     inputs:
       specificBuildWithTriggering: true
       downloadType: single
@@ -21,5 +21,5 @@ steps:
       tag: v$(GitVersion.MajorMinorPatch)
       isDraft: true
       isPreRelease: false
-      releaseNotesFile: $(Build.ArtifactStagingDirectory)/**/release-v$(GitVersion.MajorMinorPatch).md
+      releaseNotesFile: $(Build.ArtifactStagingDirectory)/Release Notes/release-v$(GitVersion.MajorMinorPatch).md
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
