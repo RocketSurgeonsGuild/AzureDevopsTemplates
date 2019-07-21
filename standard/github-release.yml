@@ -3,109 +3,14 @@ parameters:
   DotNet3Version: "3.0.100-preview6-012264"
 
 steps:
-  - task: UseDotNet@2
-    displayName: Install dotnet ${{ parameters.DotNetVersion }}
+  - task: DownloadBuildArtifacts@0
+    displayName: "Download GitVersion Variables"
     inputs:
-      packageType: 'sdk'
-      version: ${{ parameters.DotNetVersion }}
-
-  - task: UseDotNet@2
-    displayName: Install dotnet ${{ parameters.DotNet3Version }}
-    inputs:
-      packageType: 'sdk'
-      version: ${{ parameters.DotNet3Version }}
-
-  - task: DotNetCoreCLI@2
-    displayName: 'dotnet toolrestore'
-    inputs:
-      command: custom
-      custom: tool
-      arguments: 'restore'
-
-  - pwsh: |
-      $parts = '$(Build.Repository.Name)' -split '/';
-      Write-Host "##vso[task.setvariable variable=GitHub.Owner]$($parts[0])"
-      Write-Host "##vso[task.setvariable variable=GitHub.Repository]$($parts[1])"
-    displayName: 'Assign GitHub.Owner and GitHub.Repository'
-
-  - pwsh: mkdir $(Build.ArtifactStagingDirectory)/releasenotes/;
-    displayName: "Create release notes directory"
-
-  - pwsh: |
-      $token = "$(GitHub.Token)";
-      $repository = "$(GitHub.Repository)";
-      $owner = "$(GitHub.Owner)";
-      $tag = "v$(GitVersion.MajorMinorPatch)";
-
-      $milestones = Invoke-RestMethod `
-          -Uri "https://api.github.com/repos/$owner/$repository/milestones?state=open" `
-          -Headers @{  Authorization = "Token $token" } `
-          -Method Get;
-
-      $currentMilestone = $milestones | where { $_.title -eq $tag }
-      if (-not ($currentMilestone)) {
-          Invoke-RestMethod `
-              -Uri "https://api.github.com/repos/$owner/$repository/milestones" `
-              -Headers @{  Authorization = "Token $token" } `
-              -Method Post `
-              -Body (@{ title = $tag; } | ConvertTo-Json)
-      }
-    displayName: 'Ensure v$(GitVersion.MajorMinorPatch) Milestone'
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), ne(variables['GitVersion.MajorMinorPatch'], variables['GitVersion.SemVer']))
-
-  - pwsh: |
-      $token = "$(GitHub.Token)";
-      $password = '$(GitHub.Password)'
-      $repository = "$(GitHub.Repository)";
-      $owner = "$(GitHub.Owner)";
-      $tag = "v$(GitVersion.MajorMinorPatch)";
-      $sha = "$(Build.SourceVersion)";
-      $username = "$(GitHub.Username)"
-      $outfile = "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md";
-
-      dotnet gitreleasemanager create --username "$username" --password "$password" --owner "$owner" --repository "$repository" -n "$tag" -c "$sha" -m "$tag"
-
-      $d = Invoke-RestMethod `
-          -Uri "https://api.github.com/graphql" `
-          -Headers @{  Authorization = "Token $token" } `
-          -Method Post `
-          -Body (@{
-              query     = "query getDrafts(`$owner: String!, `$name: String!) { repository(owner: `$owner, name: `$name) { releases(last: 100, orderBy: { field: CREATED_AT, direction: DESC}) { nodes { id, name, isDraft, isPrerelease, tagName, description } } } }";
-              variables = @{
-                  owner = $owner;
-                  name  = $repository;
-              }
-          } | ConvertTo-Json);
-
-      $releases = Invoke-RestMethod `
-          -Uri "https://api.github.com/repos/$owner/$repository/releases" `
-          -Headers @{  Authorization = "Token $token" } `
-          -Method Get;
-
-      $drafts = $releases | Sort-Object -Property created_at | where { $_.draft -and ($_.name -eq $tag) };
-
-      $notes = "";
-      foreach ($item in $drafts | Where-Object { $_.body -and -not ($_.body.Contains("This list of changes was [auto generated]") ) }    ) {
-          $notes = $item.body
-
-          Invoke-RestMethod `
-              -Uri "https://api.github.com/repos/$owner/$repository/releases/$($item.id)" `
-              -Headers @{  Authorization = "Token $token" } `
-              -Method Delete;
-      }
-
-      $notes | Out-File $outfile
-
-    displayName: 'Get up to date changeset details from GitHub Release'
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), ne(variables['GitVersion.MajorMinorPatch'], variables['GitVersion.SemVer']))
-
-  - task: PublishBuildArtifacts@1
-    displayName: Publish Release Notes
-    inputs:
-      PathtoPublish: "$(Build.ArtifactStagingDirectory)/releasenotes/"
-      ArtifactName: "Release Notes"
-      ArtifactType: "Container"
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+      specificBuildWithTriggering: true
+      downloadType: single
+      artifactName: Release Notes
+      pipelineId: Github Draft Release
+      targetPath: $(Build.ArtifactStagingDirectory)
 
   - task: GitHubRelease@0
     displayName: 'Update GitHub Release'
@@ -116,5 +21,5 @@ steps:
       tag: v$(GitVersion.MajorMinorPatch)
       isDraft: true
       isPreRelease: false
-      releaseNotesFile: $(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md
+      releaseNotesFile: $(Build.ArtifactStagingDirectory)/**/release-v$(GitVersion.MajorMinorPatch).md
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))

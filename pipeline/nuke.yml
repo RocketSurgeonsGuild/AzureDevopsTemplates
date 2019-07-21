@@ -56,6 +56,18 @@ jobs:
       Targets: ${{ parameters.Targets }}
 
   - ${{ if ne(variables['System.PullRequest.IsFork'], 'true') }}:
+    - job: GitHub Draft Release
+      pool:
+        vmImage: "windows-2019"
+      steps:
+        # - checkout: none
+        - template: ../gitversion/restore.yml
+        - ${{ if eq(parameters.GitHub, 'true') }}:
+          - template: ../standard/github-draft-release.yml
+            parameters:
+              DotNetVersion: ${{ parameters.DotNetVersion }}
+              DotNet3Version: ${{ parameters.DotNet3Version }}
+
     - job: Publish
       pool:
         vmImage: "windows-2019"
@@ -63,6 +75,7 @@ jobs:
         - macOS
         - Linux
         - Windows
+        - GitHub Draft Release
       steps:
         # - checkout: none
         - task: DownloadBuildArtifacts@0
@@ -78,13 +91,14 @@ jobs:
             Verbosity: ${{ parameters.Verbosity }}
             GitHubPackages: ${{ parameters.GitHubPackages }}
 
-    - job: Release
+    - job: GitHub Release
       pool:
         vmImage: "windows-2019"
       dependsOn:
         - macOS
         - Linux
         - Windows
+        - GitHub Draft Release
       steps:
         # - checkout: none
         - template: ../gitversion/restore.yml
