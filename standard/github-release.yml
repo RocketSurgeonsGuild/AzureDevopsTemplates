@@ -61,6 +61,7 @@ steps:
       $tag = "v$(GitVersion.MajorMinorPatch)";
       $sha = "$(Build.SourceVersion)";
       $username = "$(GitHub.Username)"
+      $outfile = "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md";
 
       dotnet gitreleasemanager create --username "$username" --password "$password" --owner "$owner" --repository "$repository" -n "$tag" -c "$sha" -m "$tag"
 
@@ -93,38 +94,10 @@ steps:
               -Method Delete;
       }
 
-      $milestones = Invoke-RestMethod `
-          -Uri "https://api.github.com/repos/$owner/$repository/milestones?state=open" `
-          -Headers @{  Authorization = "Token $token" } `
-          -Method Get;
+      $notes | Out-File $outfile
 
-      $currentMilestone = $milestones | where { $_.title -eq $tag }
-
-      Invoke-RestMethod `
-          -Uri "https://api.github.com/repos/$owner/$repository/milestones/$($currentMilestone.number)" `
-          -Headers @{  Authorization = "Token $token" } `
-          -Method Patch `
-          -Body (@{ title = $tag; description = $notes } | ConvertTo-Json)
     displayName: 'Get up to date changeset details from GitHub Release'
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), ne(variables['GitVersion.MajorMinorPatch'], variables['GitVersion.SemVer']))
-
-  - pwsh: |
-      $token = "$(GitHub.Token)";
-      $repository = "$(GitHub.Repository)";
-      $owner = "$(GitHub.Owner)";
-      $tag = "v$(GitVersion.MajorMinorPatch)";
-      $outfile = "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md";
-
-      $milestones = Invoke-RestMethod `
-          -Uri "https://api.github.com/repos/$owner/$repository/milestones?state=open" `
-          -Headers @{  Authorization = "Token $token" } `
-          -Method Get;
-
-      $currentMilestone = $milestones | where { $_.title -eq $tag }
-
-      $currentMilestone.description | Out-File $outfile
-    displayName: 'Get manager release notes from milestone'
-    condition: and(succeeded(), or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranch'], 'refs/heads/master')))
 
   - task: PublishBuildArtifacts@1
     displayName: Publish Release Notes
