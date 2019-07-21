@@ -59,6 +59,8 @@ jobs:
     - job: GitHub_Draft_Release
       pool:
         vmImage: "windows-2019"
+      dependsOn:
+        - GitVersion
       steps:
         # - checkout: none
         - template: ../gitversion/restore.yml
