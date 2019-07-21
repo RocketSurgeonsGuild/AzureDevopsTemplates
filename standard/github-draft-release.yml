@@ -8,12 +8,14 @@ steps:
     inputs:
       packageType: 'sdk'
       version: ${{ parameters.DotNetVersion }}
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - task: UseDotNet@2
     displayName: Install dotnet ${{ parameters.DotNet3Version }}
     inputs:
       packageType: 'sdk'
       version: ${{ parameters.DotNet3Version }}
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - task: DotNetCoreCLI@2
     displayName: 'dotnet toolrestore'
@@ -21,12 +23,14 @@ steps:
       command: custom
       custom: tool
       arguments: 'restore'
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - pwsh: |
       $parts = '$(Build.Repository.Name)' -split '/';
       Write-Host "##vso[task.setvariable variable=GitHub.Owner]$($parts[0])"
       Write-Host "##vso[task.setvariable variable=GitHub.Repository]$($parts[1])"
     displayName: 'Assign GitHub.Owner and GitHub.Repository'
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - pwsh: |
       $token = "$(GitHub.Token)";
@@ -48,7 +52,7 @@ steps:
                 -Method Delete;
       }
     displayName: 'Delete old draft releases'
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), ne(variables['GitVersion.MajorMinorPatch'], variables['GitVersion.SemVer']))
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - pwsh: |
       $token = "$(GitHub.Token)";
@@ -70,10 +74,11 @@ steps:
               -Body (@{ title = $tag; } | ConvertTo-Json)
       }
     displayName: 'Ensure v$(GitVersion.MajorMinorPatch) Milestone'
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), ne(variables['GitVersion.MajorMinorPatch'], variables['GitVersion.SemVer']))
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - pwsh: mkdir $(Build.ArtifactStagingDirectory)/releasenotes/;
     displayName: "Create release notes directory"
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - pwsh: |
       $token = "$(GitHub.Token)";
@@ -119,7 +124,7 @@ steps:
       $notes | Out-File $outfile
 
     displayName: 'Get up to date changeset details from GitHub_Release'
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), ne(variables['GitVersion.MajorMinorPatch'], variables['GitVersion.SemVer']))
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - task: PublishBuildArtifacts@1
     displayName: Publish Release Notes
