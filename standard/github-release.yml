@@ -9,11 +9,11 @@ steps:
       specificBuildWithTriggering: true
       downloadType: single
       artifactName: Release Notes
-      pipelineId: Github Draft Release
+      pipelineId: GitHub_Draft_Release
       targetPath: $(Build.ArtifactStagingDirectory)
 
   - task: GitHubRelease@0
-    displayName: 'Update GitHub Release'
+    displayName: 'Update GitHub_Release'
     inputs:
       gitHubConnection: github
       action: edit

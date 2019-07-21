@@ -118,7 +118,7 @@ steps:
 
       $notes | Out-File $outfile
 
-    displayName: 'Get up to date changeset details from GitHub Release'
+    displayName: 'Get up to date changeset details from GitHub_Release'
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), ne(variables['GitVersion.MajorMinorPatch'], variables['GitVersion.SemVer']))
 
   - task: PublishBuildArtifacts@1
