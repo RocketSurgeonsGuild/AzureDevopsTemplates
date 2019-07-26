@@ -1,6 +1,6 @@
 parameters:
-  DotNetVersion: "2.2.300"
-  DotNet3Version: "3.0.100-preview6-012264"
+  DotNetVersion: "2.2.401"
+  DotNet3Version: "3.0.100-preview7-012821"
 
 steps:
   - task: DownloadBuildArtifacts@0

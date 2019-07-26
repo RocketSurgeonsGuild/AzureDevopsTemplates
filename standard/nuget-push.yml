@@ -1,5 +1,5 @@
 parameters:
-  NuGetVersion: "5.1.0"
+  NuGetVersion: "5.2.0"
   Artifacts: $(Build.ArtifactStagingDirectory)
   AllowPackageConflicts: 'true'
   MyGetFeed: 'myget.org'

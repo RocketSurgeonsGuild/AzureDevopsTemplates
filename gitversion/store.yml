@@ -5,7 +5,7 @@
 parameters:
   targetPath: "$(Build.ArtifactStagingDirectory)/gitversion/"
   version: "4.0.0"
-  NuGetVersion: "5.1.0"
+  NuGetVersion: "5.2.0"
 
 steps:
   - task: NuGetToolInstaller@1
