@@ -39,7 +39,7 @@ steps:
   env:
     COVERAGE: ${{ parameters.Coverage }}
 
-- bash: bash <(curl -s https://codecov.io/bash) -f "$(Coverage)/**/*.cobertura.xml" -P "$SYSTEM_PULLREQUEST_PULLREQUESTNUMBER"
+- bash: bash <(curl -s https://codecov.io/bash) -f "*.cobertura.xml" -P "$SYSTEM_PULLREQUEST_PULLREQUESTNUMBER"
   env:
     VCS_COMMIT_ID: $(Build.SourceVersion)
     VCS_BRANCH_NAME: $(Build.SourceBranchName)
