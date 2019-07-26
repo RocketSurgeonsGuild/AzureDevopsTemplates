@@ -1,7 +1,7 @@
 parameters:
   Configuration: Release
   Verbosity: Normal
-  DotNetVersion: "2.2.401"
+  DotNetVersion: "2.2.301"
   DotNet3Version: "3.0.100-preview7-012821"
   NuGetVersion: "5.2.0"
   Targets: 'Default'
