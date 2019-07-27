@@ -50,7 +50,7 @@ steps:
   displayName: Publish Logs
   condition: always()
   inputs:
-    PathtoPublish: "$(Artifacts)/srcfolder/"
+    PathtoPublish: "$(Artifacts)/testfolder/"
     ArtifactName: "Test - $(system.phaseName)"
     ArtifactType: "Container"
   env:
