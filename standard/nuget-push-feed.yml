@@ -1,6 +1,6 @@
 parameters:
   NuGetVersion: "5.2.0"
-  Artifacts: $(Build.ArtifactStagingDirectory)
+  Artifacts: "$(Pipeline.Workspace)/nuget/"
   FeedId: ''
   AllowPackageConflicts: 'true'
   AccessToken: '$(System.AccessToken)'
@@ -14,6 +14,6 @@ steps:
     displayName: NuGet Push
     inputs:
       command: "push"
-      packagesToPush: ${{ format('{0}/nuget/**/*.nupkg;!{0}/nuget/**/*.symbols.nupkg', parameters.Artifacts) }}
+      packagesToPush: "${{ parameters.Artifacts }}/**/*.nupkg;!${{ parameters.Artifacts }}/**/*.symbols.nupkg"
       feedPublish: ${{ parameters.FeedId }}
       allowPackageConflicts: ${{ parameters.AllowPackageConflicts }}
