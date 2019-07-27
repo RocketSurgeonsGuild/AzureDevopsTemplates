@@ -3,7 +3,6 @@
 #   This allows subsequent jobs to include the cake information without explictly requiring gitversion to be run.
 #
 parameters:
-  targetPath: "$(Build.ArtifactStagingDirectory)/gitversion/"
   version: "4.0.0"
   NuGetVersion: "5.2.0"
 
@@ -24,8 +23,8 @@ steps:
   - task: RocketSurgeonsGuild.variable-tools.SerializeVariables.SerializeVariables@1
     displayName: "Serialize GitVersion Variables"
     inputs:
-      filename: ${{ format('{0}/gitversion.json', parameters.targetPath) }}
+      filename: "$(Build.ArtifactStagingDirectory)/gitversion/gitversion.json"
       prefixes: GITVERSION
-  - publish: ${{ parameters.targetPath }}
+  - publish: "$(Build.ArtifactStagingDirectory)/gitversion/"
     displayName: "Publish GitVersion Variables"
     artifact: gitversion
