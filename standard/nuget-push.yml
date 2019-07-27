@@ -1,6 +1,6 @@
 parameters:
   NuGetVersion: "5.2.0"
-  Artifacts: $(Build.ArtifactStagingDirectory)
+  Artifacts: "$(Pipeline.Workspace)/nuget/"
   AllowPackageConflicts: 'true'
   MyGetFeed: 'myget.org'
   NuGetFeed: 'nuget.org'
@@ -17,7 +17,7 @@ steps:
     inputs:
       command: push
       nuGetFeedType: external
-      packagesToPush: ${{ format('{0}/nuget/**/*.nupkg;!{0}/nuget/**/*.symbols.nupkg', parameters.Artifacts) }}
+      packagesToPush: "${{ parameters.Artifacts }}/**/*.nupkg;!${{ parameters.Artifacts }}/**/*.symbols.nupkg"
       publishFeedCredentials: ${{ parameters.MyGetFeed }}
       allowPackageConflicts: ${{ parameters.AllowPackageConflicts }}
     condition: and(succeeded(), or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranch'], 'refs/heads/master')))
@@ -27,7 +27,7 @@ steps:
       inputs:
         command: push
         nuGetFeedType: external
-        packagesToPush: ${{ format('{0}/nuget/**/*.nupkg;!{0}/nuget/**/*.symbols.nupkg', parameters.Artifacts) }}
+        packagesToPush: "${{ parameters.Artifacts }}/**/*.nupkg;!${{ parameters.Artifacts }}/**/*.symbols.nupkg"
         publishFeedCredentials: ${{ parameters.GitHubFeed }}
         allowPackageConflicts: ${{ parameters.AllowPackageConflicts }}
       condition: and(succeeded(), or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranch'], 'refs/heads/master')))
@@ -36,7 +36,7 @@ steps:
     inputs:
       command: push
       nuGetFeedType: external
-      packagesToPush: ${{ format('{0}/nuget/**/*.nupkg;!{0}/nuget/**/*.symbols.nupkg', parameters.Artifacts) }}
+      packagesToPush: "${{ parameters.Artifacts }}/**/*.nupkg;!${{ parameters.Artifacts }}/**/*.symbols.nupkg"
       publishFeedCredentials: ${{ parameters.NuGetFeed }}
       allowPackageConflicts: ${{ parameters.AllowPackageConflicts }}
     condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
