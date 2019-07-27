@@ -9,8 +9,8 @@ steps:
   - download: current
     displayName: "Download GitVersion Variables"
     artifact: gitversion
-    path: ${{ parameters.targetPath }}
+    patterns: "**/*.json"
   - task: RocketSurgeonsGuild.variable-tools.DeserializeVariables.DeserializeVariables@1
     displayName: 'Deserialize GitVersion'
     inputs:
-      jsonfiles: ${{ format('{0}/**/gitversion.json', parameters.targetPath) }}
+      jsonfiles: "${{ parameters.targetPath }}/**/gitversion.json"
