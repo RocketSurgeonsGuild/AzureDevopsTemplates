@@ -3,7 +3,7 @@
 #   This allows subsequent jobs to include the cake information without explictly requiring gitversion to be run.
 #
 parameters:
-  targetPath: "$(Build.ArtifactStagingDirectory)/gitversion/"
+  targetPath: "$(Build.ArtifactStagingDirectory)/"
 
 steps:
   - download: current
