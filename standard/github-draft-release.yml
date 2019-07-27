@@ -129,3 +129,4 @@ steps:
   - publish: "$(Build.ArtifactStagingDirectory)/releasenotes/"
     displayName: Publish Release Notes
     artifact: "Release Notes"
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
