@@ -41,7 +41,7 @@ steps:
     rootFolderOrFile: 'test'
     includeRootFolder: false
     archiveType: 'zip' # Options: zip, 7z, tar, wim
-    archiveFile: '$(Artifacts)/srcfolder/$(Build.BuildId).zip'
+    archiveFile: '$(Artifacts)/testfolder/$(Build.BuildId).zip'
     replaceExistingArchive: true
     # verbose: # Optional
     # quiet: # Optional
