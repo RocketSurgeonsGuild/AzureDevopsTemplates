@@ -16,6 +16,46 @@ steps:
   env:
     ARTIFACTS: ${{ parameters.Artifacts }}
 
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: 'src'
+    includeRootFolder: false
+    archiveType: 'zip' # Options: zip, 7z, tar, wim
+    archiveFile: '$(Artifacts)/srcfolder/$(Build.BuildId).zip'
+    replaceExistingArchive: true
+    # verbose: # Optional
+    # quiet: # Optional
+
+- task: PublishBuildArtifacts@1
+  displayName: Publish Logs
+  condition: always()
+  inputs:
+    PathtoPublish: "$(Artifacts)/srcfolder/"
+    ArtifactName: "Src - $(system.phaseName)"
+    ArtifactType: "Container"
+  env:
+    ARTIFACTS: ${{ parameters.Artifacts }}
+
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: 'test'
+    includeRootFolder: false
+    archiveType: 'zip' # Options: zip, 7z, tar, wim
+    archiveFile: '$(Artifacts)/srcfolder/$(Build.BuildId).zip'
+    replaceExistingArchive: true
+    # verbose: # Optional
+    # quiet: # Optional
+
+- task: PublishBuildArtifacts@1
+  displayName: Publish Logs
+  condition: always()
+  inputs:
+    PathtoPublish: "$(Artifacts)/srcfolder/"
+    ArtifactName: "Test - $(system.phaseName)"
+    ArtifactType: "Container"
+  env:
+    ARTIFACTS: ${{ parameters.Artifacts }}
+
 - task: PublishTestResults@2
   displayName: Publish Tests (VSTest)
   condition: always()
