@@ -46,4 +46,5 @@ jobs:
       - ${{ if eq(parameters.pushNuget, 'true') }}:
         - template: ../standard/nuget-push-feed.yml
           parameters:
+            Artifacts: "$(Artifacts)/nuget/"
             FeedId: ${{ parameters.FeedId }}
