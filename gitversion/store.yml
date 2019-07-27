@@ -26,9 +26,6 @@ steps:
     inputs:
       filename: ${{ format('{0}/gitversion.json', parameters.targetPath) }}
       prefixes: GITVERSION
-  # Should this use Pipeline Publish Artifact ??
-  - task: PublishBuildArtifacts@1
+  - publish: ${{ parameters.targetPath }}
     displayName: "Publish GitVersion Variables"
-    inputs:
-      pathtoPublish: ${{ parameters.targetPath }}
-      artifactName: gitversion
+    artifact: gitversion

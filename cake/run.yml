@@ -19,9 +19,4 @@ steps:
   inputs:
     command: custom
     custom: cake
-    arguments: ${{ format('{0} --Target="{1}" --Configuration="$(Configuration)" --Artifacts="$(Artifacts)" --Coverage="$(Coverage)" --verbosity="$(Verbosity)"', parameters.Script, parameters.Target) }}
-  env:
-    CONFIGURATION: ${{ parameters.Configuration }}
-    ARTIFACTS: ${{ parameters.Artifacts }}
-    COVERAGE: ${{ parameters.Coverage }}
-    VERBOSITY: ${{ parameters.Verbosity }}
+    arguments: ${{ format('{0} --Target="{1}" --Configuration="${{ parameters.Configuration }}" --Artifacts="${{ parameters.Artifacts }}" --Coverage="${{ parameters.Coverage }}" --verbosity="${{ parameters.Verbosity }}"', parameters.Script, parameters.Target) }}

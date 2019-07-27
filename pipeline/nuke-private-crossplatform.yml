@@ -66,14 +66,9 @@ jobs:
       - Linux
       - Windows
     steps:
-      - task: DownloadBuildArtifacts@0
+      - download: current
         displayName: "Download NuGet Packages"
-        inputs:
-          specificBuildWithTriggering: true
-          downloadType: single
-          artifactName: 'Nupkg - Windows'
-          pipelineId: Windows
-          targetPath: $(Build.ArtifactStagingDirectory)/nuget/
+        artifact: 'Nupkg - Windows'
       - template: ../standard/nuget-push-feed.yml
         parameters:
           FeedId: ${{ parameters.FeedId }}

@@ -3,14 +3,9 @@ parameters:
   DotNet3Version: "3.0.100-preview7-012821"
 
 steps:
-  - task: DownloadBuildArtifacts@0
+  - download: current
     displayName: "Download Release Notes"
-    inputs:
-      specificBuildWithTriggering: true
-      downloadType: single
-      artifactName: Release Notes
-      pipelineId: GitHub_Draft_Release
-      targetPath: $(Build.ArtifactStagingDirectory)
+    artifact: 'Release Notes'
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - task: GitHubRelease@0

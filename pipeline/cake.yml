@@ -84,13 +84,9 @@ jobs:
         - GitHub_Draft_Release
       steps:
         # - checkout: none
-        - task: DownloadBuildArtifacts@0
+        - download: current
           displayName: "Download NuGet Packages"
-          inputs:
-            specificBuildWithTriggering: true
-            downloadType: single
-            artifactName: 'Nupkg - Windows'
-            downloadPath: $(Build.ArtifactStagingDirectory)/nuget/
+          artifact: 'Nupkg - Windows'
         - template: ../standard/nuget-push.yml
           parameters:
             NuGetVersion: ${{ parameters.NuGetVersion }}

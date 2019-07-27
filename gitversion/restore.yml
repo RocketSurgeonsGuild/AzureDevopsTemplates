@@ -6,15 +6,9 @@ parameters:
   targetPath: "$(Build.ArtifactStagingDirectory)/gitversion/"
 
 steps:
-  # Should this use Pipeline Download Artifact ??
-  - task: DownloadBuildArtifacts@0
+  - download: current
     displayName: "Download GitVersion Variables"
-    inputs:
-      specificBuildWithTriggering: true
-      downloadType: single
-      artifactName: gitversion
-      pipelineId: GitVersion
-      targetPath: ${{ parameters.targetPath }}
+    artifact: gitversion
   - task: RocketSurgeonsGuild.variable-tools.DeserializeVariables.DeserializeVariables@1
     displayName: 'Deserialize GitVersion'
     inputs:

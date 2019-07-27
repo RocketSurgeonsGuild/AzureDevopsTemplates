@@ -126,10 +126,6 @@ steps:
     displayName: 'Get up to date changeset details from GitHub_Release'
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
-  - task: PublishBuildArtifacts@1
+  - publish: "$(Build.ArtifactStagingDirectory)/releasenotes/"
     displayName: Publish Release Notes
-    inputs:
-      PathtoPublish: "$(Build.ArtifactStagingDirectory)/releasenotes/"
-      ArtifactName: "Release Notes"
-      ArtifactType: "Container"
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    artifact: "Release Notes"
