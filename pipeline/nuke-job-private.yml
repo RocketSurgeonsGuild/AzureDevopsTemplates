@@ -1,7 +1,8 @@
 parameters:
   Configuration: Release
   Verbosity: Normal
-  DotNetVersion: "2.2.301"
+  DotNet21Version: "2.1.801"
+  DotNetVersion: "2.2.401"
   DotNet3Version: "3.0.100-preview7-012821"
   NuGetVersion: "5.2.0"
   Targets: 'Default'
@@ -29,6 +30,7 @@ jobs:
         - template: ../standard/nuget-source.yml
       - template: ../nuke/install.yml
         parameters:
+          DotNet21Version: ${{ parameters.DotNet21Version }}
           DotNetVersion: ${{ parameters.DotNetVersion }}
           DotNet3Version: ${{ parameters.DotNet3Version }}
           NuGetVersion: ${{ parameters.NuGetVersion }}
