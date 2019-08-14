@@ -1,6 +1,6 @@
 parameters:
   DotNetVersion: "2.2.401"
-  DotNet3Version: "3.0.100-preview7-012821"
+  DotNet3Version: "3.0.100-preview8-013656"
 
 steps:
   - task: UseDotNet@2
