@@ -5,7 +5,7 @@ parameters:
 steps:
   - task: CacheBeta@0
     inputs:
-      key: nuget | $(Agent.OS)
+      key: nuget | release
       path: ${{ parameters.NuGetPackages }}
     displayName: Cache NuGet packages
 
