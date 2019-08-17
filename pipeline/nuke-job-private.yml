@@ -27,7 +27,7 @@ jobs:
         vmImage: ${{ parameters.vmImage }}
     variables:
       - name: NUGET_PACKAGES
-      - value: ${{ parameters.NuGetPackages }}
+        value: ${{ parameters.NuGetPackages }}
     #   - ${{ if and(ne(parameters.NuGetFallbackPackages, ''), eq(parameters.vmImage, 'macOS-10.14')) }}:
     #       - name: NUGET_FALLBACK_PACKAGES
     #       - value: "~/.nuget/packages"
