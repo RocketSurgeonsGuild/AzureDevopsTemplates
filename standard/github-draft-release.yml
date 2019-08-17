@@ -3,6 +3,12 @@ parameters:
   DotNet3Version: "3.0.100-preview8-013656"
 
 steps:
+  - task: CacheBeta@0
+    inputs:
+      key: nuget | $(Agent.OS)
+      path: ${{ parameters.NuGetPackages }}
+    displayName: Cache NuGet packages
+
   - task: UseDotNet@2
     displayName: Install dotnet ${{ parameters.DotNetVersion }}
     inputs:
