@@ -8,7 +8,7 @@ parameters:
 steps:
   - task: CacheBeta@0
     inputs:
-      key: $(Build.DefinitionName) | $(Agent.OS) | nuget | NuGet.config
+      key: '"$(Build.DefinitionName)" | $(Agent.OS) | nuget | NuGet.config'
       path: ${{ parameters.NuGetPackages }}
     displayName: Cache NuGet packages
 
