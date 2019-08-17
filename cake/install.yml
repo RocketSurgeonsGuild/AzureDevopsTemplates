@@ -9,7 +9,7 @@ parameters:
 steps:
   - task: CacheBeta@0
     inputs:
-      key: nuget | **/packages.lock.json
+      key: nuget | $(Agent.OS)
       path: ${{ parameters.NuGetPackages }}
     displayName: Cache NuGet packages
 
