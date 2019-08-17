@@ -7,11 +7,11 @@ parameters:
   RestorePackageConfig: false
 
 steps:
-  - task: CacheBeta@0
-    inputs:
-      key: '$(Agent.OS) | nuget | NuGet.config'
-      path: ${{ parameters.NuGetPackages }}
-    displayName: Cache NuGet packages
+  # - task: CacheBeta@0
+  #   inputs:
+  #     key: '$(Agent.OS) | nuget | NuGet.config'
+  #     path: ${{ parameters.NuGetPackages }}
+  #   displayName: Cache NuGet packages
 
   - task: UseDotNet@2
     displayName: Install dotnet ${{ parameters.DotNet21Version }}

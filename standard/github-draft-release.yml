@@ -4,11 +4,11 @@ parameters:
   NuGetPackages: $(Pipeline.Workspace)/.nuget/packages
 
 steps:
-  - task: CacheBeta@0
-    inputs:
-      key: 'nuget | release | NuGet.config'
-      path: ${{ parameters.NuGetPackages }}
-    displayName: Cache NuGet packages
+  # - task: CacheBeta@0
+  #   inputs:
+  #     key: 'nuget | release | NuGet.config'
+  #     path: ${{ parameters.NuGetPackages }}
+  #   displayName: Cache NuGet packages
 
   - task: UseDotNet@2
     displayName: Install dotnet ${{ parameters.DotNetVersion }}
