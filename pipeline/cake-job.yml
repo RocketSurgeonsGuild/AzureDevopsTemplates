@@ -12,6 +12,7 @@ parameters:
   vmImage: ""
   pushNuget: false
   NuGetPackages: $(Pipeline.Workspace)/.nuget/packages
+  NuGetFallbackPackages: ""
   RestorePackageConfig: false
 jobs:
   - job: ${{ parameters.name }}

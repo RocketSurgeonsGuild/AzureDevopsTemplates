@@ -11,6 +11,7 @@ parameters:
   vmImage: ""
   pushNuget: false
   NuGetPackages: $(Pipeline.Workspace)/.nuget/packages
+  NuGetFallbackPackages: ""
   RestorePackageConfig: false
 jobs:
   - job: ${{ parameters.name }}
@@ -18,12 +19,12 @@ jobs:
     pool:
       vmImage: ${{ parameters.vmImage }}
     variables:
-      ${{ if and(ne(parameters.NuGetFallbackPackages, ''), eq(parameters.vmImage, 'macOS-10.14')) }}:
-        - NUGET_FALLBACK_PACKAGES: "~/.nuget/packages"
-      ${{ if and(ne(parameters.NuGetFallbackPackages, ''), eq(parameters.vmImage, 'Ubuntu-16.04')) }}:
-        - NUGET_FALLBACK_PACKAGES: "~/.nuget/packages"
-      ${{ if and(ne(parameters.NuGetFallbackPackages, ''), startsWith(parameters.vmImage, 'windows')) }}:
-        - NUGET_FALLBACK_PACKAGES: '%userprofile%\.nuget\packages'
+      ? ${{ if and(ne(parameters.NuGetFallbackPackages, ''), eq(parameters.vmImage, 'macOS-10.14')) }}
+      : - NUGET_FALLBACK_PACKAGES: "~/.nuget/packages"
+      ? ${{ if and(ne(parameters.NuGetFallbackPackages, ''), eq(parameters.vmImage, 'Ubuntu-16.04')) }}
+      : - NUGET_FALLBACK_PACKAGES: "~/.nuget/packages"
+      ? ${{ if and(ne(parameters.NuGetFallbackPackages, ''), startsWith(parameters.vmImage, 'windows')) }}
+      : - NUGET_FALLBACK_PACKAGES: '%userprofile%\.nuget\packages'
       ${{ if ne(parameters.NuGetFallbackPackages, '') }}:
         - NUGET_FALLBACK_PACKAGES: ${{ parameters.NuGetFallbackPackages }}
     steps:

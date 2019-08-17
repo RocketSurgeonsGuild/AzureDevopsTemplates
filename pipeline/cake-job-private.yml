@@ -16,6 +16,7 @@ parameters:
   NuGetSource: ""
   NuGetConfig: "NuGet.config"
   NuGetPackages: $(Pipeline.Workspace)/.nuget/packages
+  NuGetFallbackPackages: ""
   RestorePackageConfig: false
 jobs:
   - job: ${{ parameters.name }}
