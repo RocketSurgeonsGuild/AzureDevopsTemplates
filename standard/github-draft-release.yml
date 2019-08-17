@@ -1,6 +1,7 @@
 parameters:
   DotNetVersion: "2.2.401"
   DotNet3Version: "3.0.100-preview8-013656"
+  NuGetPackages: $(Pipeline.Workspace)/.nuget/packages
 
 steps:
   - task: CacheBeta@0
