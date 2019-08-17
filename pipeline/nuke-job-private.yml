@@ -28,18 +28,18 @@ jobs:
     variables:
       - name: NUGET_PACKAGES
         value: ${{ parameters.NuGetPackages }}
-    #   - ${{ if and(ne(parameters.NuGetFallbackPackages, ''), eq(parameters.vmImage, 'macOS-10.14')) }}:
-    #       - name: NUGET_FALLBACK_PACKAGES
-    #       - value: "~/.nuget/packages"
-    #   - ${{ if and(ne(parameters.NuGetFallbackPackages, ''), eq(parameters.vmImage, 'Ubuntu-16.04')) }}:
-    #       - name: NUGET_FALLBACK_PACKAGES
-    #       - value: "~/.nuget/packages"
-    #   - ${{ if and(ne(parameters.NuGetFallbackPackages, ''), startsWith(parameters.vmImage, 'windows')) }}:
-    #       - name: NUGET_FALLBACK_PACKAGES
-    #       - value: '%userprofile%\.nuget\packages'
-    #   - ${{ if ne(parameters.NuGetFallbackPackages, '') }}:
-    #       - name: NUGET_FALLBACK_PACKAGES
-    #       - value: ${{ parameters.NuGetFallbackPackages }}
+      - ${{ if and(ne(parameters.NuGetFallbackPackages, ''), eq(parameters.vmImage, 'macOS-10.14')) }}:
+          - name: NUGET_FALLBACK_PACKAGES
+          - value: "~/.nuget/packages"
+      - ${{ if and(ne(parameters.NuGetFallbackPackages, ''), eq(parameters.vmImage, 'Ubuntu-16.04')) }}:
+          - name: NUGET_FALLBACK_PACKAGES
+          - value: "~/.nuget/packages"
+      - ${{ if and(ne(parameters.NuGetFallbackPackages, ''), startsWith(parameters.vmImage, 'windows')) }}:
+          - name: NUGET_FALLBACK_PACKAGES
+          - value: '%userprofile%\.nuget\packages'
+      - ${{ if ne(parameters.NuGetFallbackPackages, '') }}:
+          - name: NUGET_FALLBACK_PACKAGES
+          - value: ${{ parameters.NuGetFallbackPackages }}
     steps:
       - template: ../gitversion/restore.yml
       - template: ../standard/dotnet-restore.yml
