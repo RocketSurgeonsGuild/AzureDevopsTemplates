@@ -3,29 +3,36 @@ parameters:
   DotNetVersion: "2.2.401"
   DotNet3Version: "3.0.100-preview8-013656"
   NuGetVersion: "5.2.0"
+  NuGetPackages: $(Pipeline.Workspace)/.nuget/packages
 
 steps:
-- task: UseDotNet@2
-  displayName: Install dotnet ${{ parameters.DotNet21Version }}
-  inputs:
-    packageType: 'sdk'
-    version: ${{ parameters.DotNet21Version }}
+  - task: CacheBeta@0
+    inputs:
+      key: nuget | **/packages.lock.json
+      path: ${{ parameters.NuGetPackages }}
+    displayName: Cache NuGet packages
 
-- task: UseDotNet@2
-  displayName: Install dotnet ${{ parameters.DotNetVersion }}
-  inputs:
-    packageType: 'sdk'
-    version: ${{ parameters.DotNetVersion }}
+  - task: UseDotNet@2
+    displayName: Install dotnet ${{ parameters.DotNet21Version }}
+    inputs:
+      packageType: "sdk"
+      version: ${{ parameters.DotNet21Version }}
 
-- task: UseDotNet@2
-  displayName: Install dotnet ${{ parameters.DotNet3Version }}
-  inputs:
-    packageType: 'sdk'
-    version: ${{ parameters.DotNet3Version }}
+  - task: UseDotNet@2
+    displayName: Install dotnet ${{ parameters.DotNetVersion }}
+    inputs:
+      packageType: "sdk"
+      version: ${{ parameters.DotNetVersion }}
 
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet tool restore'
-  inputs:
-    command: custom
-    custom: tool
-    arguments: 'restore'
+  - task: UseDotNet@2
+    displayName: Install dotnet ${{ parameters.DotNet3Version }}
+    inputs:
+      packageType: "sdk"
+      version: ${{ parameters.DotNet3Version }}
+
+  - task: DotNetCoreCLI@2
+    displayName: "dotnet tool restore"
+    inputs:
+      command: custom
+      custom: tool
+      arguments: "restore"

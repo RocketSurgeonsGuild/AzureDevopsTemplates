@@ -3,42 +3,49 @@ parameters:
   DotNetVersion: "2.2.401"
   DotNet3Version: "3.0.100-preview8-013656"
   NuGetVersion: "5.2.0"
+  NuGetPackages: $(Pipeline.Workspace)/.nuget/packages
   RestorePackageConfig: false
 
 steps:
-- task: UseDotNet@2
-  displayName: Install dotnet ${{ parameters.DotNet21Version }}
-  inputs:
-    packageType: 'sdk'
-    version: ${{ parameters.DotNet21Version }}
-
-- task: UseDotNet@2
-  displayName: Install dotnet ${{ parameters.DotNetVersion }}
-  inputs:
-    packageType: 'sdk'
-    version: ${{ parameters.DotNetVersion }}
-
-- task: UseDotNet@2
-  displayName: Install dotnet ${{ parameters.DotNet3Version }}
-  inputs:
-    packageType: 'sdk'
-    version: ${{ parameters.DotNet3Version }}
-
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet tool restore'
-  inputs:
-    command: custom
-    custom: tool
-    arguments: 'restore'
-
-- ${{ if eq(parameters.RestorePackageConfig, true) }}:
-  - task: NuGetToolInstaller@1
-    displayName: "Get NuGet"
+  - task: CacheBeta@0
     inputs:
-      versionSpec: ${{ parameters.NuGetVersion }}
-  - task: NuGetCommand@2
-    displayName: 'Cake restore packages.config'
+      key: nuget | **/packages.lock.json
+      path: ${{ parameters.NuGetPackages }}
+    displayName: Cache NuGet packages
+
+  - task: UseDotNet@2
+    displayName: Install dotnet ${{ parameters.DotNet21Version }}
+    inputs:
+      packageType: "sdk"
+      version: ${{ parameters.DotNet21Version }}
+
+  - task: UseDotNet@2
+    displayName: Install dotnet ${{ parameters.DotNetVersion }}
+    inputs:
+      packageType: "sdk"
+      version: ${{ parameters.DotNetVersion }}
+
+  - task: UseDotNet@2
+    displayName: Install dotnet ${{ parameters.DotNet3Version }}
+    inputs:
+      packageType: "sdk"
+      version: ${{ parameters.DotNet3Version }}
+
+  - task: DotNetCoreCLI@2
+    displayName: "dotnet tool restore"
     inputs:
       command: custom
-      feedsToUse: config
-      arguments: install tools/packages.config -ExcludeVersion -OutputDirectory tools
+      custom: tool
+      arguments: "restore"
+
+  - ${{ if eq(parameters.RestorePackageConfig, true) }}:
+      - task: NuGetToolInstaller@1
+        displayName: "Get NuGet"
+        inputs:
+          versionSpec: ${{ parameters.NuGetVersion }}
+      - task: NuGetCommand@2
+        displayName: "Cake restore packages.config"
+        inputs:
+          command: custom
+          feedsToUse: config
+          arguments: install tools/packages.config -ExcludeVersion -OutputDirectory tools

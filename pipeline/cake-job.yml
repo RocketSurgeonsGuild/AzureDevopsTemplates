@@ -5,18 +5,28 @@ parameters:
   DotNetVersion: "2.2.401"
   DotNet3Version: "3.0.100-preview8-013656"
   NuGetVersion: "5.2.0"
-  Script: 'cakefile.cake'
-  Target: 'Default'
-  name: ''
-  dependsOn: ''
-  vmImage: ''
+  Script: "cakefile.cake"
+  Target: "Default"
+  name: ""
+  dependsOn: ""
+  vmImage: ""
   pushNuget: false
+  NuGetPackages: $(Pipeline.Workspace)/.nuget/packages
   RestorePackageConfig: false
 jobs:
   - job: ${{ parameters.name }}
     dependsOn: ${{ parameters.dependsOn }}
     pool:
       vmImage: ${{ parameters.vmImage }}
+    variables:
+      ? ${{ if and(ne(parameters.NuGetFallbackPackages, ''), eq(parameters.vmImage, 'macOS-10.14')) }}
+      : - NUGET_FALLBACK_PACKAGES: "~/.nuget/packages"
+      ? ${{ if and(ne(parameters.NuGetFallbackPackages, ''), eq(parameters.vmImage, 'Ubuntu-16.04')) }}
+      : - NUGET_FALLBACK_PACKAGES: "~/.nuget/packages"
+      ? ${{ if and(ne(parameters.NuGetFallbackPackages, ''), startsWith(parameters.vmImage, 'windows')) }}
+      : - NUGET_FALLBACK_PACKAGES: '%userprofile%\.nuget\packages'
+      ${{ if ne(parameters.NuGetFallbackPackages, '') }}:
+        - NUGET_FALLBACK_PACKAGES: ${{ parameters.NuGetFallbackPackages }}
     steps:
       - template: ../gitversion/restore.yml
       - template: ../cake/install.yml
@@ -25,6 +35,7 @@ jobs:
           DotNetVersion: ${{ parameters.DotNetVersion }}
           DotNet3Version: ${{ parameters.DotNet3Version }}
           NuGetVersion: ${{ parameters.NuGetVersion }}
+          NuGetPackages: ${{ parameters.NuGetPackages }}
           RestorePackageConfig: ${{ parameters.RestorePackageConfig }}
       - template: ../cake/run.yml
         parameters:
@@ -36,6 +47,6 @@ jobs:
         parameters:
           Configuration: ${{ parameters.Configuration }}
       - ${{ if eq(parameters.pushNuget, 'true') }}:
-        - template: ../standard/nuget-push.yml
-          parameters:
-            Artifacts: "$(Artifacts)/nuget/"
+          - template: ../standard/nuget-push.yml
+            parameters:
+              Artifacts: "$(Artifacts)/nuget/"
