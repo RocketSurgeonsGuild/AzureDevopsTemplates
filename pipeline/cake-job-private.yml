@@ -46,6 +46,8 @@ jobs:
       - template: ../standard/dotnet-restore.yml
       - ${{ if ne(parameters.NuGetSource, '') }}:
           - template: ../standard/nuget-source.yml
+            parameters:
+              NuGetSource: ${{ parameters.NuGetSource }}
       - template: ../cake/install.yml
         parameters:
           DotNet21Version: ${{ parameters.DotNet21Version }}
