@@ -69,7 +69,7 @@ jobs:
           Postfix: ' - $(MATRIX_NAME)'
 
   - ${{ if eq(parameters.debug, 'true') }}:
-    - job: Publish NuGet Packages
+    - job: Publish_NuGet_Packages
       pool:
         vmImage: "windows-latest"
       dependsOn:

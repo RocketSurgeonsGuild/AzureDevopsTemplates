@@ -46,7 +46,7 @@ jobs:
               DotNetVersion: ${{ parameters.DotNetVersion }}
               DotNet3Version: ${{ parameters.DotNet3Version }}
 
-    - job: Publish NuGet Packages
+    - job: Publish_NuGet_Packages
       pool:
         vmImage: "windows-latest"
       dependsOn:

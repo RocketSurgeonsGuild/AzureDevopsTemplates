@@ -57,7 +57,7 @@ jobs:
           Target: ${{ parameters.Target }}
           Postfix: ''
 
-  - job: Publish NuGet Packages
+  - job: Publish_NuGet_Packages
     pool:
       vmImage: "windows-latest"
     dependsOn:
