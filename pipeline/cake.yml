@@ -35,6 +35,7 @@ jobs:
 
   - ${{ if ne(variables['System.PullRequest.IsFork'], 'true') }}:
     - job: GitHub_Draft_Release
+      displayName: 'GitHub Draft Release'
       pool:
         vmImage: "windows-latest"
       dependsOn:
@@ -49,6 +50,7 @@ jobs:
               DotNet3Version: ${{ parameters.DotNet3Version }}
 
     - job: Publish_NuGet_Packages
+      displayName: 'Publish NuGet Packages'
       pool:
         vmImage: "windows-latest"
       dependsOn:
@@ -67,6 +69,7 @@ jobs:
             GitHubPackages: ${{ parameters.GitHubPackages }}
 
     - job: GitHub_Release
+      displayName: 'GitHub Release'
       pool:
         vmImage: "windows-latest"
       dependsOn:

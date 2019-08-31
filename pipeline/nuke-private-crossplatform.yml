@@ -64,6 +64,7 @@ jobs:
           Postfix: ' - $(MATRIX_NAME)'
 
   - job: Publish_NuGet_Packages
+    displayName: 'Publish NuGet Packages'
     pool:
       vmImage: "windows-latest"
     dependsOn:
