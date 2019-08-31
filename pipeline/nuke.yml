@@ -12,7 +12,7 @@ parameters:
 jobs:
   - job: GitVersion
     pool:
-      vmImage: windows-2019
+      vmImage: windows-latest
     steps:
       - template: ../gitversion/store.yml
         parameters:
@@ -23,8 +23,7 @@ jobs:
     parameters:
       name: 'macOS'
       dependsOn: GitVersion
-      vmImage: "macOS-10.14"
-      pushNuget: false
+      vmImage: "macOS-latest"
       Configuration: ${{ parameters.Configuration }}
       Verbosity: ${{ parameters.Verbosity }}
       DotNet21Version: ${{ parameters.DotNet21Version }}
@@ -37,8 +36,7 @@ jobs:
     parameters:
       name: 'Linux'
       dependsOn: GitVersion
-      vmImage: "Ubuntu-16.04"
-      pushNuget: false
+      vmImage: "ubuntu-latest"
       Configuration: ${{ parameters.Configuration }}
       Verbosity: ${{ parameters.Verbosity }}
       DotNet21Version: ${{ parameters.DotNet21Version }}
@@ -51,8 +49,7 @@ jobs:
     parameters:
       name: 'Windows'
       dependsOn: GitVersion
-      vmImage: "windows-2019"
-      pushNuget: false
+      vmImage: "windows-latest"
       Configuration: ${{ parameters.Configuration }}
       Verbosity: ${{ parameters.Verbosity }}
       DotNet21Version: ${{ parameters.DotNet21Version }}
@@ -64,7 +61,7 @@ jobs:
   - ${{ if ne(variables['System.PullRequest.IsFork'], 'true') }}:
     - job: GitHub_Draft_Release
       pool:
-        vmImage: "windows-2019"
+        vmImage: "windows-latest"
       dependsOn:
         - GitVersion
       steps:
@@ -76,9 +73,9 @@ jobs:
               DotNetVersion: ${{ parameters.DotNetVersion }}
               DotNet3Version: ${{ parameters.DotNet3Version }}
 
-    - job: Publish
+    - job: Publish NuGet Packages
       pool:
-        vmImage: "windows-2019"
+        vmImage: "windows-latest"
       dependsOn:
         - macOS
         - Linux
@@ -98,7 +95,7 @@ jobs:
 
     - job: GitHub_Release
       pool:
-        vmImage: "windows-2019"
+        vmImage: "windows-latest"
       dependsOn:
         - macOS
         - Linux

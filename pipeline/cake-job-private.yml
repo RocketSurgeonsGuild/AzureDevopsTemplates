@@ -11,7 +11,7 @@ parameters:
   poolName: ""
   dependsOn: ""
   vmImage: ""
-  pushNuget: false
+  Postfix: ""
   FeedId: ""
   NuGetSource: ""
   NuGetConfig: "NuGet.config"
@@ -29,13 +29,13 @@ jobs:
     # variables:
     #   - name: NUGET_PACKAGES
     #     value: ${{ parameters.NuGetPackages }}
-    #   - ${{ if and(ne(parameters.NuGetFallbackPackages, ''), eq(parameters.vmImage, 'macOS-10.14')) }}:
+    #   - ${{ if and(ne(parameters.NuGetFallbackPackages, ''), eq(parameters.vmImage, 'macOS-latest')) }}:
     #       - name: NUGET_FALLBACK_PACKAGES
     #       - value: "~/.nuget/packages"
-    #   - ${{ if and(ne(parameters.NuGetFallbackPackages, ''), eq(parameters.vmImage, 'Ubuntu-16.04')) }}:
+    #   - ${{ if and(ne(parameters.NuGetFallbackPackages, ''), eq(parameters.vmImage, 'ubuntu-latest')) }}:
     #       - name: NUGET_FALLBACK_PACKAGES
     #       - value: "~/.nuget/packages"
-    #   - ${{ if and(ne(parameters.NuGetFallbackPackages, ''), startsWith(parameters.vmImage, 'windows')) }}:
+    #   - ${{ if and(ne(parameters.NuGetFallbackPackages, ''), startsWith(parameters.vmImage, 'windows-latest')) }}:
     #       - name: NUGET_FALLBACK_PACKAGES
     #       - value: '%userprofile%\.nuget\packages'
     #   - ${{ if ne(parameters.NuGetFallbackPackages, '') }}:
@@ -62,11 +62,20 @@ jobs:
           Verbosity: ${{ parameters.Verbosity }}
           Script: ${{ parameters.Script }}
           Target: ${{ parameters.Target }}
-      - template: ../publish-artifacts.yml
-        parameters:
-          Configuration: ${{ parameters.Configuration }}
-      - ${{ if eq(parameters.pushNuget, 'true') }}:
-          - template: ../standard/nuget-push-feed.yml
-            parameters:
-              Artifacts: "$(Artifacts)/nuget/"
-              FeedId: ${{ parameters.FeedId }}
+
+      - ${{ if and(eq(parameters.Postfix, ''), or(eq(parameters.name, 'Windows'), eq(parameters.name, 'Linux'), eq(parameters.name, 'macOS'))) }}:
+        - template: ../publish-artifacts.yml
+          parameters:
+            Configuration: ${{ parameters.Configuration }}
+            Postfix: ' - ${{ parameters.name }}'
+
+      - ${{ if or(ne(parameters.Postfix, ''), and(ne(parameters.name, 'Windows'), ne(parameters.name, 'Linux'), ne(parameters.name, 'macOS'))) }}:
+        - template: ../publish-artifacts.yml
+          parameters:
+            Configuration: ${{ parameters.Configuration }}
+            Postfix: ${{ parameters.Postfix }}
+
+      - ${{ if and(eq(parameters.Postfix, ''), and(ne(parameters.name, 'Windows'), ne(parameters.name, 'Linux'), ne(parameters.name, 'macOS'))) }}:
+        - template: ../publish-artifacts.yml
+          parameters:
+            Configuration: ${{ parameters.Configuration }}

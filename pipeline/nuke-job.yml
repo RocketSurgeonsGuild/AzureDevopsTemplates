@@ -9,7 +9,7 @@ parameters:
   name: ""
   dependsOn: ""
   vmImage: ""
-  pushNuget: false
+  Postfix: ' - $(system.phaseName)'
   NuGetPackages: $(Pipeline.Workspace)/.nuget/packages
   NuGetFallbackPackages: ''
   RestorePackageConfig: false
@@ -21,13 +21,13 @@ jobs:
     # variables:
     #   - name: NUGET_PACKAGES
     #     value: ${{ parameters.NuGetPackages }}
-    #   - ${{ if and(ne(parameters.NuGetFallbackPackages, ''), eq(parameters.vmImage, 'macOS-10.14')) }}:
+    #   - ${{ if and(ne(parameters.NuGetFallbackPackages, ''), eq(parameters.vmImage, 'macOS-latest')) }}:
     #       - name: NUGET_FALLBACK_PACKAGES
     #       - value: "~/.nuget/packages"
-    #   - ${{ if and(ne(parameters.NuGetFallbackPackages, ''), eq(parameters.vmImage, 'Ubuntu-16.04')) }}:
+    #   - ${{ if and(ne(parameters.NuGetFallbackPackages, ''), eq(parameters.vmImage, 'ubuntu-latest')) }}:
     #       - name: NUGET_FALLBACK_PACKAGES
     #       - value: "~/.nuget/packages"
-    #   - ${{ if and(ne(parameters.NuGetFallbackPackages, ''), startsWith(parameters.vmImage, 'windows')) }}:
+    #   - ${{ if and(ne(parameters.NuGetFallbackPackages, ''), eq(parameters.vmImage, 'windows-latest')) }}:
     #       - name: NUGET_FALLBACK_PACKAGES
     #       - value: '%userprofile%\.nuget\packages'
     #   - ${{ if ne(parameters.NuGetFallbackPackages, '') }}:
@@ -50,7 +50,4 @@ jobs:
       - template: ../publish-artifacts.yml
         parameters:
           Configuration: ${{ parameters.Configuration }}
-      - ${{ if eq(parameters.pushNuget, 'true') }}:
-          - template: ../standard/nuget-push.yml
-            parameters:
-              Artifacts: "$(Artifacts)/nuget/"
+          Postfix: ${{ parameters.Postfix }}

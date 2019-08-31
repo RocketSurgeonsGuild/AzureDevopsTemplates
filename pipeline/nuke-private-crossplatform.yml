@@ -12,7 +12,7 @@ parameters:
 jobs:
   - job: GitVersion
     pool:
-      vmImage: "windows-2019"
+      vmImage: "windows-latest"
     steps:
       - template: ../gitversion/store.yml
         parameters:
@@ -23,8 +23,7 @@ jobs:
     parameters:
       name: 'macOS'
       dependsOn: GitVersion
-      vmImage: "macOS-10.14"
-      pushNuget: false
+      vmImage: "macOS-latest"
       FeedId: ${{ parameters.FeedId }}
       NuGetSource: ${{ parameters.NuGetSource }}
       Configuration: ${{ parameters.Configuration }}
@@ -38,8 +37,7 @@ jobs:
     parameters:
       name: 'Linux'
       dependsOn: GitVersion
-      vmImage: "Ubuntu-16.04"
-      pushNuget: false
+      vmImage: "ubuntu-latest"
       FeedId: ${{ parameters.FeedId }}
       NuGetSource: ${{ parameters.NuGetSource }}
       Configuration: ${{ parameters.Configuration }}
@@ -53,8 +51,7 @@ jobs:
     parameters:
       name: 'Windows'
       dependsOn: GitVersion
-      vmImage: "windows-2019"
-      pushNuget: false
+      vmImage: "windows-latest"
       FeedId: ${{ parameters.FeedId }}
       NuGetSource: ${{ parameters.NuGetSource }}
       Configuration: ${{ parameters.Configuration }}
@@ -64,9 +61,9 @@ jobs:
       DotNet3Version: ${{ parameters.DotNet3Version }}
       NuGetVersion: ${{ parameters.NuGetVersion }}
 
-  - job: Publish
+  - job: Publish NuGet Packages
     pool:
-      vmImage: "windows-2019"
+      vmImage: "windows-latest"
     dependsOn:
       - macOS
       - Linux

@@ -25,7 +25,6 @@ jobs:
       name: 'Hosted'
       dependsOn: GitVersion
       poolName: ${{ parameters.poolName }}
-      pushNuget: true
       FeedId: ${{ parameters.FeedId }}
       NuGetSource: ${{ parameters.NuGetSource }}
       Configuration: ${{ parameters.Configuration }}
@@ -34,3 +33,17 @@ jobs:
       DotNetVersion: ${{ parameters.DotNetVersion }}
       DotNet3Version: ${{ parameters.DotNet3Version }}
       NuGetVersion: ${{ parameters.NuGetVersion }}
+
+  - job: Publish NuGet Packages
+    pool:
+      vmImage: "windows-latest"
+    dependsOn:
+      - Hosted
+    steps:
+      - download: current
+        displayName: "Download NuGet Packages"
+        artifact: 'Nupkg'
+      - template: ../standard/nuget-push-feed.yml
+        parameters:
+          Artifacts: "$(Pipeline.Workspace)/Nupkg/"
+          FeedId: ${{ parameters.FeedId }}

@@ -12,7 +12,7 @@ parameters:
 jobs:
   - job: GitVersion
     pool:
-      vmImage: "windows-2019"
+      vmImage: "windows-latest"
     steps:
       - template: ../gitversion/store.yml
         parameters:
@@ -23,8 +23,7 @@ jobs:
     parameters:
       name: 'Windows'
       dependsOn: GitVersion
-      vmImage: "windows-2019"
-      pushNuget: true
+      vmImage: "windows-latest"
       FeedId: ${{ parameters.FeedId }}
       NuGetSource: ${{ parameters.NuGetSource }}
       Configuration: ${{ parameters.Configuration }}
@@ -33,3 +32,17 @@ jobs:
       DotNetVersion: ${{ parameters.DotNetVersion }}
       DotNet3Version: ${{ parameters.DotNet3Version }}
       NuGetVersion: ${{ parameters.NuGetVersion }}
+
+  - job: Publish NuGet Packages
+    pool:
+      vmImage: "windows-latest"
+    dependsOn:
+      - Hosted
+    steps:
+      - download: current
+        displayName: "Download NuGet Packages"
+        artifact: 'Nupkg'
+      - template: ../standard/nuget-push-feed.yml
+        parameters:
+          Artifacts: "$(Pipeline.Workspace)/Nupkg/"
+          FeedId: ${{ parameters.FeedId }}

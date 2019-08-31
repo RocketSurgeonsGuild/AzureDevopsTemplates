@@ -2,6 +2,7 @@ parameters:
   Configuration: 'Release'
   Coverage: '$(Agent.BuildDirectory)/c'
   Artifacts: $(Build.ArtifactStagingDirectory)
+  Postfix: ' - $(system.phaseName)'
 
 steps:
 - task: PublishTestResults@2
@@ -10,7 +11,7 @@ steps:
   inputs:
     testRunner: "XUnit"
     testResultsFiles: "${{ parameters.Artifacts }}/test/**/*.xml"
-    testRunTitle: "XUnit Results - $(system.phaseName)"
+    testRunTitle: "XUnit Results${{ parameters.Postfix }}"
     buildPlatform: ${{ parameters.os }}
     buildConfiguration: ${{ parameters.Configuration }}
 
@@ -20,7 +21,7 @@ steps:
   inputs:
     testRunner: "VSTest"
     testResultsFiles: "${{ parameters.Artifacts }}/test/**/*.trx"
-    testRunTitle: "XUnit Results - $(system.phaseName)"
+    testRunTitle: "XUnit Results${{ parameters.Postfix }}"
     buildPlatform: ${{ parameters.os }}
     buildConfiguration: ${{ parameters.Configuration }}
 
@@ -48,45 +49,15 @@ steps:
 
 - publish: "${{ parameters.Artifacts }}/logs/"
   displayName: Publish Logs
-  artifact: "Logs - $(system.phaseName)"
+  artifact: "Logs${{ parameters.Postfix }}"
   condition: always()
 
 - publish: ${{ parameters.Coverage }}
   displayName: Publish Coverage
-  artifact: "Coverage - $(system.phaseName)"
+  artifact: "Coverage${{ parameters.Postfix }}"
   condition: always()
 
 - publish: "${{ parameters.Artifacts }}/nuget/"
   displayName: Publish Nupkg Artifacts
-  artifact: "Nupkg - $(system.phaseName)"
-  continueOnError: true
+  artifact: "Nupkg${{ parameters.Postfix }}"
   condition: always()
-
-
-# - task: ArchiveFiles@2
-#   inputs:
-#     rootFolderOrFile: 'src'
-#     includeRootFolder: false
-#     archiveType: 'zip' # Options: zip, 7z, tar, wim
-#     archiveFile: '${{ parameters.Artifacts }}/srcfolder/$(Build.BuildId).zip'
-#     replaceExistingArchive: true
-#     # verbose: # Optional
-#     # quiet: # Optional
-
-# - publish: "${{ parameters.Artifacts }}/srcfolder/"
-#   displayName: Publish Build Src Folder
-#   artifact: "Src - $(system.phaseName)"
-
-# - task: ArchiveFiles@2
-#   inputs:
-#     rootFolderOrFile: 'test'
-#     includeRootFolder: false
-#     archiveType: 'zip' # Options: zip, 7z, tar, wim
-#     archiveFile: '${{ parameters.Artifacts }}/testfolder/$(Build.BuildId).zip'
-#     replaceExistingArchive: true
-#     # verbose: # Optional
-#     # quiet: # Optional
-
-# - publish: "${{ parameters.Artifacts }}/testfolder/"
-#   displayName: Publish Build Test Folder
-#   artifact: "Test - $(system.phaseName)"
