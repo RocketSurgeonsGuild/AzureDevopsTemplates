@@ -19,6 +19,44 @@ jobs:
           NuGetVersion: ${{ parameters.NuGetVersion }}
           BranchNameFix: ${{ parameters.BranchNameFix }}
 
+  - job: Build
+    dependsOn: GitVersion
+    pool:
+      vmImage: "windows-latest"
+    # variables:
+    #   - name: NUGET_PACKAGES
+    #     value: ${{ parameters.NuGetPackages }}
+    #   - ${{ if and(ne(parameters.NuGetFallbackPackages, ''), eq(parameters.vmImage, 'macOS-latest')) }}:
+    #       - name: NUGET_FALLBACK_PACKAGES
+    #       - value: "~/.nuget/packages"
+    #   - ${{ if and(ne(parameters.NuGetFallbackPackages, ''), eq(parameters.vmImage, 'ubuntu-latest')) }}:
+    #       - name: NUGET_FALLBACK_PACKAGES
+    #       - value: "~/.nuget/packages"
+    #   - ${{ if and(ne(parameters.NuGetFallbackPackages, ''), startsWith(parameters.vmImage, 'windows-latest')) }}:
+    #       - name: NUGET_FALLBACK_PACKAGES
+    #       - value: '%userprofile%\.nuget\packages'
+    #   - ${{ if ne(parameters.NuGetFallbackPackages, '') }}:
+    #       - name: NUGET_FALLBACK_PACKAGES
+    #       - value: ${{ parameters.NuGetFallbackPackages }}
+    steps:
+      - ${{ if ne(parameters.NuGetSource, '') }}:
+          - template: ../standard/nuget-source.yml
+            parameters:
+              NuGetSource: ${{ parameters.NuGetSource }}
+      - template: ../cake/job-steps.yml
+        parameters:
+          Configuration: ${{ parameters.Configuration }}
+          Verbosity: ${{ parameters.Verbosity }}
+          DotNet21Version: ${{ parameters.DotNet21Version }}
+          DotNetVersion: ${{ parameters.DotNetVersion }}
+          DotNet3Version: ${{ parameters.DotNet3Version }}
+          NuGetVersion: ${{ parameters.NuGetVersion }}
+          NuGetPackages: ${{ parameters.NuGetPackages }}
+          RestorePackageConfig: ${{ parameters.RestorePackageConfig }}
+          Script: ${{ parameters.Script }}
+          Target: ${{ parameters.Target }}
+          Postfix: ''
+
   - template: cake-job-private.yml
     parameters:
       name: 'Windows'

@@ -42,22 +42,20 @@ jobs:
     #       - value: ${{ parameters.NuGetFallbackPackages }}
     steps:
       - template: ../gitversion/restore.yml
-      - template: ../standard/dotnet-restore.yml
       - ${{ if ne(parameters.NuGetSource, '') }}:
           - template: ../standard/nuget-source.yml
             parameters:
               NuGetSource: ${{ parameters.NuGetSource }}
-      - template: ../nuke/install.yml
+      - template: ../nuke/steps.yml
         parameters:
+          Configuration: ${{ parameters.Configuration }}
+          Verbosity: ${{ parameters.Verbosity }}
           DotNet21Version: ${{ parameters.DotNet21Version }}
           DotNetVersion: ${{ parameters.DotNetVersion }}
           DotNet3Version: ${{ parameters.DotNet3Version }}
           NuGetVersion: ${{ parameters.NuGetVersion }}
           NuGetPackages: ${{ parameters.NuGetPackages }}
-      - template: ../nuke/run.yml
-        parameters:
-          Configuration: ${{ parameters.Configuration }}
-          Verbosity: ${{ parameters.Verbosity }}
+          RestorePackageConfig: ${{ parameters.RestorePackageConfig }}
           Targets: ${{ parameters.Targets }}
 
       - ${{ if and(eq(parameters.Postfix, ''), or(eq(parameters.name, 'Windows'), eq(parameters.name, 'Linux'), eq(parameters.name, 'macOS'))) }}:

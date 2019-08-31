@@ -1,0 +1,28 @@
+parameters:
+  Configuration: Release
+  Verbosity: Normal
+  DotNet21Version: "2.1.801"
+  DotNetVersion: "2.2.401"
+  DotNet3Version: "3.0.100-preview8-013656"
+  NuGetVersion: "5.2.0"
+  Targets: "Default"
+  NuGetPackages: $(Pipeline.Workspace)/.nuget/packages
+  RestorePackageConfig: false
+  Postfix: ''
+steps:
+  - template: ../gitversion/restore.yml
+  - template: ../nuke/steps.yml
+    parameters:
+      Configuration: ${{ parameters.Configuration }}
+      Verbosity: ${{ parameters.Verbosity }}
+      DotNet21Version: ${{ parameters.DotNet21Version }}
+      DotNetVersion: ${{ parameters.DotNetVersion }}
+      DotNet3Version: ${{ parameters.DotNet3Version }}
+      NuGetVersion: ${{ parameters.NuGetVersion }}
+      NuGetPackages: ${{ parameters.NuGetPackages }}
+      RestorePackageConfig: ${{ parameters.RestorePackageConfig }}
+      Targets: ${{ parameters.Targets }}
+  - template: ../publish-artifacts.yml
+    parameters:
+      Configuration: ${{ parameters.Configuration }}
+      Postfix: ${{ parameters.Postfix }}

@@ -9,16 +9,25 @@ parameters:
   Target: "Default"
   name: ""
   dependsOn: ""
-  vmImage: ""
-  Postfix: ' - $(system.phaseName)'
   NuGetPackages: $(Pipeline.Workspace)/.nuget/packages
   NuGetFallbackPackages: ""
   RestorePackageConfig: false
 jobs:
   - job: ${{ parameters.name }}
     dependsOn: ${{ parameters.dependsOn }}
+    strategy:
+      matrix:
+        Windows:
+          MATRIX_NAME: 'Windows'
+          IMAGE_NAME: "windows-latest"
+        Linux:
+          MATRIX_NAME: 'Linux'
+          IMAGE_NAME: "ubuntu-latest"
+        macOS:
+          MATRIX_NAME: 'macOS'
+          IMAGE_NAME: "macOS-latest"
     pool:
-      vmImage: ${{ parameters.vmImage }}
+      vmImage: $(IMAGE_NAME)
     # variables:
     #   - name: NUGET_PACKAGES
     #     value: ${{ parameters.NuGetPackages }}
@@ -35,22 +44,16 @@ jobs:
     #       - name: NUGET_FALLBACK_PACKAGES
     #       - value: ${{ parameters.NuGetFallbackPackages }}
     steps:
-      - template: ../gitversion/restore.yml
-      - template: ../cake/install.yml
+      - template: ../cake/job-steps.yml
         parameters:
+          Configuration: ${{ parameters.Configuration }}
+          Verbosity: ${{ parameters.Verbosity }}
           DotNet21Version: ${{ parameters.DotNet21Version }}
           DotNetVersion: ${{ parameters.DotNetVersion }}
           DotNet3Version: ${{ parameters.DotNet3Version }}
           NuGetVersion: ${{ parameters.NuGetVersion }}
           NuGetPackages: ${{ parameters.NuGetPackages }}
           RestorePackageConfig: ${{ parameters.RestorePackageConfig }}
-      - template: ../cake/run.yml
-        parameters:
-          Configuration: ${{ parameters.Configuration }}
-          Verbosity: ${{ parameters.Verbosity }}
           Script: ${{ parameters.Script }}
           Target: ${{ parameters.Target }}
-      - template: ../publish-artifacts.yml
-        parameters:
-          Configuration: ${{ parameters.Configuration }}
-          Postfix: ${{ parameters.Postfix }}
+          Postfix: ' - $(MATRIX_NAME)'

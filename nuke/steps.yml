@@ -1,0 +1,23 @@
+parameters:
+  Configuration: Release
+  Verbosity: Normal
+  DotNet21Version: "2.1.801"
+  DotNetVersion: "2.2.401"
+  DotNet3Version: "3.0.100-preview8-013656"
+  NuGetVersion: "5.2.0"
+  Targets: "Default"
+  NuGetPackages: $(Pipeline.Workspace)/.nuget/packages
+steps:
+  - template: ../nuke/install.yml
+    parameters:
+      DotNet21Version: ${{ parameters.DotNet21Version }}
+      DotNetVersion: ${{ parameters.DotNetVersion }}
+      DotNet3Version: ${{ parameters.DotNet3Version }}
+      NuGetVersion: ${{ parameters.NuGetVersion }}
+      NuGetPackages: ${{ parameters.NuGetPackages }}
+  - template: ../standard/dotnet-restore.yml
+  - template: ../nuke/run.yml
+    parameters:
+      Configuration: ${{ parameters.Configuration }}
+      Verbosity: ${{ parameters.Verbosity }}
+      Targets: ${{ parameters.Targets }}

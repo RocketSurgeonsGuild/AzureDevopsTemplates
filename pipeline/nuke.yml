@@ -21,35 +21,8 @@ jobs:
 
   - template: ./nuke-job.yml
     parameters:
-      name: 'macOS'
+      name: Build
       dependsOn: GitVersion
-      vmImage: "macOS-latest"
-      Configuration: ${{ parameters.Configuration }}
-      Verbosity: ${{ parameters.Verbosity }}
-      DotNet21Version: ${{ parameters.DotNet21Version }}
-      DotNetVersion: ${{ parameters.DotNetVersion }}
-      DotNet3Version: ${{ parameters.DotNet3Version }}
-      NuGetVersion: ${{ parameters.NuGetVersion }}
-      Targets: ${{ parameters.Targets }}
-
-  - template: ./nuke-job.yml
-    parameters:
-      name: 'Linux'
-      dependsOn: GitVersion
-      vmImage: "ubuntu-latest"
-      Configuration: ${{ parameters.Configuration }}
-      Verbosity: ${{ parameters.Verbosity }}
-      DotNet21Version: ${{ parameters.DotNet21Version }}
-      DotNetVersion: ${{ parameters.DotNetVersion }}
-      DotNet3Version: ${{ parameters.DotNet3Version }}
-      NuGetVersion: ${{ parameters.NuGetVersion }}
-      Targets: ${{ parameters.Targets }}
-
-  - template: ./nuke-job.yml
-    parameters:
-      name: 'Windows'
-      dependsOn: GitVersion
-      vmImage: "windows-latest"
       Configuration: ${{ parameters.Configuration }}
       Verbosity: ${{ parameters.Verbosity }}
       DotNet21Version: ${{ parameters.DotNet21Version }}
@@ -77,9 +50,7 @@ jobs:
       pool:
         vmImage: "windows-latest"
       dependsOn:
-        - macOS
-        - Linux
-        - Windows
+        - Build
         - GitHub_Draft_Release
       steps:
         # - checkout: none

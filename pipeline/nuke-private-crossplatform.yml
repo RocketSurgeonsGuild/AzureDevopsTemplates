@@ -19,47 +19,49 @@ jobs:
           NuGetVersion: ${{ parameters.NuGetVersion }}
           BranchNameFix: ${{ parameters.BranchNameFix }}
 
-  - template: nuke-job-private.yml
-    parameters:
-      name: 'macOS'
-      dependsOn: GitVersion
-      vmImage: "macOS-latest"
-      FeedId: ${{ parameters.FeedId }}
-      NuGetSource: ${{ parameters.NuGetSource }}
-      Configuration: ${{ parameters.Configuration }}
-      Verbosity: ${{ parameters.Verbosity }}
-      DotNet21Version: ${{ parameters.DotNet21Version }}
-      DotNetVersion: ${{ parameters.DotNetVersion }}
-      DotNet3Version: ${{ parameters.DotNet3Version }}
-      NuGetVersion: ${{ parameters.NuGetVersion }}
-
-  - template: nuke-job-private.yml
-    parameters:
-      name: 'Linux'
-      dependsOn: GitVersion
-      vmImage: "ubuntu-latest"
-      FeedId: ${{ parameters.FeedId }}
-      NuGetSource: ${{ parameters.NuGetSource }}
-      Configuration: ${{ parameters.Configuration }}
-      Verbosity: ${{ parameters.Verbosity }}
-      DotNet21Version: ${{ parameters.DotNet21Version }}
-      DotNetVersion: ${{ parameters.DotNetVersion }}
-      DotNet3Version: ${{ parameters.DotNet3Version }}
-      NuGetVersion: ${{ parameters.NuGetVersion }}
-
-  - template: nuke-job-private.yml
-    parameters:
-      name: 'Windows'
-      dependsOn: GitVersion
-      vmImage: "windows-latest"
-      FeedId: ${{ parameters.FeedId }}
-      NuGetSource: ${{ parameters.NuGetSource }}
-      Configuration: ${{ parameters.Configuration }}
-      Verbosity: ${{ parameters.Verbosity }}
-      DotNet21Version: ${{ parameters.DotNet21Version }}
-      DotNetVersion: ${{ parameters.DotNetVersion }}
-      DotNet3Version: ${{ parameters.DotNet3Version }}
-      NuGetVersion: ${{ parameters.NuGetVersion }}
+  - job: ${{ parameters.name }}
+    dependsOn: ${{ parameters.dependsOn }}
+    strategy:
+      matrix:
+        Windows:
+          MATRIX_NAME: 'Windows'
+          IMAGE_NAME: "windows-latest"
+        Linux:
+          MATRIX_NAME: 'Linux'
+          IMAGE_NAME: "ubuntu-latest"
+        macOS:
+          MATRIX_NAME: 'macOS'
+          IMAGE_NAME: "macOS-latest"
+    pool:
+      vmImage: $(IMAGE_NAME)
+    # variables:
+    #   - name: NUGET_PACKAGES
+    #     value: ${{ parameters.NuGetPackages }}
+    #   - ${{ if and(ne(parameters.NuGetFallbackPackages, ''), eq(parameters.vmImage, 'macOS-latest')) }}:
+    #       - name: NUGET_FALLBACK_PACKAGES
+    #       - value: "~/.nuget/packages"
+    #   - ${{ if and(ne(parameters.NuGetFallbackPackages, ''), eq(parameters.vmImage, 'ubuntu-latest')) }}:
+    #       - name: NUGET_FALLBACK_PACKAGES
+    #       - value: "~/.nuget/packages"
+    #   - ${{ if and(ne(parameters.NuGetFallbackPackages, ''), eq(parameters.vmImage, 'windows-latest')) }}:
+    #       - name: NUGET_FALLBACK_PACKAGES
+    #       - value: '%userprofile%\.nuget\packages'
+    #   - ${{ if ne(parameters.NuGetFallbackPackages, '') }}:
+    #       - name: NUGET_FALLBACK_PACKAGES
+    #       - value: ${{ parameters.NuGetFallbackPackages }}
+    steps:
+      - template: ../nuke/job-steps.yml
+        parameters:
+          Configuration: ${{ parameters.Configuration }}
+          Verbosity: ${{ parameters.Verbosity }}
+          DotNet21Version: ${{ parameters.DotNet21Version }}
+          DotNetVersion: ${{ parameters.DotNetVersion }}
+          DotNet3Version: ${{ parameters.DotNet3Version }}
+          NuGetVersion: ${{ parameters.NuGetVersion }}
+          NuGetPackages: ${{ parameters.NuGetPackages }}
+          RestorePackageConfig: ${{ parameters.RestorePackageConfig }}
+          Targets: ${{ parameters.Targets }}
+          Postfix: ' - $(MATRIX_NAME)'
 
   - job: Publish NuGet Packages
     pool:
