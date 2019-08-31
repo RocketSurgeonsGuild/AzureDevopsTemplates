@@ -68,9 +68,7 @@ jobs:
       pool:
         vmImage: "windows-latest"
       dependsOn:
-        - macOS
-        - Linux
-        - Windows
+        - Build
         - GitHub_Draft_Release
       steps:
         # - checkout: none

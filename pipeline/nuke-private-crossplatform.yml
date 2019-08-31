@@ -67,9 +67,7 @@ jobs:
     pool:
       vmImage: "windows-latest"
     dependsOn:
-      - macOS
-      - Linux
-      - Windows
+      - ${{ parameters.name }}
     steps:
       - download: current
         displayName: "Download NuGet Packages"
