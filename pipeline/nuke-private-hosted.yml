@@ -6,6 +6,7 @@ parameters:
   DotNetVersion: "2.2.401"
   DotNet3Version: "3.0.100-preview8-013656"
   NuGetVersion: "5.2.0"
+  BranchNameFix: false
   FeedId: ''
   NuGetSource: ''
   poolName: 'Default'
@@ -17,6 +18,7 @@ jobs:
       - template: ../gitversion/store.yml
         parameters:
           NuGetVersion: ${{ parameters.NuGetVersion }}
+          BranchNameFix: ${{ parameters.BranchNameFix }}
 
   - template: nuke-job-private.yml
     parameters:
