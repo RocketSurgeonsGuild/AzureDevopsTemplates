@@ -59,6 +59,7 @@ steps:
 - publish: "${{ parameters.Artifacts }}/nuget/"
   displayName: Publish Nupkg Artifacts
   artifact: "Nupkg - $(system.phaseName)"
+  continueOnError: true
   condition: always()
 
 
