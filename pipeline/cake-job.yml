@@ -1,8 +1,8 @@
 parameters:
   Configuration: Release
   Verbosity: Normal
-  DotNet21Version: "2.1.801"
-  DotNetVersion: "2.2.401"
+  DotNet21Version: "2.1.x"
+  DotNetVersion: "2.2.x"
   DotNet3Version: "3.0.100-preview8-013656"
   NuGetVersion: "5.2.0"
   Script: "cakefile.cake"

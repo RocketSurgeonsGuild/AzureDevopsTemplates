@@ -1,5 +1,5 @@
 parameters:
-  DotNetVersion: "2.2.401"
+  DotNetVersion: "2.2.x"
   DotNet3Version: "3.0.100-preview8-013656"
   NuGetPackages: $(Pipeline.Workspace)/.nuget/packages
 
