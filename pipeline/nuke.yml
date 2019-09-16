@@ -3,7 +3,7 @@ parameters:
   Verbosity: Normal
   DotNet21Version: "2.1.x"
   DotNetVersion: "2.2.x"
-  DotNet3Version: "3.0.100-preview8-013656"
+  DotNet3Version: "3.0.100-preview9-014004"
   NuGetVersion: "5.2.0"
   BranchNameFix: false
   Targets: 'Default'
