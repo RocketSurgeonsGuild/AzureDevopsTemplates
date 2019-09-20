@@ -39,7 +39,7 @@ steps:
     inputs:
       command: custom
       custom: codecov
-      arguments: "--name '$(Build.BuildNumber)-$(Agent.OS)' -f '${{ parameters.Coverage }}/solution.xml'"
+      arguments: "--name '$(Build.BuildNumber)-$(Agent.OS)' -f ${{ parameters.Coverage }}/solution.xml"
     env:
       CODECOV_TOKEN: $(CodeCovToken)
     continueOnError: true
