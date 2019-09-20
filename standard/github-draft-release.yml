@@ -13,30 +13,30 @@ steps:
   - task: UseDotNet@2
     displayName: Install dotnet ${{ parameters.DotNetVersion }}
     inputs:
-      packageType: 'sdk'
+      packageType: "sdk"
       version: ${{ parameters.DotNetVersion }}
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - task: UseDotNet@2
     displayName: Install dotnet ${{ parameters.DotNet3Version }}
     inputs:
-      packageType: 'sdk'
+      packageType: "sdk"
       version: ${{ parameters.DotNet3Version }}
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - task: DotNetCoreCLI@2
-    displayName: 'dotnet toolrestore'
+    displayName: "dotnet tool restore"
     inputs:
       command: custom
       custom: tool
-      arguments: 'restore'
+      arguments: "restore"
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - pwsh: |
       $parts = '$(Build.Repository.Name)' -split '/';
       Write-Host "##vso[task.setvariable variable=GitHub.Owner]$($parts[0])"
       Write-Host "##vso[task.setvariable variable=GitHub.Repository]$($parts[1])"
-    displayName: 'Assign GitHub.Owner and GitHub.Repository'
+    displayName: "Assign GitHub.Owner and GitHub.Repository"
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - pwsh: |
@@ -58,7 +58,7 @@ steps:
                 -Headers @{  Authorization = "Token $token" } `
                 -Method Delete;
       }
-    displayName: 'Delete old draft releases'
+    displayName: "Delete old draft releases"
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - pwsh: |
@@ -80,7 +80,7 @@ steps:
               -Method Post `
               -Body (@{ title = $tag; } | ConvertTo-Json)
       }
-    displayName: 'Ensure v$(GitVersion.MajorMinorPatch) Milestone'
+    displayName: "Ensure v$(GitVersion.MajorMinorPatch) Milestone"
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - pwsh: mkdir $(Build.ArtifactStagingDirectory)/releasenotes/;
@@ -97,7 +97,9 @@ steps:
       $username = "$(GitHub.Username)"
       $outfile = "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md";
 
-      dotnet gitreleasemanager create --username "$username" --password "$password" --owner "$owner" --repository "$repository" -n "$tag" -c "$sha" -m "$tag"
+      $newTag = dotnet gitreleasemanager create --username "$username" --password "$password" --owner "$owner" --repository "$repository" -n "$tag" -c "$sha" -m "$tag"
+
+      Write-Host New Tag: $newTag
 
       $d = Invoke-RestMethod `
           -Uri "https://api.github.com/graphql" `
@@ -130,7 +132,7 @@ steps:
 
       $notes | Out-File $outfile
 
-    displayName: 'Get up to date changeset details from GitHub_Release'
+    displayName: "Get up to date changeset details from GitHub_Release"
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - publish: "$(Build.ArtifactStagingDirectory)/releasenotes/"
