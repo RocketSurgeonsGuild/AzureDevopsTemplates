@@ -124,12 +124,12 @@ steps:
       foreach ($item in $drafts | Where-Object { $_.body -and -not ($_.body.Contains("This list of changes was [auto generated]") ) }    ) {
           $notes = $item.body
 
-          Invoke-RestMethod `
-              -Uri "https://api.github.com/repos/$owner/$repository/releases/$($item.id)" `
-              -Headers @{  Authorization = "Token $token" } `
-              -Method Delete;
+          # Invoke-RestMethod `
+          #     -Uri "https://api.github.com/repos/$owner/$repository/releases/$($item.id)" `
+          #     -Headers @{  Authorization = "Token $token" } `
+          #     -Method Delete;
       }
-
+      write-host $notes
       $notes | Out-File $outfile
 
     displayName: "Get up to date changeset details from GitHub_Release"
