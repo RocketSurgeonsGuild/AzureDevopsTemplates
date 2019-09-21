@@ -1,37 +1,10 @@
 parameters:
-  DotNetVersion: "2.2.x"
-  DotNet3Version: "3.0.100-rc1-014190"
-  NuGetPackages: $(Pipeline.Workspace)/.nuget/packages
+  GithubAuthVariableGroup: ""
+
+variables:
+  - group: ${{ parameters.GithubAuthVariableGroup }}
 
 steps:
-  # - task: CacheBeta@0
-  #   inputs:
-  #     key: 'nuget | release | NuGet.config'
-  #     path: ${{ parameters.NuGetPackages }}
-  #   displayName: Cache NuGet packages
-
-  - task: UseDotNet@2
-    displayName: Install dotnet ${{ parameters.DotNetVersion }}
-    inputs:
-      packageType: "sdk"
-      version: ${{ parameters.DotNetVersion }}
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-
-  - task: UseDotNet@2
-    displayName: Install dotnet ${{ parameters.DotNet3Version }}
-    inputs:
-      packageType: "sdk"
-      version: ${{ parameters.DotNet3Version }}
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-
-  - task: DotNetCoreCLI@2
-    displayName: "dotnet tool restore"
-    inputs:
-      command: custom
-      custom: tool
-      arguments: "restore"
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-
   - pwsh: |
       $parts = '$(Build.Repository.Name)' -split '/';
       Write-Host "##vso[task.setvariable variable=GitHub.Owner]$($parts[0])"
@@ -81,61 +54,4 @@ steps:
               -Body (@{ title = $tag; } | ConvertTo-Json)
       }
     displayName: "Ensure v$(GitVersion.MajorMinorPatch) Milestone"
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-
-  - pwsh: mkdir $(Build.ArtifactStagingDirectory)/releasenotes/;
-    displayName: "Create release notes directory"
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-
-  - pwsh: |
-      $token = "$(GitHub.Token)";
-      $password = '$(GitHub.Password)'
-      $repository = "$(GitHub.Repository)";
-      $owner = "$(GitHub.Owner)";
-      $tag = "v$(GitVersion.MajorMinorPatch)";
-      $sha = "$(Build.SourceVersion)";
-      $username = "$(GitHub.Username)"
-      $outfile = "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md";
-
-      $newTag = dotnet gitreleasemanager create --username "$username" --password "$password" --owner "$owner" --repository "$repository" -n "$tag" -c "$sha" -m "$tag"
-
-      Write-Host New Tag: $newTag
-
-      $d = Invoke-RestMethod `
-          -Uri "https://api.github.com/graphql" `
-          -Headers @{  Authorization = "Token $token" } `
-          -Method Post `
-          -Body (@{
-              query     = "query getDrafts(`$owner: String!, `$name: String!) { repository(owner: `$owner, name: `$name) { releases(last: 100, orderBy: { field: CREATED_AT, direction: DESC}) { nodes { id, name, isDraft, isPrerelease, tagName, description } } } }";
-              variables = @{
-                  owner = $owner;
-                  name  = $repository;
-              }
-          } | ConvertTo-Json);
-
-      $releases = Invoke-RestMethod `
-          -Uri "https://api.github.com/repos/$owner/$repository/releases" `
-          -Headers @{  Authorization = "Token $token" } `
-          -Method Get;
-
-      $drafts = $releases | Sort-Object -Property created_at | where { $_.draft -and ($_.name -eq $tag) };
-
-      $notes = "";
-      foreach ($item in $drafts | Where-Object { $_.body -and -not ($_.body.Contains("This list of changes was [auto generated]") ) }    ) {
-          $notes = $item.body
-
-          # Invoke-RestMethod `
-          #     -Uri "https://api.github.com/repos/$owner/$repository/releases/$($item.id)" `
-          #     -Headers @{  Authorization = "Token $token" } `
-          #     -Method Delete;
-      }
-      write-host $notes
-      $notes | Out-File $outfile
-
-    displayName: "Get up to date changeset details from GitHub_Release"
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-
-  - publish: "$(Build.ArtifactStagingDirectory)/releasenotes/"
-    displayName: Publish Release Notes
-    artifact: "Release Notes"
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))

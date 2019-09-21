@@ -6,9 +6,10 @@ parameters:
   DotNet3Version: "3.0.100-rc1-014190"
   NuGetVersion: "5.2.0"
   BranchNameFix: false
-  Targets: 'Default'
+  Targets: "Default"
   GitHub: false
   GitHubPackages: false
+  GithubAuthVariableGroup: ""
 jobs:
   - job: GitVersion
     pool:
@@ -32,54 +33,52 @@ jobs:
       Targets: ${{ parameters.Targets }}
 
   - ${{ if ne(variables['System.PullRequest.IsFork'], 'true') }}:
-    - job: GitHub_Draft_Release
-      displayName: 'GitHub Draft Release'
-      pool:
-        vmImage: "windows-latest"
-      dependsOn:
-        - GitVersion
-      steps:
-        # - checkout: none
-        - template: ../gitversion/restore.yml
-        - ${{ if eq(parameters.GitHub, 'true') }}:
-          - template: ../standard/github-draft-release.yml
+      - job: GitHub_Draft_Release
+        displayName: "GitHub Draft Release"
+        pool:
+          vmImage: "windows-latest"
+        dependsOn:
+          - GitVersion
+        steps:
+          # - checkout: none
+          - template: ../gitversion/restore.yml
+          - ${{ if eq(parameters.GitHub, 'true') }}:
+              - template: ../standard/github-draft-release.yml
+                parameters:
+                  GithubAuthVariableGroup: ${{ parameters.GithubAuthVariableGroup }}
+
+      - job: Publish_NuGet_Packages
+        displayName: "Publish NuGet Packages"
+        pool:
+          vmImage: "windows-latest"
+        dependsOn:
+          - Build
+          - GitHub_Draft_Release
+        steps:
+          # - checkout: none
+          - download: current
+            displayName: "Download NuGet Packages"
+            artifact: "Nupkg - Windows"
+          - template: ../standard/nuget-push.yml
             parameters:
-              DotNetVersion: ${{ parameters.DotNetVersion }}
-              DotNet3Version: ${{ parameters.DotNet3Version }}
+              Artifacts: "$(Pipeline.Workspace)/Nupkg - Windows/"
+              NuGetVersion: ${{ parameters.NuGetVersion }}
+              Verbosity: ${{ parameters.Verbosity }}
+              GitHubPackages: ${{ parameters.GitHubPackages }}
 
-    - job: Publish_NuGet_Packages
-      displayName: 'Publish NuGet Packages'
-      pool:
-        vmImage: "windows-latest"
-      dependsOn:
-        - Build
-        - GitHub_Draft_Release
-      steps:
-        # - checkout: none
-        - download: current
-          displayName: "Download NuGet Packages"
-          artifact: 'Nupkg - Windows'
-        - template: ../standard/nuget-push.yml
-          parameters:
-            Artifacts: "$(Pipeline.Workspace)/Nupkg - Windows/"
-            NuGetVersion: ${{ parameters.NuGetVersion }}
-            Verbosity: ${{ parameters.Verbosity }}
-            GitHubPackages: ${{ parameters.GitHubPackages }}
-
-    - job: GitHub_Release
-      displayName: 'GitHub Release'
-      pool:
-        vmImage: "windows-latest"
-      dependsOn:
-        - Build
-        - GitHub_Draft_Release
-      steps:
-        # - checkout: none
-        - template: ../gitversion/restore.yml
-        - ${{ if eq(parameters.GitHub, 'true') }}:
-          - template: ../standard/github-release.yml
-            parameters:
-              DotNetVersion: ${{ parameters.DotNetVersion }}
-              DotNet3Version: ${{ parameters.DotNet3Version }}
-
-
+      - job: GitHub_Release
+        displayName: "GitHub Release"
+        pool:
+          vmImage: "windows-latest"
+        dependsOn:
+          - Build
+          - GitHub_Draft_Release
+        steps:
+          # - checkout: none
+          - template: ../gitversion/restore.yml
+          - ${{ if eq(parameters.GitHub, 'true') }}:
+              - template: ../standard/github-release.yml
+                parameters:
+                  GithubAuthVariableGroup: ${{ parameters.GithubAuthVariableGroup }}
+                  DotNetVersion: ${{ parameters.DotNetVersion }}
+                  DotNet3Version: ${{ parameters.DotNet3Version }}
