@@ -39,13 +39,13 @@ jobs:
           vmImage: "windows-latest"
         dependsOn:
           - GitVersion
+        variables:
+          - group: ${{ parameters.GithubAuthVariableGroup }}
         steps:
           # - checkout: none
           - template: ../gitversion/restore.yml
           - ${{ if eq(parameters.GitHub, 'true') }}:
               - template: ../standard/github-draft-release.yml
-                parameters:
-                  GithubAuthVariableGroup: ${{ parameters.GithubAuthVariableGroup }}
 
       - job: Publish_NuGet_Packages
         displayName: "Publish NuGet Packages"
@@ -73,12 +73,13 @@ jobs:
         dependsOn:
           - Build
           - GitHub_Draft_Release
+        variables:
+          - group: ${{ parameters.GithubAuthVariableGroup }}
         steps:
           # - checkout: none
           - template: ../gitversion/restore.yml
           - ${{ if eq(parameters.GitHub, 'true') }}:
               - template: ../standard/github-release.yml
                 parameters:
-                  GithubAuthVariableGroup: ${{ parameters.GithubAuthVariableGroup }}
                   DotNetVersion: ${{ parameters.DotNetVersion }}
                   DotNet3Version: ${{ parameters.DotNet3Version }}

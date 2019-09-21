@@ -2,10 +2,6 @@ parameters:
   DotNet21Version: "2.1.x"
   DotNetVersion: "2.2.x"
   DotNet3Version: "3.0.100-rc1-014190"
-  GithubAuthVariableGroup: ""
-
-variables:
-  - group: ${{ parameters.GithubAuthVariableGroup }}
 
 steps:
   - task: UseDotNet@2
