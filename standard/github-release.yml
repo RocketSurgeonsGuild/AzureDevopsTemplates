@@ -47,11 +47,14 @@ steps:
 
       $newTag = dotnet gitreleasemanager create --username "$username" --password "$password" --owner "$owner" --repository "$repository" -n "$tag" -c "$sha" -m "$tag";
       dotnet gitreleasemanager export --username "$username" --password "$password" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md" -t $tag
+      Write-Host Tag Name $tagName;
       $tagName = $tag -split '/' | select -Last 1;
+
       $item = Invoke-RestMethod `
           -Uri "https://api.github.com/repos/$owner/$repository/releases/tags/$tagName" `
           -Headers @{  Authorization = "Token $token" } `
           -Method Get;
+
       Invoke-RestMethod `
           -Uri "https://api.github.com/repos/$owner/$repository/releases/$($item.id)" `
           -Headers @{  Authorization = "Token $token" } `
