@@ -1,5 +1,3 @@
-parameters:
-
 steps:
   - pwsh: |
       $parts = '$(Build.Repository.Name)' -split '/';
