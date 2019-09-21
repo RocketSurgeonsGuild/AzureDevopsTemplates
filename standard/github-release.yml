@@ -104,11 +104,10 @@ steps:
           -Method Get;
 
       $currentMilestone = $milestones | where { $_.title -eq $tag }
-      if (-not ($currentMilestone)) {
-          Invoke-RestMethod `
-              -Uri "https://api.github.com/repos/$owner/$repository/milestones/$($currentMilestone.number)" `
-              -Headers @{  Authorization = "Token $token" } `
-              -Method Delete
-      }
+      Invoke-RestMethod `
+          -Uri "https://api.github.com/repos/$owner/$repository/milestones/$($currentMilestone.number)" `
+          -Headers @{  Authorization = "Token $token" } `
+          -Method Post `
+          -Body (@{ title = $tag; state = "closed" } | ConvertTo-Json)
     displayName: "Delete v$(GitVersion.MajorMinorPatch) Milestone"
     condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
