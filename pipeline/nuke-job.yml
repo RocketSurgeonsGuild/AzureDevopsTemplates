@@ -50,7 +50,7 @@ jobs:
           - pwsh: |
               $content = Get-Content -Raw '$(Pipeline.Workspace)\ReleaseNotes\release.md';
               $content = ($content -replace '\n', '%0A') -replace '\r', '%0D'
-              Write-Host "##vso[task.setvariable variable=PackageReleaseNotes]$()"
+              Write-Host "##vso[task.setvariable variable=PackageReleaseNotes]$($content)"
             displayName: asdf
       - template: ../nuke/job-steps.yml
         parameters:
