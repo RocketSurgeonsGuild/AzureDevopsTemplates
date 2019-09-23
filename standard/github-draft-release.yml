@@ -1,6 +1,6 @@
 parameters:
   DotNetVersion: "2.2.x"
-  DotNet3Version: "3.0.100-rc1-014190"
+  DotNet3Version: "3.0.x"
 
 steps:
   - pwsh: |

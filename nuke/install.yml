@@ -1,7 +1,7 @@
 parameters:
-  DotNet21Version: "2.1.x"
+  # DotNet21Version: "2.1.x"
   DotNetVersion: "2.2.x"
-  DotNet3Version: "3.0.100-rc1-014190"
+  DotNet3Version: "3.0.x"
   NuGetVersion: "5.2.0"
   NuGetPackages: $(Pipeline.Workspace)/.nuget/packages
 
@@ -12,11 +12,11 @@ steps:
   #     path: ${{ parameters.NuGetPackages }}
   #   displayName: Cache NuGet packages
 
-  - task: UseDotNet@2
-    displayName: Install dotnet ${{ parameters.DotNet21Version }}
-    inputs:
-      packageType: "sdk"
-      version: ${{ parameters.DotNet21Version }}
+  # - task: UseDotNet@2
+  #   displayName: Install dotnet ${{ parameters.DotNet21Version }}
+  #   inputs:
+  #     packageType: "sdk"
+  #     version: ${{ parameters.DotNet21Version }}
 
   - task: UseDotNet@2
     displayName: Install dotnet ${{ parameters.DotNetVersion }}
