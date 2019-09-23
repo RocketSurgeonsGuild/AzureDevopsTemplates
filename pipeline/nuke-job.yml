@@ -9,7 +9,7 @@ parameters:
   name: ""
   dependsOn: ""
   NuGetPackages: $(Pipeline.Workspace)/.nuget/packages
-  NuGetFallbackPackages: ''
+  NuGetFallbackPackages: ""
   RestorePackageConfig: false
 jobs:
   - job: ${{ parameters.name }}
@@ -17,13 +17,13 @@ jobs:
     strategy:
       matrix:
         Windows:
-          MATRIX_NAME: 'Windows'
+          MATRIX_NAME: "Windows"
           IMAGE_NAME: "windows-latest"
         Linux:
-          MATRIX_NAME: 'Linux'
+          MATRIX_NAME: "Linux"
           IMAGE_NAME: "ubuntu-latest"
         macOS:
-          MATRIX_NAME: 'macOS'
+          MATRIX_NAME: "macOS"
           IMAGE_NAME: "macOS-latest"
     pool:
       vmImage: $(IMAGE_NAME)
@@ -43,6 +43,10 @@ jobs:
     #       - name: NUGET_FALLBACK_PACKAGES
     #       - value: ${{ parameters.NuGetFallbackPackages }}
     steps:
+      - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/v') }}
+        - download: current
+          displayName: "Download Release Notes (Tag)"
+          artifact: "Release Notes (Tag)"
       - template: ../nuke/job-steps.yml
         parameters:
           Configuration: ${{ parameters.Configuration }}
@@ -54,4 +58,4 @@ jobs:
           NuGetPackages: ${{ parameters.NuGetPackages }}
           RestorePackageConfig: ${{ parameters.RestorePackageConfig }}
           Targets: ${{ parameters.Targets }}
-          Postfix: ' - $(MATRIX_NAME)'
+          Postfix: " - $(MATRIX_NAME)"
