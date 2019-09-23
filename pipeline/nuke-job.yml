@@ -43,10 +43,10 @@ jobs:
     #       - name: NUGET_FALLBACK_PACKAGES
     #       - value: ${{ parameters.NuGetFallbackPackages }}
     steps:
-      - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/v') }}
-        - download: current
-          displayName: "Download Release Notes (Tag)"
-          artifact: "Release Notes (Tag)"
+      - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/v') }}:
+          - download: current
+            displayName: "Download Release Notes (Tag)"
+            artifact: "Release Notes (Tag)"
       - template: ../nuke/job-steps.yml
         parameters:
           Configuration: ${{ parameters.Configuration }}

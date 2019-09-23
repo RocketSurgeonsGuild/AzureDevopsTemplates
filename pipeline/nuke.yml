@@ -23,7 +23,9 @@ jobs:
   - template: ./nuke-job.yml
     parameters:
       name: Build
-      dependsOn: GitVersion
+      dependsOn:
+        - GitVersion
+        - GitHub_Draft_Release
       Configuration: ${{ parameters.Configuration }}
       Verbosity: ${{ parameters.Verbosity }}
       DotNet21Version: ${{ parameters.DotNet21Version }}

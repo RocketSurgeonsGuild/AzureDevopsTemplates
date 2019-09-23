@@ -49,3 +49,24 @@ steps:
       }
     displayName: "Ensure v$(GitVersion.MajorMinorPatch) Milestone"
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+
+  - pwsh: mkdir $(Build.ArtifactStagingDirectory)/releasenotes/;
+    displayName: "Create release notes directory (Tag)"
+    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
+
+  - pwsh: |
+      $password = '$(GitHub.Password)'
+      $repository = "$(GitHub.Repository)";
+      $owner = "$(GitHub.Owner)";
+      $tag = "v$(GitVersion.MajorMinorPatch)";
+      $username = "$(GitHub.Username)"
+
+      dotnet gitreleasemanager export --username "$username" --password "$password" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md" -t $tag
+      dotnet gitreleasemanager export --username "$username" --password "$password" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release.md"
+    displayName: "Export Release (Tag)"
+    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
+
+  - publish: "$(Build.ArtifactStagingDirectory)/releasenotes/"
+    displayName: Publish Release Notes
+    artifact: "Release Notes (Tag)"
+    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
