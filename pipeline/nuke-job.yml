@@ -46,7 +46,10 @@ jobs:
       - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/v') }}:
           - download: current
             displayName: "Download Release Notes (Tag)"
-            artifact: "Release Notes (Tag)"
+            artifact: "ReleaseNotes"
+          - pwsh: |
+              Write-Host "##vso[task.setvariable variable=PackageReleaseNotes]$(Get-Content -Raw '$(Pipeline.Workspace)\ReleaseNotes\release.md')"
+            displayName: asdf
       - template: ../nuke/job-steps.yml
         parameters:
           Configuration: ${{ parameters.Configuration }}
