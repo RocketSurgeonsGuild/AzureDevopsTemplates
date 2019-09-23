@@ -1,7 +1,7 @@
 parameters:
-  # DotNet21Version: "2.1.x"
-  DotNetVersion: "2.2.x"
-  DotNet3Version: "3.0.x"
+  DotNetSdk:
+    - "2.2.x"
+    - "3.0.x"
   NuGetVersion: "5.2.0"
   NuGetPackages: $(Pipeline.Workspace)/.nuget/packages
   RestorePackageConfig: false
@@ -13,23 +13,12 @@ steps:
   #     path: ${{ parameters.NuGetPackages }}
   #   displayName: Cache NuGet packages
 
-  # - task: UseDotNet@2
-  #   displayName: Install dotnet ${{ parameters.DotNet21Version }}
-  #   inputs:
-  #     packageType: "sdk"
-  #     version: ${{ parameters.DotNet21Version }}
-
-  - task: UseDotNet@2
-    displayName: Install dotnet ${{ parameters.DotNetVersion }}
-    inputs:
-      packageType: "sdk"
-      version: ${{ parameters.DotNetVersion }}
-
-  - task: UseDotNet@2
-    displayName: Install dotnet ${{ parameters.DotNet3Version }}
-    inputs:
-      packageType: "sdk"
-      version: ${{ parameters.DotNet3Version }}
+  - ${{ each sdk in parameters.DotNetSdk }}:
+      - task: UseDotNet@2
+        displayName: Install dotnet ${{ sdk }}
+        inputs:
+          packageType: "sdk"
+          version: ${{ sdk }}
 
   - task: DotNetCoreCLI@2
     displayName: "dotnet tool restore"

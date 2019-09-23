@@ -1,9 +1,9 @@
 parameters:
   Configuration: Release
   Verbosity: Normal
-  # DotNet21Version: "2.1.x"
-  DotNetVersion: "2.2.x"
-  DotNet3Version: "3.0.x"
+  DotNetSdk:
+    - "2.2.x"
+    - "3.0.x"
   NuGetVersion: "5.2.0"
   BranchNameFix: false
   Script: "cakefile.cake"
@@ -29,9 +29,7 @@ jobs:
         - GitHub_Draft_Release
       Configuration: ${{ parameters.Configuration }}
       Verbosity: ${{ parameters.Verbosity }}
-      # DotNet21Version: ${{ parameters.DotNet21Version }}
-      DotNetVersion: ${{ parameters.DotNetVersion }}
-      DotNet3Version: ${{ parameters.DotNet3Version }}
+      DotNetSdk: ${{ parameters.DotNetSdk }}
       NuGetVersion: ${{ parameters.NuGetVersion }}
       Script: ${{ parameters.Script }}
       Target: ${{ parameters.Target }}
@@ -51,8 +49,7 @@ jobs:
           - ${{ if eq(parameters.GitHub, 'true') }}:
               - template: ../standard/github-draft-release.yml
                 parameters:
-                  DotNetVersion: ${{ parameters.DotNetVersion }}
-                  DotNet3Version: ${{ parameters.DotNet3Version }}
+                  DotNetSdk: ${{ parameters.DotNetSdk }}
 
       - job: Publish_NuGet_Packages
         displayName: "Publish NuGet Packages"
@@ -88,5 +85,4 @@ jobs:
           - ${{ if eq(parameters.GitHub, 'true') }}:
               - template: ../standard/github-release.yml
                 parameters:
-                  DotNetVersion: ${{ parameters.DotNetVersion }}
-                  DotNet3Version: ${{ parameters.DotNet3Version }}
+                  DotNetSdk: ${{ parameters.DotNetSdk }}
