@@ -1,10 +1,10 @@
 parameters:
   NuGetVersion: "5.2.0"
   Artifacts: "$(Pipeline.Workspace)/nuget/"
-  AllowPackageConflicts: 'true'
-  MyGetFeed: 'myget.org'
-  NuGetFeed: 'nuget.org'
-  GitHubFeed: 'github.nuget'
+  AllowPackageConflicts: "true"
+  MyGetFeed: "myget.org"
+  NuGetFeed: "nuget.org"
+  GitHubFeed: "github.nuget"
   GitHubPackages: false
 
 steps:
@@ -12,31 +12,30 @@ steps:
     displayName: "Get NuGet"
     inputs:
       versionSpec: ${{ parameters.NuGetVersion }}
-  - task: NuGetCommand@2
-    displayName: Push NuGet packages to ${{ parameters.MyGetFeed }}
-    inputs:
-      command: push
-      nuGetFeedType: external
-      packagesToPush: "${{ parameters.Artifacts }}/**/*.nupkg;!${{ parameters.Artifacts }}/**/*.symbols.nupkg"
-      publishFeedCredentials: ${{ parameters.MyGetFeed }}
-      allowPackageConflicts: ${{ parameters.AllowPackageConflicts }}
-    condition: and(succeeded(), or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranch'], 'refs/heads/master')))
-  - ${{ if eq(parameters.GitHubPackages, 'true') }}:
-    - task: NuGetCommand@2
-      displayName: Push NuGet packages to ${{ parameters.GitHubFeed }}
-      inputs:
-        command: push
-        nuGetFeedType: external
-        packagesToPush: "${{ parameters.Artifacts }}/**/*.nupkg;!${{ parameters.Artifacts }}/**/*.symbols.nupkg"
-        publishFeedCredentials: ${{ parameters.GitHubFeed }}
-        allowPackageConflicts: ${{ parameters.AllowPackageConflicts }}
-      condition: and(succeeded(), or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranch'], 'refs/heads/master')))
-  - task: NuGetCommand@2
-    displayName: Push NuGet packages to ${{ parameters.NuGetFeed }}
-    inputs:
-      command: push
-      nuGetFeedType: external
-      packagesToPush: "${{ parameters.Artifacts }}/**/*.nupkg;!${{ parameters.Artifacts }}/**/*.symbols.nupkg"
-      publishFeedCredentials: ${{ parameters.NuGetFeed }}
-      allowPackageConflicts: ${{ parameters.AllowPackageConflicts }}
-    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
+
+  - ${{ if or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranch'], 'refs/heads/master')) }}:
+      - task: NuGetCommand@2
+        displayName: Push NuGet packages to ${{ parameters.MyGetFeed }}
+        inputs:
+          command: push
+          nuGetFeedType: external
+          packagesToPush: "${{ parameters.Artifacts }}/**/*.nupkg;!${{ parameters.Artifacts }}/**/*.symbols.nupkg"
+          publishFeedCredentials: ${{ parameters.MyGetFeed }}
+          allowPackageConflicts: ${{ parameters.AllowPackageConflicts }}
+      - ${{ if eq(parameters.GitHubPackages, 'true') }}:
+          - task: NuGetCommand@2
+            displayName: Push NuGet packages to ${{ parameters.GitHubFeed }}
+            inputs:
+              command: push
+              nuGetFeedType: external
+              packagesToPush: "${{ parameters.Artifacts }}/**/*.nupkg;!${{ parameters.Artifacts }}/**/*.symbols.nupkg"
+              publishFeedCredentials: ${{ parameters.GitHubFeed }}
+              allowPackageConflicts: ${{ parameters.AllowPackageConflicts }}
+      - task: NuGetCommand@2
+        displayName: Push NuGet packages to ${{ parameters.NuGetFeed }}
+        inputs:
+          command: push
+          nuGetFeedType: external
+          packagesToPush: "${{ parameters.Artifacts }}/**/*.nupkg;!${{ parameters.Artifacts }}/**/*.symbols.nupkg"
+          publishFeedCredentials: ${{ parameters.NuGetFeed }}
+          allowPackageConflicts: ${{ parameters.AllowPackageConflicts }}

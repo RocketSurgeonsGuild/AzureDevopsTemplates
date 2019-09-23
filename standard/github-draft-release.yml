@@ -1,34 +1,32 @@
 steps:
-  - pwsh: |
-      $parts = '$(Build.Repository.Name)' -split '/';
-      Write-Host "##vso[task.setvariable variable=GitHub.Owner]$($parts[0])"
-      Write-Host "##vso[task.setvariable variable=GitHub.Repository]$($parts[1])"
-    displayName: "Assign GitHub.Owner and GitHub.Repository"
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-
-  - pwsh: |
-      $token = "$(GitHub.Token)";
-      $repository = "$(GitHub.Repository)";
-      $owner = "$(GitHub.Owner)";
-      $tag = "v$(GitVersion.MajorMinorPatch)";
-
-      $releases = Invoke-RestMethod `
-          -Uri "https://api.github.com/repos/$owner/$repository/releases" `
-          -Headers @{  Authorization = "Token $token" } `
-          -Method Get;
-
-      $drafts = $releases | Sort-Object -Property created_at | where { $_.draft -and ($_.name -eq $tag) };
-
-      foreach ($draft in $drafts) {
-            Invoke-RestMethod `
-                -Uri "https://api.github.com/repos/$owner/$repository/releases/$($draft.id)" `
-                -Headers @{  Authorization = "Token $token" } `
-                -Method Delete;
-      }
-    displayName: "Delete old draft releases"
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-
   - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/master') }}:
+      - pwsh: |
+          $parts = '$(Build.Repository.Name)' -split '/';
+          Write-Host "##vso[task.setvariable variable=GitHub.Owner]$($parts[0])"
+          Write-Host "##vso[task.setvariable variable=GitHub.Repository]$($parts[1])"
+        displayName: "Assign GitHub.Owner and GitHub.Repository"
+
+      - pwsh: |
+          $token = "$(GitHub.Token)";
+          $repository = "$(GitHub.Repository)";
+          $owner = "$(GitHub.Owner)";
+          $tag = "v$(GitVersion.MajorMinorPatch)";
+
+          $releases = Invoke-RestMethod `
+              -Uri "https://api.github.com/repos/$owner/$repository/releases" `
+              -Headers @{  Authorization = "Token $token" } `
+              -Method Get;
+
+          $drafts = $releases | Sort-Object -Property created_at | where { $_.draft -and ($_.name -eq $tag) };
+
+          foreach ($draft in $drafts) {
+                Invoke-RestMethod `
+                    -Uri "https://api.github.com/repos/$owner/$repository/releases/$($draft.id)" `
+                    -Headers @{  Authorization = "Token $token" } `
+                    -Method Delete;
+          }
+        displayName: "Delete old draft releases"
+
       - pwsh: |
           $token = "$(GitHub.Token)";
           $repository = "$(GitHub.Repository)";
@@ -49,24 +47,22 @@ steps:
                   -Body (@{ title = $tag; } | ConvertTo-Json)
           }
         displayName: "Ensure v$(GitVersion.MajorMinorPatch) Milestone"
-    # condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-  - pwsh: mkdir $(Build.ArtifactStagingDirectory)/releasenotes/;
-    displayName: "Create release notes directory (Tag)"
-    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
 
-  - pwsh: |
-      $password = '$(GitHub.Password)'
-      $repository = "$(GitHub.Repository)";
-      $owner = "$(GitHub.Owner)";
-      $tag = "v$(GitVersion.MajorMinorPatch)";
-      $username = "$(GitHub.Username)"
+  - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/v') }}:
+      - pwsh: mkdir $(Build.ArtifactStagingDirectory)/releasenotes/;
+        displayName: "Create release notes directory (Tag)"
 
-      dotnet gitreleasemanager export --username "$username" --password "$password" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md" -t $tag
-      dotnet gitreleasemanager export --username "$username" --password "$password" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release.md"
-    displayName: "Export Release (Tag)"
-    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
+      - pwsh: |
+          $password = '$(GitHub.Password)'
+          $repository = "$(GitHub.Repository)";
+          $owner = "$(GitHub.Owner)";
+          $tag = "v$(GitVersion.MajorMinorPatch)";
+          $username = "$(GitHub.Username)"
 
-  - publish: "$(Build.ArtifactStagingDirectory)/releasenotes/"
-    displayName: Publish Release Notes
-    artifact: "Release Notes (Tag)"
-    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
+          dotnet gitreleasemanager export --username "$username" --password "$password" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md" -t $tag
+          dotnet gitreleasemanager export --username "$username" --password "$password" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release.md"
+        displayName: "Export Release (Tag)"
+
+      - publish: "$(Build.ArtifactStagingDirectory)/releasenotes/"
+        displayName: Publish Release Notes
+        artifact: "Release Notes (Tag)"

@@ -8,13 +8,12 @@ parameters:
   BranchNameFix: false
 
 steps:
-  - ${{ if eq(parameters.BranchNameFix, 'true') }}:
+  - ${{ if and(eq(parameters.BranchNameFix, 'true'), variables['System.PullRequest.SourceBranch']) }}:
     - powershell: |
         Write-Host "##vso[task.setvariable variable=Build.SourceBranch]$ENV:SYSTEM_PULLREQUEST_SOURCEBRANCH"
         $sourceBranchName = $ENV:SYSTEM_PULLREQUEST_SOURCEBRANCH -split '/' | select -last 1;
         Write-Host "##vso[task.setvariable variable=Build.SourceBranchName]$sourceBranchName"
       displayName: GitVersion Hack
-      condition: and(succeeded(), variables['System.PullRequest.SourceBranch'])
   - task: NuGetToolInstaller@1
     displayName: "Get NuGet"
     inputs:
