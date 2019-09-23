@@ -9,9 +9,6 @@ steps:
       Write-Host "##vso[task.setvariable variable=GitHub.Repository]$($parts[1])"
     displayName: "Assign GitHub.Owner and GitHub.Repository"
 
-  - pwsh: mkdir $(Build.ArtifactStagingDirectory)/releasenotes/;
-    displayName: "Create release notes directory"
-
   - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/master') }}:
       - task: UseDotNet@2
         displayName: Install dotnet ${{ parameters.DotNetVersion }}
@@ -31,6 +28,9 @@ steps:
           command: custom
           custom: tool
           arguments: "restore"
+
+      - pwsh: mkdir $(Build.ArtifactStagingDirectory)/releasenotes/;
+        displayName: "Create release notes directory"
 
       - pwsh: |
           $token = "$(GitHub.Token)";
