@@ -31,6 +31,8 @@ steps:
               packagesToPush: "${{ parameters.Artifacts }}/**/*.nupkg;!${{ parameters.Artifacts }}/**/*.symbols.nupkg"
               publishFeedCredentials: ${{ parameters.GitHubFeed }}
               allowPackageConflicts: ${{ parameters.AllowPackageConflicts }}
+
+  - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/v') }}:
       - task: NuGetCommand@2
         displayName: Push NuGet packages to ${{ parameters.NuGetFeed }}
         inputs:
