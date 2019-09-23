@@ -1,10 +1,11 @@
 steps:
+  - pwsh: |
+      $parts = '$(Build.Repository.Name)' -split '/';
+      Write-Host "##vso[task.setvariable variable=GitHub.Owner]$($parts[0])"
+      Write-Host "##vso[task.setvariable variable=GitHub.Repository]$($parts[1])"
+    displayName: "Assign GitHub.Owner and GitHub.Repository"
+
   - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/master') }}:
-      - pwsh: |
-          $parts = '$(Build.Repository.Name)' -split '/';
-          Write-Host "##vso[task.setvariable variable=GitHub.Owner]$($parts[0])"
-          Write-Host "##vso[task.setvariable variable=GitHub.Repository]$($parts[1])"
-        displayName: "Assign GitHub.Owner and GitHub.Repository"
 
       - pwsh: |
           $token = "$(GitHub.Token)";
