@@ -84,7 +84,7 @@ steps:
 
       - publish: "$(Build.ArtifactStagingDirectory)/releasenotes/"
         displayName: Publish Release Notes
-        artifact: "Release Notes"
+        artifact: "ReleaseNotes"
 
   - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/v') }}:
       - pwsh: |

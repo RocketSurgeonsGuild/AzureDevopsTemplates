@@ -64,5 +64,5 @@ steps:
         displayName: "Export Release (Tag)"
 
       - publish: "$(Build.ArtifactStagingDirectory)/releasenotes/"
-        displayName: Publish Release Notes
-        artifact: "Release Notes (Tag)"
+        displayName: Publish Release Notes (Tag)
+        artifact: "ReleaseNotes"
