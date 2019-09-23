@@ -26,7 +26,8 @@ jobs:
       name: Build
       dependsOn:
         - GitVersion
-        - GitHub_Draft_Release
+        - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/v') }}:
+            - GitHub_Draft_Release
       Configuration: ${{ parameters.Configuration }}
       Verbosity: ${{ parameters.Verbosity }}
       DotNetSdk: ${{ parameters.DotNetSdk }}
@@ -56,8 +57,7 @@ jobs:
           vmImage: "windows-latest"
         dependsOn:
           - Build
-          - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/v') }}:
-            - GitHub_Draft_Release
+          - GitHub_Draft_Release
         steps:
           # - checkout: none
           - download: current
