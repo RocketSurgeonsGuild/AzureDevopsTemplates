@@ -3,7 +3,7 @@
 #   This allows subsequent jobs to include the cake information without explictly requiring gitversion to be run.
 #
 parameters:
-  version: "4.0.0"
+  version: "5.0.1"
   NuGetVersion: "5.2.0"
   BranchNameFix: false
 
