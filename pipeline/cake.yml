@@ -26,7 +26,7 @@ jobs:
       name: "Build"
       dependsOn:
         - GitVersion
-        - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/v') }}:
+        - ${{ if and(eq(parameters.GitHub, 'true'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v')) }}:
             - GitHub_Draft_Release
       Configuration: ${{ parameters.Configuration }}
       Verbosity: ${{ parameters.Verbosity }}
@@ -36,21 +36,23 @@ jobs:
       Target: ${{ parameters.Target }}
 
   - ${{ if ne(variables['System.PullRequest.IsFork'], 'true') }}:
-      - job: GitHub_Draft_Release
-        displayName: "GitHub Draft Release"
-        pool:
-          vmImage: "windows-latest"
-        dependsOn:
-          - GitVersion
-        variables:
-          - group: ${{ parameters.GithubAuthVariableGroup }}
-        steps:
-          # - checkout: none
-          - template: ../gitversion/restore.yml
-          - ${{ if eq(parameters.GitHub, 'true') }}:
-              - template: ../standard/github-draft-release.yml
-                parameters:
-                  DotNetSdk: ${{ parameters.DotNetSdk }}
+
+      - ${{ if eq(parameters.GitHub, 'true') }}:
+          - job: GitHub_Draft_Release
+            displayName: "GitHub Draft Release"
+            pool:
+              vmImage: "windows-latest"
+            dependsOn:
+              - GitVersion
+            variables:
+              - group: ${{ parameters.GithubAuthVariableGroup }}
+            steps:
+              # - checkout: none
+              - template: ../gitversion/restore.yml
+              - ${{ if eq(parameters.GitHub, 'true') }}:
+                  - template: ../standard/github-draft-release.yml
+                    parameters:
+                      DotNetSdk: ${{ parameters.DotNetSdk }}
 
       - job: Publish_NuGet_Packages
         displayName: "Publish NuGet Packages"
@@ -58,7 +60,8 @@ jobs:
           vmImage: "windows-latest"
         dependsOn:
           - Build
-          - GitHub_Draft_Release
+          - ${{ if eq(parameters.GitHub, 'true') }}:
+              - GitHub_Draft_Release
         steps:
           # - checkout: none
           - download: current
@@ -71,19 +74,19 @@ jobs:
               Verbosity: ${{ parameters.Verbosity }}
               GitHubPackages: ${{ parameters.GitHubPackages }}
 
-      - job: GitHub_Release
-        displayName: "GitHub Release"
-        pool:
-          vmImage: "windows-latest"
-        dependsOn:
-          - Build
-          - GitHub_Draft_Release
-        variables:
-          - group: ${{ parameters.GithubAuthVariableGroup }}
-        steps:
-          # - checkout: none
-          - template: ../gitversion/restore.yml
-          - ${{ if eq(parameters.GitHub, 'true') }}:
+      - ${{ if eq(parameters.GitHub, 'true') }}:
+          - job: GitHub_Release
+            displayName: "GitHub Release"
+            pool:
+              vmImage: "windows-latest"
+            dependsOn:
+              - Build
+              - GitHub_Draft_Release
+            variables:
+              - group: ${{ parameters.GithubAuthVariableGroup }}
+            steps:
+              # - checkout: none
+              - template: ../gitversion/restore.yml
               - template: ../standard/github-release.yml
                 parameters:
                   DotNetSdk: ${{ parameters.DotNetSdk }}
