@@ -40,7 +40,6 @@ steps:
           $outfile = "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md";
 
           $newTag = dotnet gitreleasemanager create --username "$username" --password "$password" --owner "$owner" --repository "$repository" -n "$tag" -c "$sha" -m "$tag";
-          dotnet gitreleasemanager export --username "$username" --password "$password" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md" -t $tag
           $tagName = $newTag -split '/' | select -Last 1;
           Write-Host Tag Name $tagName;
 
@@ -53,6 +52,8 @@ steps:
               -Uri "https://api.github.com/repos/$owner/$repository/releases/$($item.id)" `
               -Headers @{  Authorization = "Token $token" } `
               -Method Delete;
+
+          Set-Content -Path "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md" -Value $item.body
 
         displayName: "Get up to date changeset details from GitHub_Release"
 
