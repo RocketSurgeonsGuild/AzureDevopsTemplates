@@ -12,20 +12,21 @@ parameters:
   NuGetPackages: $(Pipeline.Workspace)/.nuget/packages
   NuGetFallbackPackages: ""
   RestorePackageConfig: false
+  Matrix:
+    Windows:
+      MATRIX_NAME: "Windows"
+      IMAGE_NAME: "windows-latest"
+    Linux:
+      MATRIX_NAME: "Linux"
+      IMAGE_NAME: "ubuntu-latest"
+    macOS:
+      MATRIX_NAME: "macOS"
+      IMAGE_NAME: "macOS-latest"
 jobs:
   - job: ${{ parameters.name }}
     dependsOn: ${{ parameters.dependsOn }}
     strategy:
-      matrix:
-        Windows:
-          MATRIX_NAME: 'Windows'
-          IMAGE_NAME: "windows-latest"
-        Linux:
-          MATRIX_NAME: 'Linux'
-          IMAGE_NAME: "ubuntu-latest"
-        macOS:
-          MATRIX_NAME: 'macOS'
-          IMAGE_NAME: "macOS-latest"
+      matrix: ${{ parameters.Matrix }}
     pool:
       vmImage: $(IMAGE_NAME)
     # variables:
