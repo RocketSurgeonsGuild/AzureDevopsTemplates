@@ -10,7 +10,7 @@ parameters:
   RestorePackageConfig: false
   Postfix: ''
 steps:
-  - template: ../gitversion/restore.yml
+  # - template: ../gitversion/restore.yml
   - template: ../nuke/steps.yml
     parameters:
       Configuration: ${{ parameters.Configuration }}

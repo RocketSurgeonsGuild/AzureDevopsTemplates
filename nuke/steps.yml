@@ -13,7 +13,7 @@ steps:
       DotNetSdk: ${{ parameters.DotNetSdk }}
       NuGetVersion: ${{ parameters.NuGetVersion }}
       NuGetPackages: ${{ parameters.NuGetPackages }}
-  - template: ../standard/dotnet-restore.yml
+  # - template: ../standard/dotnet-restore.yml
   - template: ../nuke/run.yml
     parameters:
       Configuration: ${{ parameters.Configuration }}

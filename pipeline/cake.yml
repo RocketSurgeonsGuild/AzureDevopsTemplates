@@ -25,7 +25,7 @@ jobs:
     parameters:
       name: "Build"
       dependsOn:
-        - GitVersion
+        # - GitVersion
         - ${{ if and(eq(parameters.GitHub, 'true'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v')) }}:
             - GitHub_Draft_Release
       Configuration: ${{ parameters.Configuration }}
@@ -43,7 +43,7 @@ jobs:
             pool:
               vmImage: "windows-latest"
             dependsOn:
-              - GitVersion
+              # - GitVersion
             variables:
               - group: ${{ parameters.GithubAuthVariableGroup }}
             steps:

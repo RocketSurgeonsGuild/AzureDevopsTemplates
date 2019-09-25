@@ -42,7 +42,7 @@ jobs:
     #       - name: NUGET_FALLBACK_PACKAGES
     #       - value: ${{ parameters.NuGetFallbackPackages }}
     steps:
-      - template: ../gitversion/restore.yml
+      # - template: ../gitversion/restore.yml
       - ${{ if ne(parameters.NuGetSource, '') }}:
           - template: ../standard/nuget-source.yml
             parameters:

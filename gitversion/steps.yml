@@ -16,7 +16,7 @@ steps:
       NuGetVersion: ${{ parameters.NuGetVersion }}
       NuGetPackages: ${{ parameters.NuGetPackages }}
       RestorePackageConfig: ${{ parameters.RestorePackageConfig }}
-  - template: ../standard/dotnet-restore.yml
+  # - template: ../standard/dotnet-restore.yml
   - template: ../cake/run.yml
     parameters:
       Configuration: ${{ parameters.Configuration }}
