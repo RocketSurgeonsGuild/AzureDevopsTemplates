@@ -12,6 +12,7 @@ parameters:
   NuGetPackages: $(Pipeline.Workspace)/.nuget/packages
   NuGetFallbackPackages: ""
   RestorePackageConfig: false
+  EnableReleaseNotes: true
   Matrix:
     Windows:
       MATRIX_NAME: "Windows"
@@ -45,13 +46,13 @@ jobs:
     #       - name: NUGET_FALLBACK_PACKAGES
     #       - value: ${{ parameters.NuGetFallbackPackages }}
     steps:
-      - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/v') }}:
+      - ${{ if and(eq(parameters.EnableReleaseNotes, 'true'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v')) }}:
           - download: current
             displayName: "Download Release Notes (Tag)"
             artifact: "ReleaseNotes"
           - pwsh: |
               Write-Host "##vso[task.setvariable variable=PackageReleaseNotes]$(Get-Content -Raw '$(Pipeline.Workspace)\ReleaseNotes\release.md')"
-            displayName: asdf
+            displayName: 'Replace whitespace'
       - template: ../cake/job-steps.yml
         parameters:
           Configuration: ${{ parameters.Configuration }}

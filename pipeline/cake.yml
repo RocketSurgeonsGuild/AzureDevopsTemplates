@@ -8,6 +8,7 @@ parameters:
   BranchNameFix: false
   Script: "cakefile.cake"
   Target: "Default"
+  EnableReleaseNotes: true
   GitHub: false
   GitHubPackages: false
   GithubAuthVariableGroup: ""
@@ -26,7 +27,7 @@ jobs:
       name: "Build"
       dependsOn:
         - GitVersion
-        - ${{ if and(eq(parameters.GitHub, 'true'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v')) }}:
+        - ${{ if and(eq(parameters.EnableReleaseNotes, 'true'), eq(parameters.GitHub, 'true'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v')) }}:
             - GitHub_Draft_Release
       Configuration: ${{ parameters.Configuration }}
       Verbosity: ${{ parameters.Verbosity }}
@@ -34,10 +35,11 @@ jobs:
       NuGetVersion: ${{ parameters.NuGetVersion }}
       Script: ${{ parameters.Script }}
       Target: ${{ parameters.Target }}
+      EnableReleaseNotes: ${{ parameters.EnableReleaseNotes }}
 
   - ${{ if ne(variables['System.PullRequest.IsFork'], 'true') }}:
 
-      - ${{ if eq(parameters.GitHub, 'true') }}:
+      - ${{ if and(eq(parameters.EnableReleaseNotes, 'true'), eq(parameters.GitHub, 'true')) }}:
           - job: GitHub_Draft_Release
             displayName: "GitHub Draft Release"
             pool:
@@ -49,7 +51,7 @@ jobs:
             steps:
               # - checkout: none
               - template: ../gitversion/restore.yml
-              - ${{ if eq(parameters.GitHub, 'true') }}:
+              - ${{ if and(eq(parameters.EnableReleaseNotes, 'true'), eq(parameters.GitHub, 'true')) }}:
                   - template: ../standard/github-draft-release.yml
                     parameters:
                       DotNetSdk: ${{ parameters.DotNetSdk }}
@@ -60,7 +62,7 @@ jobs:
           vmImage: "windows-latest"
         dependsOn:
           - Build
-          - ${{ if eq(parameters.GitHub, 'true') }}:
+          - ${{ if and(eq(parameters.EnableReleaseNotes, 'true'), eq(parameters.GitHub, 'true')) }}:
               - GitHub_Draft_Release
         steps:
           # - checkout: none
@@ -74,7 +76,7 @@ jobs:
               Verbosity: ${{ parameters.Verbosity }}
               GitHubPackages: ${{ parameters.GitHubPackages }}
 
-      - ${{ if eq(parameters.GitHub, 'true') }}:
+      - ${{ if and(eq(parameters.EnableReleaseNotes, 'true'), eq(parameters.GitHub, 'true')) }}:
           - job: GitHub_Release
             displayName: "GitHub Release"
             pool:

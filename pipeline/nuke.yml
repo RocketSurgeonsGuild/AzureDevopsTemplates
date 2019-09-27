@@ -8,6 +8,7 @@ parameters:
   NuGetVersion: "5.2.0"
   BranchNameFix: false
   Targets: "Default"
+  EnableReleaseNotes: true
   GitHub: false
   GitHubPackages: false
   GithubAuthVariableGroup: ""
@@ -26,17 +27,18 @@ jobs:
       name: Build
       dependsOn:
         - GitVersion
-        - ${{ if and(eq(parameters.GitHub, 'true'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v')) }}:
+        - ${{ if and(eq(parameters.EnableReleaseNotes, 'true'), eq(parameters.GitHub, 'true'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v')) }}:
             - GitHub_Draft_Release
       Configuration: ${{ parameters.Configuration }}
       Verbosity: ${{ parameters.Verbosity }}
       DotNetSdk: ${{ parameters.DotNetSdk }}
       NuGetVersion: ${{ parameters.NuGetVersion }}
       Targets: ${{ parameters.Targets }}
+      EnableReleaseNotes: ${{ parameters.EnableReleaseNotes }}
 
   - ${{ if ne(variables['System.PullRequest.IsFork'], 'true') }}:
 
-      - ${{ if eq(parameters.GitHub, 'true') }}:
+      - ${{ if and(eq(parameters.EnableReleaseNotes, 'true'), eq(parameters.GitHub, 'true')) }}:
           - job: GitHub_Draft_Release
             displayName: "GitHub Draft Release"
             pool:
@@ -58,7 +60,7 @@ jobs:
           vmImage: "windows-latest"
         dependsOn:
           - Build
-          - ${{ if eq(parameters.GitHub, 'true') }}:
+          - ${{ if and(eq(parameters.EnableReleaseNotes, 'true'), eq(parameters.GitHub, 'true')) }}:
               - GitHub_Draft_Release
         steps:
           # - checkout: none
@@ -72,7 +74,7 @@ jobs:
               Verbosity: ${{ parameters.Verbosity }}
               GitHubPackages: ${{ parameters.GitHubPackages }}
 
-      - ${{ if eq(parameters.GitHub, 'true') }}:
+      - ${{ if and(eq(parameters.EnableReleaseNotes, 'true'), eq(parameters.GitHub, 'true')) }}:
           - job: GitHub_Release
             displayName: "GitHub Release"
             pool:
