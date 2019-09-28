@@ -50,7 +50,7 @@ jobs:
             displayName: "Download Release Notes (Tag)"
             artifact: "ReleaseNotes"
           - pwsh: |
-              $content = Get-Content -Raw '$(Pipeline.Workspace)\ReleaseNotes\release-v$(GitVersion.MajorMinorPatch).md';
+              $content = Get-Content -Raw '$(Pipeline.Workspace)\ReleaseNotes\release-current.md';
               $content = ($content -replace '\n', '%0A') -replace '\r', '%0D'
               Write-Host "##vso[task.setvariable variable=PackageReleaseNotes]$($content)"
             displayName: 'Replace whitespace'
