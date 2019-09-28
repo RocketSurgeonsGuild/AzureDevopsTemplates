@@ -6,7 +6,7 @@ parameters:
     - "2.2.x"
     - "3.0.x"
   NuGetVersion: "5.2.0"
-  BranchNameFix: false
+  BranchNameFix: true
   FeedId: ''
   NuGetSource: ''
 jobs:
