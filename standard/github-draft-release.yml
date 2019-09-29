@@ -74,15 +74,14 @@ steps:
         displayName: "Create release notes directory (Tag)"
 
       - pwsh: |
-          $password = '$(GitHub.Password)'
+          $token = "$(GitHub.Token)";
           $repository = "$(GitHub.Repository)";
           $owner = "$(GitHub.Owner)";
           $tag = "v$(GitVersion.MajorMinorPatch)";
-          $username = "$(GitHub.Username)"
 
-          dotnet gitreleasemanager export --username "$username" --password "$password" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md" -t $tag
-          dotnet gitreleasemanager export --username "$username" --password "$password" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release-current.md" -t $tag
-          dotnet gitreleasemanager export --username "$username" --password "$password" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release.md"
+          dotnet gitreleasemanager export --token "$token" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md" -t $tag
+          dotnet gitreleasemanager export --token "$token" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release-current.md" -t $tag
+          dotnet gitreleasemanager export --token "$token" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release.md"
         displayName: "Export Release (Tag)"
 
       - publish: "$(Build.ArtifactStagingDirectory)/releasenotes/"

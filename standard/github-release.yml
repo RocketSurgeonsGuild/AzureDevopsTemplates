@@ -31,15 +31,14 @@ steps:
 
       - pwsh: |
           $token = "$(GitHub.Token)";
-          $password = '$(GitHub.Password)'
           $repository = "$(GitHub.Repository)";
           $owner = "$(GitHub.Owner)";
           $tag = "v$(GitVersion.MajorMinorPatch)";
           $sha = "$(Build.SourceVersion)";
-          $username = "$(GitHub.Username)"
           $outfile = "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md";
 
-          $newTag = dotnet gitreleasemanager create --username "$username" --password "$password" --owner "$owner" --repository "$repository" -n "$tag" -c "$sha" -m "$tag";
+          $newTag = dotnet gitreleasemanager create --token "$token" --owner "$owner" --repository "$repository" -n "$tag" -c "$sha" -m "$tag";
+          Write-Host Response From Create $newTag
           $tagName = $newTag -split '/' | select -Last 1;
           Write-Host Tag Name $tagName;
 
@@ -69,14 +68,13 @@ steps:
           releaseNotesFile: "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md"
 
       - pwsh: |
-          $password = '$(GitHub.Password)'
+          $token = "$(GitHub.Token)";
           $repository = "$(GitHub.Repository)";
           $owner = "$(GitHub.Owner)";
           $tag = "v$(GitVersion.MajorMinorPatch)";
-          $username = "$(GitHub.Username)"
 
-          dotnet gitreleasemanager export --username "$username" --password "$password" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md" -t $tag
-          dotnet gitreleasemanager export --username "$username" --password "$password" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release.md"
+          dotnet gitreleasemanager export --token "$token" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md" -t $tag
+          dotnet gitreleasemanager export --token "$token" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release.md"
         displayName: "Export Release Notes"
 
       - publish: "$(Build.ArtifactStagingDirectory)/releasenotes/"
