@@ -23,7 +23,7 @@ steps:
               -Headers @{  Authorization = "Token $token" } `
               -Method Get;
 
-          $drafts = $releases | Sort-Object -Property created_at | where { $_.draft -and ($_.name -eq $tag) };
+          $drafts = $releases | Sort-Object -Property created_at | where { $_.draft };
 
           foreach ($draft in $drafts) {
                 Invoke-RestMethod `
