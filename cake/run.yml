@@ -12,11 +12,11 @@ steps:
   inputs:
     command: custom
     custom: cake
-    arguments: ${{ format('{0} --bootstrap', parameters.Script) }}
+    arguments: '${{ parameters.Script }} --bootstrap'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet cake'
   inputs:
     command: custom
     custom: cake
-    arguments: ${{ format('{0} --Target="{1}" --Configuration="${{ parameters.Configuration }}" --Artifacts="${{ parameters.Artifacts }}" --Coverage="${{ parameters.Coverage }}" --verbosity="${{ parameters.Verbosity }}"', parameters.Script, parameters.Target) }}
+    arguments: '${{ parameters.Script }} --Target="${{ parameters.Target }}" --Configuration="${{ parameters.Configuration }}" --Artifacts="${{ parameters.Artifacts }}" --Coverage="${{ parameters.Coverage }}" --verbosity="${{ parameters.Verbosity }}"'
