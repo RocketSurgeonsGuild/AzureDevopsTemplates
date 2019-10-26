@@ -34,6 +34,7 @@ steps:
           publishFeedCredentials: ${{ parameters.MyGetFeed }}
           allowPackageConflicts: ${{ parameters.AllowPackageConflicts }}
           continueOnError: true
+
       - ${{ if eq(parameters.GitHubPackages, 'true') }}:
           - task: NuGetCommand@2
             displayName: Push NuGet packages to ${{ parameters.GitHubFeed }}

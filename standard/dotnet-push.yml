@@ -1,20 +1,37 @@
 parameters:
-  Artifacts: $(Build.ArtifactStagingDirectory)
+  Artifacts: "$(Pipeline.Workspace)/nuget/"
+  MyGetFeed: "myget.org"
+  NuGetFeed: "nuget.org"
+  GitHubFeed: "github.nuget"
+  GitHubPackages: false
 
 steps:
-  - task: DotNetCoreCLI@2
-    displayName: "Push NuGet packages to myget.org"
-    inputs:
-      command: push
-      nuGetFeedType: external
-      packagesToPush: ${{ format('{0}/nuget/*.nupkg;!{0}/nuget/*.symbols.nupkg', parameters.Artifacts) }}
-      publishFeedCredentials: myget.org
-
   - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/v') }}:
       - task: DotNetCoreCLI@2
-        displayName: "Push NuGet packages to nuget.org"
+        displayName: Push NuGet packages to ${{ parameters.NuGetFeed }}
         inputs:
           command: push
           nuGetFeedType: external
-          packagesToPush: ${{ format('{0}/nuget/*.nupkg;!{0}/nuget/*.symbols.nupkg', parameters.Artifacts) }}
-          publishFeedCredentials: nuget.org
+          packagesToPush: "${{ parameters.Artifacts }}/**/*.nupkg;!${{ parameters.Artifacts }}/**/*.symbols.nupkg"
+          publishFeedCredentials: ${{ parameters.NuGetFeed }}
+          continueOnError: true
+
+  - ${{ if or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranch'], 'refs/heads/master')) }}:
+      - task: DotNetCoreCLI@2
+        displayName: Push NuGet packages to ${{ parameters.MyGetFeed }}
+        inputs:
+          command: push
+          nuGetFeedType: external
+          packagesToPush: "${{ parameters.Artifacts }}/**/*.nupkg;!${{ parameters.Artifacts }}/**/*.symbols.nupkg"
+          publishFeedCredentials: ${{ parameters.MyGetFeed }}
+          continueOnError: true
+
+      - ${{ if eq(parameters.GitHubPackages, 'true') }}:
+          - task: DotNetCoreCLI@2
+            displayName: Push NuGet packages to ${{ parameters.GitHubFeed }}
+            inputs:
+              command: push
+              nuGetFeedType: external
+              packagesToPush: "${{ parameters.Artifacts }}/**/*.nupkg;!${{ parameters.Artifacts }}/**/*.symbols.nupkg"
+              publishFeedCredentials: ${{ parameters.GitHubFeed }}
+              continueOnError: true

@@ -14,19 +14,9 @@ steps:
         $sourceBranchName = $ENV:SYSTEM_PULLREQUEST_SOURCEBRANCH -split '/' | select -last 1;
         Write-Host "##vso[task.setvariable variable=Build.SourceBranchName]$sourceBranchName"
       displayName: GitVersion Hack
-  - task: NuGetToolInstaller@1
-    displayName: "Get NuGet"
+  - task: gittools.gitversion.gitversion-task.GitVersion@5
     inputs:
-      versionSpec: ${{ parameters.NuGetVersion }}
-  - task: NuGetCommand@2
-    displayName: 'NuGet custom'
-    inputs:
-      command: custom
-      feedsToUse: config
-      arguments: ${{ format('install GitVersion.CommandLine -Version "{0}" -ExcludeVersion', parameters.version) }}
-  - script: GitVersion.exe /output buildserver
-    displayName: Run GitVersion
-    workingDirectory: GitVersion.CommandLine/tools/
+      configFilePath: GitVersion.yml
   - task: RocketSurgeonsGuild.variable-tools.SerializeVariables.SerializeVariables@1
     displayName: "Serialize GitVersion Variables"
     inputs:

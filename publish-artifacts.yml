@@ -21,7 +21,7 @@ steps:
     inputs:
       testRunner: "VSTest"
       testResultsFiles: "${{ parameters.Artifacts }}/test/**/*.trx"
-      testRunTitle: "XUnit Results${{ parameters.Postfix }}"
+      testRunTitle: "VSTest Results${{ parameters.Postfix }}"
       buildPlatform: ${{ parameters.os }}
       buildConfiguration: ${{ parameters.Configuration }}
 
