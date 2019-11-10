@@ -31,7 +31,7 @@ steps:
     inputs:
       codeCoverageTool: "Cobertura"
       summaryFileLocation: "${{ parameters.Coverage }}/solution.cobertura"
-      reportDirectory: "${{ parameters.Coverage }}/report/"
+      # reportDirectory: "${{ parameters.Coverage }}/report/"
       # failIfCoverageEmpty: "true"
 
   - task: DotNetCoreCLI@2
