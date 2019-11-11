@@ -53,7 +53,7 @@ steps:
         displayName: "Ensure v$(GitVersion.MajorMinorPatch) Milestone"
 
   - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/v') }}:
-      - template: ./install-dotnet.yml
+      - template: ../new/install-dotnet.yml
         parameters:
           DotNetSdk:
             - '2.x'
