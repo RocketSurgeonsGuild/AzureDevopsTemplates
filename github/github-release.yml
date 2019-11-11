@@ -7,10 +7,10 @@ steps:
 
   - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/master') }}:
       - task: UseDotNet@2
-        displayName: Install dotnet 3.x
+        displayName: Install dotnet 2.x
         inputs:
           packageType: "sdk"
-          version: '3.x'
+          version: '2.x'
 
       - task: DotNetCoreCLI@2
         displayName: "dotnet tool restore"
