@@ -23,8 +23,8 @@ steps:
     - task: NuGetCommand@2
       inputs:
         command: 'custom'
-        arguments: 'update -Name "$(feed.name)" -UserName "$(feed.username)" -Password "$(feed.password)"'
-      displayName: Authorize NuGet $(feed.name)
+        arguments: 'update -Name "${{ feed.name }}" -UserName "${{ feed.username }}" -Password "${{ feed.password }}"'
+      displayName: Authorize NuGet ${{ feed.name }}
 
   - task: DotNetCoreCLI@2
     displayName: "dotnet tool restore"
