@@ -57,5 +57,5 @@ steps:
 
   - publish: "${{ parameters.Artifacts }}/nuget/"
     displayName: Publish NuGet Artifacts
-    artifact: "NuGet ${{ parameters.Postfix }}"
+    artifact: "NuGet${{ parameters.Postfix }}"
     condition: always()
