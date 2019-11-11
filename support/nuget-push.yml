@@ -1,6 +1,6 @@
 parameters:
   NuGetVersion: "5.3.1"
-  Artifacts: "$(Pipeline.Workspace)/nuget/"
+  Artifacts: "$(Pipeline.Workspace)"
   AllowPackageConflicts: "true"
   MyGetFeed: "myget.org"
   MyGetPackages: false

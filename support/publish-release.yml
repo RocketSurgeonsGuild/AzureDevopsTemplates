@@ -43,7 +43,7 @@ jobs:
             artifact: "NuGet${{ parameters.Postfix }}"
           - template: ./nuget-push.yml
             parameters:
-              Artifacts: "$(Pipeline.Workspace)/nuget/"
+              Artifacts: "$(Pipeline.Workspace)"
               NuGetVersion: ${{ parameters.NuGetVersion }}
               GitHubPackages: ${{ parameters.GitHubPackages }}
               MyGetPackages: ${{ parameters.MyGetPackages }}
