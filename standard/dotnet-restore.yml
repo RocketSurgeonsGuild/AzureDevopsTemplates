@@ -1,8 +1,15 @@
 parameters:
   NuGetConfig: 'NuGet.config'
   Verbosity: 'Normal'
+  AuthNuGetFeeds: []
 
 steps:
+  - ${{ each feed in parameters.AuthNuGetFeeds }}:
+    - task: NuGetCommand@2
+      inputs:
+        command: 'custom'
+        arguments: 'update -Name "$(feed.name)" -UserName "$(feed.username)" -Password "$(feed.password)"'
+
   - task: DotNetCoreCLI@2
     displayName: 'dotnet restore'
     inputs:

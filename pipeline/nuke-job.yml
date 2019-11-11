@@ -12,6 +12,7 @@ parameters:
   NuGetFallbackPackages: ""
   RestorePackageConfig: false
   EnableReleaseNotes: true
+  AuthNuGetFeeds: []
   Matrix:
     Windows:
       MATRIX_NAME: "Windows"
@@ -62,5 +63,6 @@ jobs:
           NuGetVersion: ${{ parameters.NuGetVersion }}
           NuGetPackages: ${{ parameters.NuGetPackages }}
           RestorePackageConfig: ${{ parameters.RestorePackageConfig }}
+          AuthNuGetFeeds: ${{ parameters.AuthNuGetFeeds }}
           Targets: ${{ parameters.Targets }}
           Postfix: " - $(MATRIX_NAME)"

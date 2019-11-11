@@ -9,6 +9,7 @@ parameters:
   Target: "Default"
   NuGetPackages: $(Pipeline.Workspace)/.nuget/packages
   RestorePackageConfig: false
+  AuthNuGetFeeds: []
   Postfix: ''
 steps:
   - template: ../gitversion/restore.yml
@@ -20,6 +21,7 @@ steps:
       NuGetVersion: ${{ parameters.NuGetVersion }}
       NuGetPackages: ${{ parameters.NuGetPackages }}
       RestorePackageConfig: ${{ parameters.RestorePackageConfig }}
+      AuthNuGetFeeds: ${{ parameters.AuthNuGetFeeds }}
       Script: ${{ parameters.Script }}
       Target: ${{ parameters.Target }}
   - template: ../publish-artifacts.yml

@@ -11,7 +11,8 @@ parameters:
   EnableReleaseNotes: true
   GitHub: false
   GitHubPackages: false
-  GithubAuthVariableGroup: ""
+  GitHubAuthVariableGroup: ""
+  AuthNuGetFeeds: []
   Matrix:
     Windows:
       MATRIX_NAME: "Windows"
@@ -39,10 +40,14 @@ jobs:
         - GitVersion
         - ${{ if and(eq(parameters.EnableReleaseNotes, 'true'), eq(parameters.GitHub, 'true'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v')) }}:
             - GitHub_Draft_Release
+      variables:
+        - ${{ if ne(parameters.GitHubAuthVariableGroup, '') }}:
+          - group: ${{ parameters.GitHubAuthVariableGroup }}
       Configuration: ${{ parameters.Configuration }}
       Verbosity: ${{ parameters.Verbosity }}
       DotNetSdk: ${{ parameters.DotNetSdk }}
       NuGetVersion: ${{ parameters.NuGetVersion }}
+      AuthNuGetFeeds: ${{ parameters.AuthNuGetFeeds }}
       Targets: ${{ parameters.Targets }}
       EnableReleaseNotes: ${{ parameters.EnableReleaseNotes }}
       Matrix: ${{ parameters.Matrix }}
@@ -57,7 +62,8 @@ jobs:
             dependsOn:
               - GitVersion
             variables:
-              - group: ${{ parameters.GithubAuthVariableGroup }}
+              - ${{ if ne(parameters.GitHubAuthVariableGroup, '') }}:
+                - group: ${{ parameters.GitHubAuthVariableGroup }}
             steps:
               # - checkout: none
               - template: ../gitversion/restore.yml
@@ -94,7 +100,8 @@ jobs:
               - Build
               - GitHub_Draft_Release
             variables:
-              - group: ${{ parameters.GithubAuthVariableGroup }}
+              - ${{ if ne(parameters.GitHubAuthVariableGroup, '') }}:
+                - group: ${{ parameters.GitHubAuthVariableGroup }}
             steps:
               # - checkout: none
               - template: ../gitversion/restore.yml
