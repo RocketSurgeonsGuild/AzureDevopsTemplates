@@ -30,7 +30,7 @@ jobs:
     pool:
       vmImage: windows-latest
     steps:
-      - template: ../gitversion/store.yml
+      - template: ../support/gitversion-store.yml
         parameters:
           BranchNameFix: ${{ parameters.BranchNameFix }}
 
@@ -67,11 +67,11 @@ jobs:
               Write-Host "##vso[task.setvariable variable=PackageReleaseNotes]$($content)"
             displayName: 'Replace whitespace'
 
-      - template: ./gitversion-hack.yml
+      - template: ../support/gitversion-hack.yml
         parameters:
           BranchNameFix: ${{ parameters.BranchNameFix }}
 
-      - template: ./install-dotnet.yml
+      - template: ../support/install-dotnet.yml
         parameters:
           DotNetSdk: ${{ parameters.DotNetSdk }}
           AuthNuGetFeeds: ${{ parameters.AuthNuGetFeeds }}
@@ -107,7 +107,7 @@ jobs:
       - pwsh: .\build.ps1 -Target="${{parameters.Target}}" --Configuration="${{ parameters.Configuration }}" --Artifacts="${{ parameters.Artifacts }}" --Coverage="${{ parameters.Coverage }}" --verbosity="${{ parameters.Verbosity }}"
         displayName: 'cake ${{parameters.Target}}'
 
-      - template: ./publish-artifacts.yml
+      - template: ../support/publish-artifacts.yml
         parameters:
           Configuration: ${{ parameters.Configuration }}
           Postfix: ' - $(BuildName)'
