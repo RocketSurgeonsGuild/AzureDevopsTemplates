@@ -9,7 +9,7 @@ steps:
     displayName: "Assign GitHub.Owner and GitHub.Repository"
 
   - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/master') }}:
-      - template: ./install-dotnet.yml
+      - template: ../new/install-dotnet.yml
         parameters:
           DotNetSdk:
             - '2.x'
