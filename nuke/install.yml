@@ -23,7 +23,7 @@ steps:
     - task: NuGetCommand@2
       inputs:
         command: 'custom'
-        arguments: 'sources update -Name "${{ feed.name }}" -Source "${{ feed.source }}" -UserName "${{ feed.username }}" -Password "${{ feed.password }}" -ConfigFile "NuGet.config"'
+        arguments: 'sources update -Name "${{ feed.name }}" -Source "${{ feed.source }}" -UserName "${{ feed.username }}" -Password "${{ feed.password }}" -ConfigFile "NuGet.config" -StorePasswordInClearText'
       displayName: Authorize NuGet ${{ feed.name }}
 
   - task: DotNetCoreCLI@2
