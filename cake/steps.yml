@@ -15,9 +15,8 @@ steps:
       DotNetSdk: ${{ parameters.DotNetSdk }}
       NuGetVersion: ${{ parameters.NuGetVersion }}
       NuGetPackages: ${{ parameters.NuGetPackages }}
-  - template: ../standard/dotnet-restore.yml
-    parameters:
       AuthNuGetFeeds: ${{ parameters.AuthNuGetFeeds }}
+  - template: ../standard/dotnet-restore.yml
   - template: ./run.yml
     parameters:
       Configuration: ${{ parameters.Configuration }}
