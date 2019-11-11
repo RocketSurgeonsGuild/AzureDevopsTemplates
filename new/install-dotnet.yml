@@ -1,0 +1,20 @@
+parameters:
+  DotNetSdk:
+    - 2.2.x
+    - 3.0.x
+  AuthNuGetFeeds: []
+
+steps:
+  - ${{ each sdk in parameters.DotNetSdk }}:
+      - task: UseDotNet@2
+        displayName: Install dotnet ${{ sdk }}
+        inputs:
+          packageType: "sdk"
+          version: ${{ sdk }}
+
+  - ${{ each feed in parameters.AuthNuGetFeeds }}:
+    - task: NuGetCommand@2
+      inputs:
+        command: 'custom'
+        arguments: 'sources update -Name "${{ feed.name }}" -Source "${{ feed.source }}" -UserName "${{ feed.username }}" -Password "${{ feed.password }}" -ConfigFile "NuGet.config" -StorePasswordInClearText'
+      displayName: Authorize NuGet ${{ feed.name }}

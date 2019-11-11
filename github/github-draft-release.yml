@@ -1,6 +1,5 @@
 parameters:
-  DotNetSdk:
-    - "3.0.x"
+  AuthNuGetFeeds: []
 
 steps:
   - pwsh: |
@@ -54,14 +53,14 @@ steps:
         displayName: "Ensure v$(GitVersion.MajorMinorPatch) Milestone"
 
   - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/v') }}:
-      - task: UseDotNet@2
-        displayName: Install dotnet 2.x
-        inputs:
-          packageType: "sdk"
-          version: '2.x'
+      - template: ./install-dotnet.yml
+        parameters:
+          DotNetSdk:
+            - '2.x'
+          AuthNuGetFeeds: ${{ parameters.AuthNuGetFeeds }}
 
       - task: DotNetCoreCLI@2
-        displayName: "dotnet tool restore"
+        displayName: "dotnet tool install gitreleasemanager.tool"
         inputs:
           command: custom
           custom: tool

@@ -6,6 +6,7 @@ parameters:
   MyGetPackages: false
   NuGetVersion: '5.3.1'
   Postfix: ''
+  AuthNuGetFeeds: []
 
 jobs:
   - ${{ if and(or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranch'], 'refs/heads/master')), ne(variables['System.PullRequest.IsFork'], 'true')) }}:
@@ -60,3 +61,6 @@ jobs:
               # - checkout: none
               - template: ./gitversion-restore.yml
               - template: ../github/github-release.yml
+                parameters:
+                  AuthNuGetFeeds: ${{ parameters.AuthNuGetFeeds }}
+

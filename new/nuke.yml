@@ -44,6 +44,7 @@ jobs:
       MyGetPackages: ${{ parameters.MyGetPackages }}
       NuGetVersion: ${{ parameters.NuGetVersion }}
       Postfix: " - ${{ parameters.PublishNuGetPackages }}"
+      AuthNuGetFeeds: ${{ parameters.AuthNuGetFeeds }}
 
   - job: Build
     dependsOn:
@@ -71,19 +72,10 @@ jobs:
         parameters:
           BranchNameFix: ${{ parameters.BranchNameFix }}
 
-      - ${{ each sdk in parameters.DotNetSdk }}:
-          - task: UseDotNet@2
-            displayName: Install dotnet ${{ sdk }}
-            inputs:
-              packageType: "sdk"
-              version: ${{ sdk }}
-
-      - ${{ each feed in parameters.AuthNuGetFeeds }}:
-        - task: NuGetCommand@2
-          inputs:
-            command: 'custom'
-            arguments: 'sources update -Name "${{ feed.name }}" -Source "${{ feed.source }}" -UserName "${{ feed.username }}" -Password "${{ feed.password }}" -ConfigFile "NuGet.config" -StorePasswordInClearText'
-          displayName: Authorize NuGet ${{ feed.name }}
+      - template: ./install-dotnet.yml
+        parameters:
+          DotNetSdk: ${{ parameters.DotNetSdk }}
+          AuthNuGetFeeds: ${{ parameters.AuthNuGetFeeds }}
 
       - task: DotNetCoreCLI@2
         displayName: "dotnet tool restore"
