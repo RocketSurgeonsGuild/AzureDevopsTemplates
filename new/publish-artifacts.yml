@@ -1,0 +1,61 @@
+parameters:
+  Configuration: "Release"
+  Coverage: "$(Agent.BuildDirectory)/c"
+  Artifacts: $(Build.ArtifactStagingDirectory)
+  Postfix: " - $(system.phaseName)"
+
+steps:
+  - task: PublishTestResults@2
+    displayName: Publish Tests (XUnit)
+    condition: always()
+    inputs:
+      testRunner: "XUnit"
+      testResultsFiles: "${{ parameters.Artifacts }}/test/**/*.xml"
+      testRunTitle: "XUnit Results${{ parameters.Postfix }}"
+      buildPlatform: ${{ parameters.os }}
+      buildConfiguration: ${{ parameters.Configuration }}
+
+  - task: PublishTestResults@2
+    displayName: Publish Tests (VSTest)
+    condition: always()
+    inputs:
+      testRunner: "VSTest"
+      testResultsFiles: "${{ parameters.Artifacts }}/test/**/*.trx"
+      testRunTitle: "VSTest Results${{ parameters.Postfix }}"
+      buildPlatform: ${{ parameters.os }}
+      buildConfiguration: ${{ parameters.Configuration }}
+
+  - task: PublishCodeCoverageResults@1
+    displayName: Publish Code Coverage
+    condition: always()
+    inputs:
+      codeCoverageTool: "Cobertura"
+      summaryFileLocation: "${{ parameters.Coverage }}/solution.cobertura"
+      # reportDirectory: "${{ parameters.Coverage }}/report/"
+      # failIfCoverageEmpty: "true"
+
+  - task: DotNetCoreCLI@2
+    displayName: Upload coverage to CodeCov
+    inputs:
+      command: custom
+      custom: codecov
+      arguments: "--name $(Build.BuildNumber)-$(Agent.OS) -f ${{ parameters.Coverage }}/solution.xml"
+    env:
+      CODECOV_TOKEN: $(CodeCovToken)
+    continueOnError: true
+    condition: and(succeeded(), ne(variables['CodeCovToken'], ''))
+
+  - publish: "${{ parameters.Artifacts }}/logs/"
+    displayName: Publish Logs
+    artifact: "Logs${{ parameters.Postfix }}"
+    condition: always()
+
+  - publish: ${{ parameters.Coverage }}
+    displayName: Publish Coverage
+    artifact: "Coverage${{ parameters.Postfix }}"
+    condition: always()
+
+  - publish: "${{ parameters.Artifacts }}/nuget/"
+    displayName: Publish NuGet Artifacts
+    artifact: "NuGet ${{ parameters.Postfix }}"
+    condition: always()

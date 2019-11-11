@@ -1,0 +1,13 @@
+#
+# This task will restore all gitversion variables from the serialzied metafile
+#   This allows subsequent jobs to include the cake information without explictly requiring gitversion to be run.
+#
+
+steps:
+  - download: current
+    displayName: "Download GitVersion Variables"
+    artifact: gitversion
+  - task: RocketSurgeonsGuild.variable-tools.DeserializeVariables.DeserializeVariables@1
+    displayName: 'Deserialize GitVersion'
+    inputs:
+      jsonfiles: "$(Pipeline.Workspace)/gitversion/**/gitversion.json"

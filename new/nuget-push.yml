@@ -1,0 +1,49 @@
+parameters:
+  NuGetVersion: "5.3.1"
+  Artifacts: "$(Pipeline.Workspace)/nuget/"
+  AllowPackageConflicts: "true"
+  MyGetFeed: "myget.org"
+  MyGetPackages: false
+  NuGetFeed: "nuget.org"
+  GitHubFeed: "github.nuget"
+  GitHubPackages: false
+
+steps:
+  - task: NuGetToolInstaller@1
+    displayName: "Get NuGet"
+    inputs:
+      versionSpec: ${{ parameters.NuGetVersion }}
+
+  - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/v') }}:
+      - task: NuGetCommand@2
+        displayName: Push NuGet packages to ${{ parameters.NuGetFeed }}
+        inputs:
+          command: push
+          nuGetFeedType: external
+          packagesToPush: "${{ parameters.Artifacts }}/**/*.nupkg;!${{ parameters.Artifacts }}/**/*.symbols.nupkg"
+          publishFeedCredentials: ${{ parameters.NuGetFeed }}
+          allowPackageConflicts: ${{ parameters.AllowPackageConflicts }}
+          continueOnError: true
+
+  - ${{ if or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranch'], 'refs/heads/master')) }}:
+      - ${{ if eq(parameters.MyGetPackages, 'true') }}:
+        - task: NuGetCommand@2
+          displayName: Push NuGet packages to ${{ parameters.MyGetFeed }}
+          inputs:
+            command: push
+            nuGetFeedType: external
+            packagesToPush: "${{ parameters.Artifacts }}/**/*.nupkg;!${{ parameters.Artifacts }}/**/*.symbols.nupkg"
+            publishFeedCredentials: ${{ parameters.MyGetFeed }}
+            allowPackageConflicts: ${{ parameters.AllowPackageConflicts }}
+            continueOnError: true
+
+      - ${{ if eq(parameters.GitHubPackages, 'true') }}:
+          - task: NuGetCommand@2
+            displayName: Push NuGet packages to ${{ parameters.GitHubFeed }}
+            inputs:
+              command: push
+              nuGetFeedType: external
+              packagesToPush: "${{ parameters.Artifacts }}/**/*.nupkg;!${{ parameters.Artifacts }}/**/*.symbols.nupkg"
+              publishFeedCredentials: ${{ parameters.GitHubFeed }}
+              allowPackageConflicts: ${{ parameters.AllowPackageConflicts }}
+              continueOnError: true

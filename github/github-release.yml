@@ -1,0 +1,95 @@
+steps:
+  - pwsh: |
+      $parts = '$(Build.Repository.Name)' -split '/';
+      Write-Host "##vso[task.setvariable variable=GitHub.Owner]$($parts[0])"
+      Write-Host "##vso[task.setvariable variable=GitHub.Repository]$($parts[1])"
+    displayName: "Assign GitHub.Owner and GitHub.Repository"
+
+  - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/master') }}:
+      - task: UseDotNet@2
+        displayName: Install dotnet 3.x
+        inputs:
+          packageType: "sdk"
+          version: '3.x'
+
+      - task: DotNetCoreCLI@2
+        displayName: "dotnet tool restore"
+        inputs:
+          command: custom
+          custom: tool
+          arguments: "install -g gitreleasemanager.tool"
+
+      - pwsh: mkdir $(Build.ArtifactStagingDirectory)/releasenotes/;
+        displayName: "Create release notes directory"
+
+      - pwsh: |
+          $token = "$(GitHub.Token)";
+          $repository = "$(GitHub.Repository)";
+          $owner = "$(GitHub.Owner)";
+          $tag = "v$(GitVersion.MajorMinorPatch)";
+          $sha = "$(Build.SourceVersion)";
+          $outfile = "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md";
+
+          $newTag = dotnet gitreleasemanager create --token "$token" --owner "$owner" --repository "$repository" -n "$tag" -c "$sha" -m "$tag";
+          Write-Host Response From Create $newTag
+          $tagName = $newTag -split '/' | select -Last 1;
+          Write-Host Tag Name $tagName;
+
+          $item = Invoke-RestMethod `
+              -Uri "https://api.github.com/repos/$owner/$repository/releases/tags/$tagName" `
+              -Headers @{  Authorization = "Token $token" } `
+              -Method Get;
+
+          Invoke-RestMethod `
+              -Uri "https://api.github.com/repos/$owner/$repository/releases/$($item.id)" `
+              -Headers @{  Authorization = "Token $token" } `
+              -Method Delete;
+
+          Set-Content -Path "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md" -Value $item.body
+
+        displayName: "Get up to date changeset details from GitHub_Release"
+
+      - task: GitHubRelease@0
+        displayName: "Update GitHub_Release"
+        inputs:
+          gitHubConnection: github
+          action: edit
+          title: v$(GitVersion.MajorMinorPatch)
+          tag: v$(GitVersion.MajorMinorPatch)
+          isDraft: true
+          isPreRelease: false
+          releaseNotesFile: "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md"
+
+      - pwsh: |
+          $token = "$(GitHub.Token)";
+          $repository = "$(GitHub.Repository)";
+          $owner = "$(GitHub.Owner)";
+          $tag = "v$(GitVersion.MajorMinorPatch)";
+
+          dotnet gitreleasemanager export --token "$token" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md" -t $tag
+          dotnet gitreleasemanager export --token "$token" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release.md"
+        displayName: "Export Release Notes"
+
+      - publish: "$(Build.ArtifactStagingDirectory)/releasenotes/"
+        displayName: Publish Release Notes
+        artifact: "ReleaseNotes"
+
+  - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/v') }}:
+      - pwsh: |
+          $token = "$(GitHub.Token)";
+          $repository = "$(GitHub.Repository)";
+          $owner = "$(GitHub.Owner)";
+          $tag = "v$(GitVersion.MajorMinorPatch)";
+
+          $milestones = Invoke-RestMethod `
+              -Uri "https://api.github.com/repos/$owner/$repository/milestones?state=open" `
+              -Headers @{  Authorization = "Token $token" } `
+              -Method Get;
+
+          $currentMilestone = $milestones | where { $_.title -eq $tag }
+          Invoke-RestMethod `
+              -Uri "https://api.github.com/repos/$owner/$repository/milestones/$($currentMilestone.number)" `
+              -Headers @{  Authorization = "Token $token" } `
+              -Method Post `
+              -Body (@{ title = $tag; state = "closed" } | ConvertTo-Json)
+        displayName: "Delete v$(GitVersion.MajorMinorPatch) Milestone"

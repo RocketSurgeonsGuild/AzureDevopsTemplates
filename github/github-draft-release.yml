@@ -1,0 +1,86 @@
+parameters:
+  DotNetSdk:
+    - "3.0.x"
+
+steps:
+  - pwsh: |
+      $parts = '$(Build.Repository.Name)' -split '/';
+      Write-Host "##vso[task.setvariable variable=GitHub.Owner]$($parts[0])"
+      Write-Host "##vso[task.setvariable variable=GitHub.Repository]$($parts[1])"
+    displayName: "Assign GitHub.Owner and GitHub.Repository"
+
+  - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/master') }}:
+
+      - pwsh: |
+          $token = "$(GitHub.Token)";
+          $repository = "$(GitHub.Repository)";
+          $owner = "$(GitHub.Owner)";
+          $tag = "v$(GitVersion.MajorMinorPatch)";
+
+          $releases = Invoke-RestMethod `
+              -Uri "https://api.github.com/repos/$owner/$repository/releases" `
+              -Headers @{  Authorization = "Token $token" } `
+              -Method Get;
+
+          $drafts = $releases | Sort-Object -Property created_at | where { $_.draft };
+
+          foreach ($draft in $drafts) {
+                Invoke-RestMethod `
+                    -Uri "https://api.github.com/repos/$owner/$repository/releases/$($draft.id)" `
+                    -Headers @{  Authorization = "Token $token" } `
+                    -Method Delete;
+          }
+        displayName: "Delete old draft releases"
+
+      - pwsh: |
+          $token = "$(GitHub.Token)";
+          $repository = "$(GitHub.Repository)";
+          $owner = "$(GitHub.Owner)";
+          $tag = "v$(GitVersion.MajorMinorPatch)";
+
+          $milestones = Invoke-RestMethod `
+              -Uri "https://api.github.com/repos/$owner/$repository/milestones?state=open" `
+              -Headers @{  Authorization = "Token $token" } `
+              -Method Get;
+
+          $currentMilestone = $milestones | where { $_.title -eq $tag }
+          if (-not ($currentMilestone)) {
+              Invoke-RestMethod `
+                  -Uri "https://api.github.com/repos/$owner/$repository/milestones" `
+                  -Headers @{  Authorization = "Token $token" } `
+                  -Method Post `
+                  -Body (@{ title = $tag; } | ConvertTo-Json)
+          }
+        displayName: "Ensure v$(GitVersion.MajorMinorPatch) Milestone"
+
+  - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/v') }}:
+      - task: UseDotNet@2
+        displayName: Install dotnet 3.x
+        inputs:
+          packageType: "sdk"
+          version: '3.x'
+
+      - task: DotNetCoreCLI@2
+        displayName: "dotnet tool restore"
+        inputs:
+          command: custom
+          custom: tool
+          arguments: "install -g gitreleasemanager.tool"
+
+      - pwsh: mkdir $(Build.ArtifactStagingDirectory)/releasenotes/;
+        displayName: "Create release notes directory (Tag)"
+
+      - pwsh: |
+          $token = "$(GitHub.Token)";
+          $repository = "$(GitHub.Repository)";
+          $owner = "$(GitHub.Owner)";
+          $tag = "v$(GitVersion.MajorMinorPatch)";
+
+          dotnet gitreleasemanager export --token "$token" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md" -t $tag
+          dotnet gitreleasemanager export --token "$token" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release-current.md" -t $tag
+          dotnet gitreleasemanager export --token "$token" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release.md"
+        displayName: "Export Release (Tag)"
+
+      - publish: "$(Build.ArtifactStagingDirectory)/releasenotes/"
+        displayName: Publish Release Notes (Tag)
+        artifact: "ReleaseNotes"
