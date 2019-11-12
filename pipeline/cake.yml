@@ -111,3 +111,5 @@ jobs:
         parameters:
           Configuration: ${{ parameters.Configuration }}
           Postfix: ' - $(BuildName)'
+          PublishXUnit: false
+          PublishVSTest: true

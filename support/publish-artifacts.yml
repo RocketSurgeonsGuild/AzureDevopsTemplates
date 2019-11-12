@@ -3,27 +3,31 @@ parameters:
   Coverage: "$(Agent.BuildDirectory)/c"
   Artifacts: $(Build.ArtifactStagingDirectory)
   Postfix: " - $(system.phaseName)"
+  PublishXUnit: false
+  PublishVSTest: false
 
 steps:
-  - task: PublishTestResults@2
-    displayName: Publish Tests (XUnit)
-    condition: always()
-    inputs:
-      testRunner: "XUnit"
-      testResultsFiles: "${{ parameters.Artifacts }}/test/**/*.xml"
-      testRunTitle: "XUnit Results${{ parameters.Postfix }}"
-      buildPlatform: ${{ parameters.os }}
-      buildConfiguration: ${{ parameters.Configuration }}
+  - ${{ if eq(parameters.PublishXUnit, 'true') }}:
+    - task: PublishTestResults@2
+      displayName: Publish Tests (XUnit)
+      condition: always()
+      inputs:
+        testRunner: "XUnit"
+        testResultsFiles: "${{ parameters.Artifacts }}/test/**/*.xml"
+        testRunTitle: "XUnit Results${{ parameters.Postfix }}"
+        buildPlatform: ${{ parameters.os }}
+        buildConfiguration: ${{ parameters.Configuration }}
 
-  - task: PublishTestResults@2
-    displayName: Publish Tests (VSTest)
-    condition: always()
-    inputs:
-      testRunner: "VSTest"
-      testResultsFiles: "${{ parameters.Artifacts }}/test/**/*.trx"
-      testRunTitle: "VSTest Results${{ parameters.Postfix }}"
-      buildPlatform: ${{ parameters.os }}
-      buildConfiguration: ${{ parameters.Configuration }}
+  - ${{ if eq(parameters.PublishVSTest, 'true') }}:
+    - task: PublishTestResults@2
+      displayName: Publish Tests (VSTest)
+      condition: always()
+      inputs:
+        testRunner: "VSTest"
+        testResultsFiles: "${{ parameters.Artifacts }}/test/**/*.trx"
+        testRunTitle: "VSTest Results${{ parameters.Postfix }}"
+        buildPlatform: ${{ parameters.os }}
+        buildConfiguration: ${{ parameters.Configuration }}
 
   - task: PublishCodeCoverageResults@1
     displayName: Publish Code Coverage
