@@ -26,9 +26,7 @@ parameters:
     macOS:
       BuildName: "macOS"
       ImageName: "macOS-latest"
-  BuildSteps:
-    - pwsh: .\build.ps1 ${{parameters.Targets}} --Configuration="${{ parameters.Configuration }}" --Artifacts="${{ parameters.Artifacts }}" --Coverage="${{ parameters.Coverage }}" --verbosity="${{ parameters.Verbosity }}"
-      displayName: 'nuke ${{parameters.Targets}}'
+  StepTemplate: ''
 
 jobs:
   - job: GitVersion
@@ -118,7 +116,11 @@ jobs:
           nugetConfigPath: ${{ parameters.NuGetConfig }}
           verbosityRestore: ${{ parameters.Verbosity }}
 
-      - ${{ parameters.BuildSteps }}
+      - ${{ if eq(parameters.StepTemplate, '') }}:
+        - pwsh: .\build.ps1 ${{parameters.Targets}} --Configuration="${{ parameters.Configuration }}" --Artifacts="${{ parameters.Artifacts }}" --Coverage="${{ parameters.Coverage }}" --verbosity="${{ parameters.Verbosity }}"
+          displayName: 'nuke ${{parameters.Targets}}'
+      - ${{ if ne(parameters.StepTemplate, '') }}:
+        - template: ${{ parameters.StepTemplate }}
 
       - template: ../support/publish-artifacts.yml
         parameters:
