@@ -1,6 +1,6 @@
 parameters:
   EnableReleaseNotes: false
-  GitHub: true
+  GitHub: false
   GitHubPackages: false
   GitHubAuthVariableGroup: ''
   MyGetPackages: false
