@@ -1,0 +1,23 @@
+#
+# This task will store all gitversion variables into a json file
+#   This allows subsequent jobs to include the cake information without explictly requiring gitversion to be run.
+#
+parameters:
+  BranchNameFix: false
+
+jobs:
+  - job: GitVersion
+    pool:
+      vmImage: windows-latest
+    steps:
+      - template: ./gitversion-hack.yml
+        parameters:
+          BranchNameFix: ${{ parameters.BranchNameFix }}
+      - task: RocketSurgeonsGuild.variable-tools.SerializeVariables.SerializeVariables@1
+        displayName: "Serialize GitVersion Variables"
+        inputs:
+          filename: "$(Build.ArtifactStagingDirectory)/gitversion/gitversion.json"
+          prefixes: GITVERSION
+      - publish: "$(Build.ArtifactStagingDirectory)/gitversion/"
+        displayName: "Publish GitVersion Variables"
+        artifact: gitversion

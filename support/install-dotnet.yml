@@ -2,6 +2,7 @@ parameters:
   DotNetSdk:
     - 2.2.x
     - 3.0.x
+  DotNetRuntime: []
   AuthNuGetFeeds: []
 
 steps:
@@ -11,6 +12,13 @@ steps:
         inputs:
           packageType: "sdk"
           version: ${{ sdk }}
+
+  - ${{ each runtime in parameters.DotNetRuntime }}:
+      - task: UseDotNet@2
+        displayName: Install dotnet ${{ runtime }}
+        inputs:
+          packageType: "runtime"
+          version: ${{ runtime }}
 
   - ${{ each feed in parameters.AuthNuGetFeeds }}:
     - task: NuGetCommand@2
