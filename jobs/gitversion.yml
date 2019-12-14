@@ -10,7 +10,7 @@ jobs:
     pool:
       vmImage: windows-latest
     steps:
-      - template: ./gitversion-hack.yml
+      - template: ../support/gitversion-hack.yml
         parameters:
           BranchNameFix: ${{ parameters.BranchNameFix }}
       - task: RocketSurgeonsGuild.variable-tools.SerializeVariables.SerializeVariables@1
