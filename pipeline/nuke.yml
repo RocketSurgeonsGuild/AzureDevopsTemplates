@@ -91,7 +91,6 @@ jobs:
           nugetConfigPath: ${{ parameters.NuGetConfig }}
           verbosityRestore: ${{ parameters.Verbosity }}
 
-      - ${{ if eq(parameters.Steps, '') }}:
       - ${{ parameters.Steps }}
 
       - template: ../support/publish-artifacts.yml
