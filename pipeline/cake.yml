@@ -42,7 +42,7 @@ jobs:
       GitHubAuthVariableGroup: ${{ parameters.GitHubAuthVariableGroup }}
       MyGetPackages: ${{ parameters.MyGetPackages }}
       NuGetVersion: ${{ parameters.NuGetVersion }}
-      Postfix: " - ${{ parameters.PublishNuGetPackages }}"
+      PublishNuGetPackagesFromArtifact: "NuGet - ${{ parameters.PublishNuGetPackages }}"
       AuthNuGetFeeds: ${{ parameters.AuthNuGetFeeds }}
 
   - job: Build
