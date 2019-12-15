@@ -3,7 +3,7 @@
 #   This allows subsequent jobs to include the cake information without explictly requiring gitversion to be run.
 #
 parameters:
-  BranchNameFix: false
+  BranchNameFix: true
 
 steps:
   - template: ./gitversion-hack.yml
