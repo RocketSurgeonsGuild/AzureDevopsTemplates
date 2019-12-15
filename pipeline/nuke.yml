@@ -37,7 +37,7 @@ jobs:
         parameters:
           BranchNameFix: ${{ parameters.BranchNameFix }}
 
-  - template: ../support/publish-release.yml
+  - template: ../jobs/publish-release.yml
     parameters:
       EnableReleaseNotes: ${{ parameters.EnableReleaseNotes }}
       GitHub: ${{ parameters.GitHub }}
@@ -63,9 +63,9 @@ jobs:
       - template: ../support/mono.yml
         parameters:
           MonoVersion: ${{ parameters.MonoVersion }}
-      - template: ../support/download-release-notes.yml
-        parameters:
-          EnableReleaseNotes: ${{ parameters.EnableReleaseNotes }}
+      - ${{ if eq(parameters.EnableReleaseNotes, 'true') }}:
+        - template: ../support/download-release-notes.yml
+          parameters:
 
       - template: ../support/gitversion-hack.yml
         parameters:

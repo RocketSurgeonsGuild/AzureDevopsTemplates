@@ -34,7 +34,7 @@ jobs:
         parameters:
           BranchNameFix: ${{ parameters.BranchNameFix }}
 
-  - template: ../support/publish-release.yml
+  - template: ../jobs/publish-release.yml
     parameters:
       EnableReleaseNotes: ${{ parameters.EnableReleaseNotes }}
       GitHub: ${{ parameters.GitHub }}
