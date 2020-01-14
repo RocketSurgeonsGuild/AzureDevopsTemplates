@@ -33,9 +33,7 @@ steps:
           $sha = "$(Build.SourceVersion)";
           $outfile = "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md";
 
-          try {
-
-          $newTag = dotnet gitreleasemanager create --token "$token" --owner "$owner" --repository "$repository" -n "$tag" -c "$sha" -m "$tag";
+          $newTag = dotnet gitreleasemanager create --no-logo --token "$token" --owner "$owner" --repository "$repository" -n "$tag" -c "$sha" -m "$tag";
           Write-Host Response From Create $newTag
           $tagName = $newTag -split '/' | select -Last 1;
           Write-Host Tag Name $tagName;
@@ -45,15 +43,7 @@ steps:
               -Headers @{  Authorization = "Token $token" } `
               -Method Get;
 
-          Invoke-RestMethod `
-              -Uri "https://api.github.com/repos/$owner/$repository/releases/$($item.id)" `
-              -Headers @{  Authorization = "Token $token" } `
-              -Method Delete;
-
-            Set-Content -Path "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md" -Value $item.body
-          } catch {
-            Set-Content -Path "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md" -Value ''
-          }
+          Set-Content -Path "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md" -Value $item.body
 
         displayName: "Get up to date changeset details from GitHub_Release"
 
@@ -74,8 +64,9 @@ steps:
           $owner = "$(GitHub.Owner)";
           $tag = "v$(GitVersion.MajorMinorPatch)";
 
-          dotnet gitreleasemanager export --token "$token" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md" -t $tag
-          dotnet gitreleasemanager export --token "$token" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release.md"
+          dotnet gitreleasemanager export --no-logo --token "$token" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md" -t $tag
+          dotnet gitreleasemanager export --no-logo --token "$token" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release-current.md" -t $tag
+          dotnet gitreleasemanager export --no-logo --token "$token" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release.md"
         displayName: "Export Release Notes"
 
       - publish: "$(Build.ArtifactStagingDirectory)/releasenotes/"

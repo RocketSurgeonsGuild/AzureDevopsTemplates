@@ -75,9 +75,9 @@ steps:
           $owner = "$(GitHub.Owner)";
           $tag = "v$(GitVersion.MajorMinorPatch)";
 
-          dotnet gitreleasemanager export --token "$token" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md" -t $tag
-          dotnet gitreleasemanager export --token "$token" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release-current.md" -t $tag
-          dotnet gitreleasemanager export --token "$token" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release.md"
+          dotnet gitreleasemanager export --no-logo --token "$token" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md" -t $tag
+          dotnet gitreleasemanager export --no-logo --token "$token" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release-current.md" -t $tag
+          dotnet gitreleasemanager export --no-logo --token "$token" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release.md"
         displayName: "Export Release (Tag)"
 
       - publish: "$(Build.ArtifactStagingDirectory)/releasenotes/"
