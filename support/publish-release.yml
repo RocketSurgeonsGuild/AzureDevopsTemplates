@@ -4,7 +4,7 @@ parameters:
   GitHubPackages: false
   GitHubAuthVariableGroup: ''
   MyGetPackages: false
-  NuGetVersion: '5.3.1'
+  NuGetVersion: '5.4.0'
   Postfix: ''
   AuthNuGetFeeds: []
 

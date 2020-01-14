@@ -33,6 +33,8 @@ steps:
           $sha = "$(Build.SourceVersion)";
           $outfile = "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md";
 
+          try {
+
           $newTag = dotnet gitreleasemanager create --token "$token" --owner "$owner" --repository "$repository" -n "$tag" -c "$sha" -m "$tag";
           Write-Host Response From Create $newTag
           $tagName = $newTag -split '/' | select -Last 1;
@@ -48,7 +50,10 @@ steps:
               -Headers @{  Authorization = "Token $token" } `
               -Method Delete;
 
-          Set-Content -Path "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md" -Value $item.body
+            Set-Content -Path "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md" -Value $item.body
+          } catch {
+            Set-Content -Path "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md" -Value ''
+          }
 
         displayName: "Get up to date changeset details from GitHub_Release"
 
