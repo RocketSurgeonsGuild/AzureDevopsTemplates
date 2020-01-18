@@ -48,8 +48,8 @@ steps:
           } catch {
           Set-Content -Path "$(Build.ArtifactStagingDirectory)/releasenotes/release-v$(GitVersion.MajorMinorPatch).md" -Value ''
           }
-
         displayName: "Get up to date changeset details from GitHub_Release"
+        continueOnError: true
 
       - task: GitHubRelease@0
         displayName: "Update GitHub_Release"
