@@ -79,6 +79,7 @@ steps:
           dotnet gitreleasemanager export --no-logo --token "$token" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release-current.md" -t $tag
           dotnet gitreleasemanager export --no-logo --token "$token" --owner "$owner" --repository "$repository" -f "$(Build.ArtifactStagingDirectory)/releasenotes/release.md"
         displayName: "Export Release (Tag)"
+        continueOnError: true
 
       - publish: "$(Build.ArtifactStagingDirectory)/releasenotes/"
         displayName: Publish Release Notes (Tag)
