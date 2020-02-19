@@ -4,14 +4,8 @@ parameters:
   GitHubPackages: false
   GitHubAuthVariableGroup: ''
   MyGetPackages: false
-<<<<<<< HEAD:jobs/publish-release.yml
-  NuGetVersion: '5.3.1'
-  PublishNuGetPackagesFromArtifact: ''
-=======
   NuGetVersion: '5.4.0'
-  Postfix: ''
-  AuthNuGetFeeds: []
->>>>>>> origin/master:support/publish-release.yml
+  PublishNuGetPackagesFromArtifact: ''
 
 jobs:
   - ${{ if and(or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranch'], 'refs/heads/master')), ne(variables['System.PullRequest.IsFork'], 'true')) }}:
