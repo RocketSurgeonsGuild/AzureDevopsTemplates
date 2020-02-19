@@ -1,9 +1,0 @@
-parameters:
-  Configuration: Release
-  Verbosity: Normal
-  Targets: "Default"
-  Coverage: $(Agent.BuildDirectory)/c
-  Artifacts: $(Build.ArtifactStagingDirectory)
-steps:
-  - pwsh: .\build.ps1 ${{parameters.Targets}} --Configuration="${{ parameters.Configuration }}" --Artifacts="${{ parameters.Artifacts }}" --Coverage="${{ parameters.Coverage }}" --verbosity="${{ parameters.Verbosity }}"
-    displayName: "nuke ${{parameters.Targets}}"
