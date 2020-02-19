@@ -3,8 +3,8 @@ parameters:
   Verbosity: Normal
   DotNetSdk:
     - 2.2.x
-    - 3.0.x
-  NuGetVersion: "5.3.0"
+    - 3.1.x
+  NuGetVersion: "5.4.0"
   BranchNameFix: true
   Target: "Default"
   EnableReleaseNotes: true
