@@ -61,9 +61,8 @@ jobs:
       - template: ../support/mono.yml
         parameters:
           MonoVersion: ${{ parameters.MonoVersion }}
-      - ${{ if eq(parameters.EnableReleaseNotes, 'true') }}:
+      - ${{ if and(eq(parameters.EnableReleaseNotes, 'true'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v')) }}:
         - template: ../support/download-release-notes.yml
-          parameters:
 
       - template: ../support/gitversion-hack.yml
         parameters:
