@@ -1,3 +1,6 @@
+parmaeters:
+  AuthNuGetFeeds: []
+
 steps:
   - pwsh: |
       $parts = '$(Build.Repository.Name)' -split '/';
@@ -10,6 +13,7 @@ steps:
         parameters:
           DotNetSdk:
             - '2.x'
+          AuthNuGetFeeds: ${{ parameters.AuthNuGetFeeds }}
 
       - task: DotNetCoreCLI@2
         displayName: "dotnet tool install gitreleasemanager.tool"

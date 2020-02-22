@@ -6,6 +6,7 @@ parameters:
   MyGetPackages: false
   NuGetVersion: '5.4.0'
   PublishNuGetPackagesFromArtifact: ''
+  AuthNuGetFeeds: []
 
 jobs:
   - ${{ if and(or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranch'], 'refs/heads/master')), ne(variables['System.PullRequest.IsFork'], 'true')) }}:
@@ -60,4 +61,6 @@ jobs:
               # - checkout: none
               - template: ../support/gitversion-restore.yml
               - template: ../github/github-release.yml
+                parameters:
+                  AuthNuGetFeeds: ${{ parameters.AuthNuGetFeeds }}
 
