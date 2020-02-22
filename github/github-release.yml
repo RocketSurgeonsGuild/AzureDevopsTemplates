@@ -1,4 +1,4 @@
-parmaeters:
+parameters:
   AuthNuGetFeeds: []
 
 steps:
