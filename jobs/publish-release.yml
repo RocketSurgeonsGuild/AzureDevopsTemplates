@@ -9,7 +9,6 @@ parameters:
 
 jobs:
   - ${{ if and(or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranch'], 'refs/heads/master')), ne(variables['System.PullRequest.IsFork'], 'true')) }}:
-
       - ${{ if and(eq(parameters.EnableReleaseNotes, 'true'), eq(parameters.GitHub, 'true')) }}:
           - job: GitHub_Draft_Release
             displayName: "GitHub Draft Release"
