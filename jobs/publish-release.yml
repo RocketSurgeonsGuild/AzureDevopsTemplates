@@ -24,6 +24,8 @@ jobs:
               # - checkout: none
               - template: ../support/gitversion-restore.yml
               - template: ../github/github-draft-release.yml
+                parameters:
+                  AuthNuGetFeeds: ${{ parameters.AuthNuGetFeeds }}
 
       - ${{ if ne(parameters.PublishNuGetPackagesFromArtifact, '') }}:
         - job: Publish_NuGet_Packages
