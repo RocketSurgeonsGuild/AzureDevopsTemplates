@@ -19,12 +19,15 @@ parameters:
     Windows:
       BuildName: "Windows"
       ImageName: "windows-latest"
+      ScriptName: build.ps1
     Linux:
       BuildName: "Linux"
       ImageName: "ubuntu-latest"
+      ScriptName: build.sh
     macOS:
       BuildName: "macOS"
       ImageName: "macOS-latest"
+      ScriptName: build.sh
 jobs:
   - job: GitVersion
     pool:
@@ -100,7 +103,7 @@ jobs:
           nugetConfigPath: ${{ parameters.NuGetConfig }}
           verbosityRestore: ${{ parameters.Verbosity }}
 
-      - pwsh: .\build.ps1 -Target "${{parameters.Target}}" -Configuration "${{ parameters.Configuration }}" -Artifacts="${{ parameters.Artifacts }}" -Coverage="${{ parameters.Coverage }}" -verbosity "${{ parameters.Verbosity }}"
+      - pwsh: .\$(ScriptName) -Target "${{parameters.Target}}" -Configuration "${{ parameters.Configuration }}" -Artifacts="${{ parameters.Artifacts }}" -Coverage="${{ parameters.Coverage }}" -verbosity "${{ parameters.Verbosity }}"
         displayName: 'cake ${{parameters.Target}}'
 
       - template: ../support/publish-artifacts.yml
