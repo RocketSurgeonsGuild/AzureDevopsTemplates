@@ -100,7 +100,7 @@ jobs:
           nugetConfigPath: ${{ parameters.NuGetConfig }}
           verbosityRestore: ${{ parameters.Verbosity }}
 
-      - pwsh: .\build.ps1 -Target="${{parameters.Target}}" -Configuration="${{ parameters.Configuration }}" -Artifacts="${{ parameters.Artifacts }}" -Coverage="${{ parameters.Coverage }}" -verbosity="${{ parameters.Verbosity }}"
+      - pwsh: .\build.ps1 -Target "${{parameters.Target}}" -Configuration "${{ parameters.Configuration }}" -Artifacts="${{ parameters.Artifacts }}" -Coverage="${{ parameters.Coverage }}" -verbosity "${{ parameters.Verbosity }}"
         displayName: 'cake ${{parameters.Target}}'
 
       - template: ../support/publish-artifacts.yml
