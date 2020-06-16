@@ -1,8 +1,6 @@
 parameters:
   EnableReleaseNotes: false
-  GitHub: false
   GitHubPackages: false
-  GitHubAuthVariableGroup: ''
   MyGetPackages: false
   NuGetVersion: '5.4.0'
   PublishNuGetPackagesFromArtifact: ''
@@ -10,59 +8,21 @@ parameters:
 
 jobs:
   - ${{ if and(or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranch'], 'refs/heads/master')), ne(variables['System.PullRequest.IsFork'], 'true')) }}:
-      - ${{ if and(eq(parameters.EnableReleaseNotes, 'true'), eq(parameters.GitHub, 'true')) }}:
-          - job: GitHub_Draft_Release
-            displayName: "GitHub Draft Release"
-            pool:
-              vmImage: "windows-latest"
-            dependsOn:
-              - GitVersion
-            variables:
-              - ${{ if ne(parameters.GitHubAuthVariableGroup, '') }}:
-                - group: ${{ parameters.GitHubAuthVariableGroup }}
-            steps:
-              # - checkout: none
-              - template: ../support/gitversion-restore.yml
-              - template: ../github/github-draft-release.yml
-                parameters:
-                  AuthNuGetFeeds: ${{ parameters.AuthNuGetFeeds }}
-
-      - ${{ if ne(parameters.PublishNuGetPackagesFromArtifact, '') }}:
-        - job: Publish_NuGet_Packages
-          displayName: "Publish NuGet Packages"
-          pool:
-            vmImage: "windows-latest"
-          dependsOn:
-            - Build
-            - ${{ if and(eq(parameters.EnableReleaseNotes, 'true'), eq(parameters.GitHub, 'true')) }}:
-                - GitHub_Draft_Release
-          steps:
-            - checkout: none
-            - download: current
-              displayName: "Download NuGet Packages"
-              artifact: "${{ parameters.PublishNuGetPackagesFromArtifact }}"
-            - template: ../support/nuget-push.yml
-              parameters:
-                Artifacts: "$(Pipeline.Workspace)"
-                NuGetVersion: ${{ parameters.NuGetVersion }}
-                GitHubPackages: ${{ parameters.GitHubPackages }}
-                MyGetPackages: ${{ parameters.MyGetPackages }}
-
-      - ${{ if and(eq(parameters.EnableReleaseNotes, 'true'), eq(parameters.GitHub, 'true')) }}:
-          - job: GitHub_Release
-            displayName: "GitHub Release"
-            pool:
-              vmImage: "windows-latest"
-            dependsOn:
-              - Build
-              - GitHub_Draft_Release
-            variables:
-              - ${{ if ne(parameters.GitHubAuthVariableGroup, '') }}:
-                - group: ${{ parameters.GitHubAuthVariableGroup }}
-            steps:
-              # - checkout: none
-              - template: ../support/gitversion-restore.yml
-              - template: ../github/github-release.yml
-                parameters:
-                  AuthNuGetFeeds: ${{ parameters.AuthNuGetFeeds }}
-
+    - ${{ if ne(parameters.PublishNuGetPackagesFromArtifact, '') }}:
+      - job: Publish_NuGet_Packages
+        displayName: "Publish NuGet Packages"
+        pool:
+          vmImage: "windows-latest"
+        dependsOn:
+          - Build
+        steps:
+          - checkout: none
+          - download: current
+            displayName: "Download NuGet Packages"
+            artifact: "${{ parameters.PublishNuGetPackagesFromArtifact }}"
+          - template: ../support/nuget-push.yml
+            parameters:
+              Artifacts: "$(Pipeline.Workspace)"
+              NuGetVersion: ${{ parameters.NuGetVersion }}
+              GitHubPackages: ${{ parameters.GitHubPackages }}
+              MyGetPackages: ${{ parameters.MyGetPackages }}
