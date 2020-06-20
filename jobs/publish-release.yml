@@ -1,5 +1,4 @@
 parameters:
-  EnableReleaseNotes: false
   GitHubPackages: false
   MyGetPackages: false
   NuGetVersion: '5.4.0'
