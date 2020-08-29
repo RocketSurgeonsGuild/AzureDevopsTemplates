@@ -53,13 +53,14 @@ steps:
     displayName: Publish Logs
     artifact: "Logs${{ parameters.Postfix }}"
     condition: always()
+    continueOnError: true
 
   - publish: ${{ parameters.Coverage }}
     displayName: Publish Coverage
     artifact: "Coverage${{ parameters.Postfix }}"
     condition: always()
+    continueOnError: true
 
   - publish: "${{ parameters.Artifacts }}/nuget/"
     displayName: Publish NuGet Artifacts
     artifact: "NuGet${{ parameters.Postfix }}"
-    condition: always()
