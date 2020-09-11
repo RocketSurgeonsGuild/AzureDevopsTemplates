@@ -9,6 +9,8 @@ parameters:
   GitHubPackages: false
   AzureDevOpsFeed: ''
   AzureDevOpsPackages: false
+  AzureDevOpsPreviewFeed: ''
+  AzureDevOpsPreviewPackages: false
 
 steps:
   - task: NuGetToolInstaller@1
@@ -59,3 +61,13 @@ steps:
               packagesToPush: "${{ parameters.Artifacts }}/**/*.nupkg;!${{ parameters.Artifacts }}/**/*.symbols.nupkg"
               publishVstsFeed: "${{ parameters.AzureDevOpsFeed }}"
               allowPackageConflicts: ${{ parameters.AllowPackageConflicts }}
+
+  - ${{ if eq(parameters.AzureDevOpsPreviewPackages, 'true') }}:
+      - task: NuGetCommand@2
+        displayName: Push NuGet packages to ${{ parameters.AzureDevOpsFeed }}
+        continueOnError: true
+        inputs:
+          command: push
+          packagesToPush: "${{ parameters.Artifacts }}/**/*.nupkg;!${{ parameters.Artifacts }}/**/*.symbols.nupkg"
+          publishVstsFeed: "${{ parameters.AzureDevOpsPreviewFeed }}"
+          allowPackageConflicts: ${{ parameters.AllowPackageConflicts }}
