@@ -1,5 +1,5 @@
 parameters:
-  NuGetVersion: "5.4.0"
+  NuGetVersion: "5.7.0"
   Artifacts: "$(Pipeline.Workspace)"
   AllowPackageConflicts: "true"
   MyGetFeed: "myget.org"
@@ -7,6 +7,8 @@ parameters:
   NuGetFeed: "nuget.org"
   GitHubFeed: "github.nuget"
   GitHubPackages: false
+  AzureDevOpsFeed: ''
+  AzureDevOpsPackages: false
 
 steps:
   - task: NuGetToolInstaller@1
@@ -46,4 +48,14 @@ steps:
               nuGetFeedType: external
               packagesToPush: "${{ parameters.Artifacts }}/**/*.nupkg;!${{ parameters.Artifacts }}/**/*.symbols.nupkg"
               publishFeedCredentials: ${{ parameters.GitHubFeed }}
+              allowPackageConflicts: ${{ parameters.AllowPackageConflicts }}
+
+      - ${{ if eq(parameters.AzureDevOpsPackages, 'true') }}:
+          - task: NuGetCommand@2
+            displayName: Push NuGet packages to ${{ parameters.AzureDevOpsFeed }}
+            continueOnError: true
+            inputs:
+              command: push
+              packagesToPush: "${{ parameters.Artifacts }}/**/*.nupkg;!${{ parameters.Artifacts }}/**/*.symbols.nupkg"
+              publishVstsFeed: "${{ parameters.AzureDevOpsFeed }}"
               allowPackageConflicts: ${{ parameters.AllowPackageConflicts }}
