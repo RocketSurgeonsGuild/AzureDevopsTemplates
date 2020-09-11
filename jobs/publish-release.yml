@@ -1,12 +1,19 @@
 parameters:
-  GitHubPackages: false
+  MyGetFeed: "myget.org"
   MyGetPackages: false
-  NuGetVersion: '5.4.0'
+  NuGetFeed: "nuget.org"
+  GitHubFeed: "github.nuget"
+  GitHubPackages: false
+  AzureDevOpsFeed: ''
+  AzureDevOpsPackages: false
+  AzureDevOpsPreviewFeed: ''
+  AzureDevOpsPreviewPackages: false
+  NuGetVersion: '5.7.0'
   PublishNuGetPackagesFromArtifact: ''
   AuthNuGetFeeds: []
 
 jobs:
-  - ${{ if ne(parameters.PublishNuGetPackagesFromArtifact, '') }}:
+  - ${{ if and(ne(parameters.PublishNuGetPackagesFromArtifact, ''), ne(variables['System.PullRequest.IsFork'], 'true')) }}:
     - job: Publish_NuGet_Packages
       displayName: "Publish NuGet Packages"
       pool:
@@ -22,6 +29,13 @@ jobs:
           parameters:
             Artifacts: "$(Pipeline.Workspace)"
             NuGetVersion: ${{ parameters.NuGetVersion }}
-            GitHubPackages: ${{ parameters.GitHubPackages }}
+            MyGetFeed: ${{ parameters.MyGetFeed }}
             MyGetPackages: ${{ parameters.MyGetPackages }}
+            NuGetFeed: ${{ parameters.NuGetFeed }}
+            GitHubFeed: ${{ parameters.GitHubFeed }}
+            GitHubPackages: ${{ parameters.GitHubPackages }}
+            AzureDevOpsFeed: ${{ parameters.AzureDevOpsFeed }}
+            AzureDevOpsPackages: ${{ parameters.AzureDevOpsPackages }}
+            AzureDevOpsPreviewFeed: ${{ parameters.AzureDevOpsPreviewFeed }}
+            AzureDevOpsPreviewPackages: ${{ parameters.AzureDevOpsPreviewPackages }}
   # - ${{ if and(or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranch'], 'refs/heads/master')), ne(variables['System.PullRequest.IsFork'], 'true')) }}:
